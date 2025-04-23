@@ -1,0 +1,437 @@
+﻿<%@ Master Language="VB" CodeFile="MasterPageB.master.vb" Inherits="MasterPageB" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+   <title>Foreign Vehicle Permit</title>
+    <link rel="icon" href="image/logo_dlt.png">
+
+      <!--icon add Mobile-->
+    <link rel="apple-touch-icon" sizes="128x128" href="image/logo_dlt.png">
+
+    <link rel="stylesheet" type="text/css" href="~/font/Kanit/css/font.css" />
+    <link rel="stylesheet" href="~/Styles/w3.css">
+    <link href="~/Styles/Site.css" rel="stylesheet" type="text/css" />
+    <link href="~/Styles/boostrap-stackpath.css" rel="stylesheet" type="text/css" />
+    <script src="../Styles/boostrap-stackpath.js"></script>
+    <%--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>--%>
+    
+
+    <%--<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">--%>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+
+
+    <%-- Footable --%>
+     <link rel="stylesheet" href="~/Footable/Icon/Styles/font-awesome.min.css" />
+
+   <%-- <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-footable/0.1/css/footable.min.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-footable/0.1.0/js/footable.min.js"></script>--%>
+
+    <link rel="stylesheet" href="~/Footable/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Footable/bootstrap-theme.min.css" />
+   
+    <link href="~/Footable/css/footable.bootstrap.min.css" rel="stylesheet" />
+     
+    <script src="../Footable/jquery.min.js"></script>
+    <script src="../Footable/bootstrap.min.js"></script>
+    <script src="../Footable/footable.js"></script>
+    <asp:ContentPlaceHolder ID="HeadContent" runat="server">
+
+    </asp:ContentPlaceHolder>
+   
+
+  <%--For Loading--%>
+<style type="text/css">
+
+.overlays
+{
+position: fixed;
+z-index: 999;
+height: 100%;
+width: 100%;
+top: 0;
+background-color: Black;
+filter: alpha(opacity=60);
+opacity: 0.6;
+-moz-opacity: 0.8;
+color:White;
+
+/*เพิ่มมาเองมันมีช่องว่างด้านซ้าย*/
+left: 0;
+}
+
+.loader {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #570EC2; /* purple */
+    border-radius: 50%;
+    width: 90px;
+    height: 90px;
+    animation: spin 2s linear infinite;
+    margin-top:200px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.bgmenucolor
+{
+    background-color:#7a4c9c;
+    
+}
+.bgnavcolor
+{
+    
+    background-color:#530f87;    
+}
+
+.headtxt
+{
+    font-size:x-large;    
+    font-weight:bolder;
+}
+.headmenu
+{
+    font-size:large;    
+    font-weight:bolder;
+}
+
+
+
+</style>  
+</head>
+<%--<style>
+@font-face{
+      font-family:'thaisans';
+      src : url('../font/ThaiSansNeue-Regular/thaisansneue-bold-webfont.woff2');
+    }
+   
+body,h1,h2,h3,h4,h5,h6,div{
+     font-family: "thaisans";
+     font-size: large;
+        
+        
+}
+</style>--%>
+<body class="w3-white">
+
+<script type="text/javascript">
+
+    function hideAdmin() {
+        $(function () {
+            $('#adminhide').hide();
+            $('#adminhide2').hide();
+            $('#adminhide3').hide();
+            
+        });
+
+    }
+
+    function hideUser() {
+        $(function () {
+            $('#menu2_3').hide();
+            $('#menu7_2').hide();
+            $('#Userhide3').hide();
+            $('#divT').hide();
+        });
+
+    }
+
+    function mySetFunc2(_div) {
+        console.log(_div);
+        var x = document.getElementById(_div);
+        if (x.className.indexOf("w3-show") == -1) {
+            x.className += " w3-show";
+        } else {
+            x.className = x.className.replace(" w3-show", "");
+        }
+
+        //        setclass(_div);
+    }
+
+</script>
+
+
+<!-- Top container -->
+<div class="w3-bar w3-top bgnavcolor w3-large" style="z-index:4;">
+  <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey w3-text-white" onclick="w3_open();" style="font-family: 'Kanit', sans-serif;" ><i class="fa fa-bars"></i>  Menu</button>
+  <%--<span class="w3-bar-item w3-right w3-text-white">Foreign Vehicle Permit</span>--%>
+  <a class="w3-text-white  w3-wide w3-bar-item w3-round-large w3-left-align w3-hide-medium w3-hide-small"> <img src="../image/logo_dlt.png" style="width:45px;"class="w3-round"><b style="font-family: 'Kanit', sans-serif;text-shadow:1px 1px 0 #444;margin-left: 15px; font-size:0.9em;">Foreign Vehicle Permit</b></a>
+</div>
+
+
+<!-- Sidebar/menu -->
+<nav class="w3-sidebar w3-collapse bgmenucolor  w3-text-white w3-animate-left w3-card" style="z-index:3;width:300px;margin-top: 0.5%;" id="mySidebar">
+  <div class="w3-container w3-row w3-padding-top32">
+    <div class="w3-col s4">
+      <img src="../image/Icon2/businessman.png" class="w3-circle w3-margin-right" style="width:70px">
+    </div>
+    <div class="w3-col s8 w3-bar">
+      <span>ยินดีต้อนรับ : <strong><% Response.Write(_name)%></strong></span><br>
+   <%--   <a href="#" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i></a>
+      <a href="#" class="w3-bar-item w3-button"><i class="fa fa-user"></i></a>--%>
+      <a href="Editadmin.aspx" class="w3-bar-item w3-button w3-text-aqua"><i class="fa fa-cog"></i></a>
+    </div>
+  </div>
+<%--  <hr>--%>
+  <div class="w3-container w3-bar-block shadow-lg">
+<a class="w3-bar-item w3-button w3-padding w3-text-white" href="dashboard.aspx"> <i class="fa fa-home" aria-hidden="true"></i> หน้าหลัก </a>
+  </div>
+  <div class="w3-container w3-bar-block shadow-lg w3-hide">
+    <h5 id="_carLocal" class=" headmenu w3-bar-item w3-button w3-padding w3-text-white" onclick="mySetFunc('carLocal')">จัดการรถประจำถิ่น <i class="fa fa-caret-down" aria-hidden="true"></i> </h5>
+  </div>
+  <div id="carLocal" class="w3-bar-block w3-hide w3-left-align w3-margin">
+    <a id="menu0" href="index.aspx?rt=1" runat="server"  class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-users fa-fw"></i>--%>รายการรออนุมัติรถประจำถิ่นเข้ามาในราชอาณาจักร </a>
+    <a id="menu1" href="index.aspx?rt=1"  class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-users fa-fw"></i>--%>ค้นหาขออนุญาตนำรถประจำถิ่นเข้ามาในราชอาณาจักร</a>
+    <a id="menu2" href="arrival.aspx?rt=1" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-eye fa-fw"></i>--%>รถประจำถิ่นที่ได้รับอนุญาติเข้ามาในราชอาณาจักร</a>
+    <a id="menu3" href="departures.aspx?rt=1" style="display:none" class="w3-bar-item w3-button w3-padding"><%--<i class="fa fa-users fa-fw"></i>--%>  นำรถออกจากราชอาณาจักร</a>
+    <a id="menu4" href="search.aspx?rt=1" style="display:none" class="w3-bar-item w3-button w3-padding"><%--<i class="fa fa-bullseye fa-fw"></i>--%>  สืบค้นข้อมูลรถและข้อมูลผู้ใช้รถ</a>
+    <a id="menu5" href="rules.aspx?rt=1" style="display:none" class="w3-bar-item w3-button w3-padding"><%--<i class="fa fa-diamond fa-fw"></i>--%>  บันทึกการฝ่าฝืนเงื่อนไข</a>
+    <a id="menu6" href="searchRules.aspx?rt=1" style="display:none" class="w3-bar-item w3-button w3-padding"><%--<i class="fa fa-bell fa-fw"></i>--%>  ตรวจสอบประวัติการฝ่าฝืนเงื่อนไข</a>
+    <a href="#" style="display:none" class="w3-bar-item w3-button w3-padding"><%--<i class="fa fa-bank fa-fw"></i>--%>  แจ้งเตือนขอยกเลิกใบอนุญาต</a>
+    <a href="#" style="display:none" class="w3-bar-item w3-button w3-padding"><%--<i class="fa fa-history fa-fw"></i>--%>  เพิกถอนใบอนุญาต</a>
+    <a href="#" style="display:none" class="w3-bar-item w3-button w3-padding"><%--<i class="fa fa-cog fa-fw"></i>--%>  ตรวจสอบประวัติเดินทาง</a>
+    <a href="#" style="display:none" class="w3-bar-item w3-button w3-padding"><%--<i class="fa fa-cog fa-fw"></i>--%>  สถิติการออกใบอนุญาต</a>
+  </div>
+  <%--<div style="Display:none">--%>
+
+  <div class="w3-container w3-bar-block shadow-lg w3-hide">
+    <h5 id="_carTravel" class="headmenu w3-bar-item w3-button w3-padding w3-text-white" onclick="mySetFunc('carTravel')">จัดการรถท่องเที่ยว <i class="fa fa-caret-down" aria-hidden="true"></i> </h5>
+  </div> 
+  <div id="carTravel" class="w3-bar-block w3-hide w3-left-align w3-margin">
+    <a id="menu0_2" href="index.aspx?rt=2" runat="server"  class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-users fa-fw"></i>--%>รายการรออนุมัติรถเข้ามาในราชอาณาจักร </a>
+    <a id="menu1_2" href="index.aspx?rt=2" style="Display:none" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-users fa-fw"></i>--%>ค้นหาขออนุญาตนำรถเข้ามาในราชอาณาจักร</a>
+    <a id="menu2_2" href="arrival.aspx?rt=2" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-eye fa-fw"></i>--%>รถที่ได้รับอนุญาติเข้ามาในราชอาณาจักร</a>
+    <a id="menu2_3" href="arrival.aspx?rt=2&all=1" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-eye fa-fw"></i>--%>รถที่ได้รับอนุญาติเข้ามาในราชอาณาจักร (ทั่วประเทศ)</a>
+    <a id="menu3_2" href="arrival.aspx?rt=2&cancel=1" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-users fa-fw"></i>--%>รายการยกเลิกเครื่องหมายแสดงการใช้รถ</a>
+    <a id="menu3_3" href="arrival.aspx?rt=2&fail=1" runat="server" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-users fa-fw"></i>--%>รายการขออนุญาตที่ไม่สำเร็จ</a>
+    <a id="menu4_2" href="search.aspx?rt=2"style="Display:none" class="w3-bar-item w3-button w3-padding"><%--<i class="fa fa-bullseye fa-fw"></i>--%>  สืบค้นข้อมูลรถและผู้ประกอบธุรกิจนำเที่ยว</a>
+    <a id="menu5_2" href="rules.aspx?rt=2" style="Display:none" class="w3-bar-item w3-button w3-padding"><%--<i class="fa fa-diamond fa-fw"></i>--%>  บันทึกการฝ่าฝืนเงื่อนไข</a>
+    <a id="menu6_2" href="searchRules.aspx?rt=2" style="Display:none" class="w3-bar-item w3-button w3-padding"><%--<i class="fa fa-bell fa-fw"></i>--%>  ตรวจสอบประวัติการฝ่าฝืนเงื่อนไข</a>
+    <a href="#" style="Display:none" class="w3-bar-item w3-button w3-padding"><%--<i class="fa fa-bank fa-fw"></i>--%>  แจ้งเตือนขอยกเลิกการใช้งาน</a>
+    <a href="#" style="Display:none" class="w3-bar-item w3-button w3-padding"><%--<i class="fa fa-history fa-fw"></i>--%>  เพิกถอนการใช้งาน</a>
+    <a href="#" style="Display:none" class="w3-bar-item w3-button w3-padding"><%--<i class="fa fa-cog fa-fw"></i>--%>  ตรวจสอบประวัติเดินทาง</a>
+    <a href="#" style="Display:none" class="w3-bar-item w3-button w3-padding"><%--<i class="fa fa-cog fa-fw"></i>--%>  สถิติการออกใบอนุญาต</a>
+    <a id="menu7_2" href="Conditionrule.aspx" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-address-card" aria-hidden="true"></i>--%>  จัดการข้อมูลฝ่าฝืนเงื่อนไข </a>
+  </div>
+  <%--</div>--%>
+  <div id="adminhide">
+  <div class="w3-container w3-bar-block shadow-lg w3-hide">
+    <h5 id="_carLaos" class="headmenu w3-bar-item w3-button w3-padding w3-text-white" onclick="mySetFunc('carLaos')">จัดการรถตามความตกลงระหว่าง<br />ประเทศรถยนต์ส่วนบุคคล <br />ของประเทศลาว <i class="fa fa-caret-down" aria-hidden="true"></i></h5>
+  </div>
+  <div id="carLaos" class="w3-bar-block w3-hide w3-left-align w3-margin">
+    <a id="menu0_3" href="index.aspx?rt=3" runat="server"  class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-users fa-fw"></i>--%>รายการรออนุมัติรถเข้ามาในราชอาณาจักร </a>
+    <a id="menu1_3" href="index.aspx?rt=3" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-users fa-fw"></i>--%>ค้นหาขออนุญาตนำรถเข้ามาในราชอาณาจักร</a>
+    <a id="menu2_3" href="arrival.aspx?rt=3" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-eye fa-fw"></i>--%>รถที่ได้รับอนุญาติเข้ามาในราชอาณาจักร</a>
+  </div>
+
+  <div class="w3-container w3-bar-block shadow-lg w3-hide">
+    <h5 id="_carMalaysia_Singapore" class="headmenu w3-bar-item w3-button w3-padding w3-text-white" onclick="mySetFunc('carMalaysia_Singapore')">จัดการรถตามความตกลงระหว่าง<br />ประเทศรถยนต์ส่วนบุคคล <br />ของประเทศมาเลเซีย และสิงคโปร์ <i class="fa fa-caret-down" aria-hidden="true"></i></h5>
+  </div>
+  <div id="carMalaysia_Singapore" class="w3-bar-block w3-hide w3-left-align w3-margin">
+    <a id="menu0_4" href="index.aspx?rt=4" runat="server"  class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-users fa-fw"></i>--%>รายการรออนุมัติรถเข้ามาในราชอาณาจักร </a>
+    <a id="menu1_4" href="index.aspx?rt=4" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-users fa-fw"></i>--%>ค้นหาขออนุญาตนำรถเข้ามาในราชอาณาจักร</a>
+    <a id="menu2_4" href="arrival.aspx?rt=4" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-eye fa-fw"></i>--%>รถที่ได้รับอนุญาติเข้ามาในราชอาณาจักร</a>
+  </div>
+
+  <div class="w3-container w3-bar-block shadow-lg w3-hide">
+    <h5 id="_carCommerce" class="headmenu w3-bar-item w3-button w3-padding w3-text-white" onclick="mySetFunc('carCommerce')">จัดการรถตามความตกลงระหว่าง<br />ประเทศรถขนส่งเชิงพาณิชย์ <i class="fa fa-caret-down" aria-hidden="true"></i></h5>
+  </div>
+  <div id="carCommerce" class="w3-bar-block w3-hide w3-left-align w3-margin">
+    <%--<a id="menu0_5" href="index.aspx?rt=5" runat="server"  class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"> รายการรออนุมัติรถเข้ามาในราชอาณาจักร </a>--%>
+    <a id="menu1_5" href="index.aspx?rt=5"  class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-users fa-fw"></i>--%>ค้นหาขออนุญาตนำรถเข้ามาในราชอาณาจักร</a>
+    <a id="menu2_5" href="arrival.aspx?rt=5" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-eye fa-fw"></i>--%>รถที่ได้รับอนุญาติเข้ามาในราชอาณาจักร</a>
+    <a id="menu3_5" href="importcarCommerce.aspx" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-users fa-fw"></i>--%>นำเข้าข้อมูลรถตามความตกลงระหว่าง<br />ประเทศรถขนส่งเชิงพาณิชย์</a>
+  </div>
+
+
+ 
+
+    
+
+
+
+
+  <div class="w3-container w3-bar-block shadow-lg w3-hide">
+    <h5 id="_Stat1" class="headmenu w3-bar-item w3-button w3-padding w3-text-white" onclick="mySetFunc('Stat1')">สถิติจำนวนรถประจำถิ่น <i class="fa fa-caret-down" aria-hidden="true"></i></h5>
+  </div>
+  <div id="Stat1" class="w3-bar-block w3-hide w3-left-align w3-margin">
+    
+    <a id="A6" href="RptStatChartTab.aspx?rt=1" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo">ภาพรวมกราฟสรุปสถิติรถประจำถิ่น</a>
+    <a id="A36" href="RptStatChartData.aspx?rt=1" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo">รายงานสรุปสถิติรถประจำถิ่น</a>
+
+
+    <a id="menuS1" href="RptStat.aspx?sid=1&rt=1"  class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"> ข้อมูลสถิติจำนวนรถ</a>
+    <a id="menuC1" href="RptStatChart.aspx?sid=1&rt=1" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"> กราฟข้อมูลสถิติจำนวนรถ</a>
+  </div>
+</div>
+  <div class="w3-container w3-bar-block shadow-lg">
+    <h5 id="_Stat2" class="headmenu w3-bar-item w3-button w3-padding w3-text-white" onclick="mySetFunc('Stat2')">สถิติจำนวนรถท่องเที่ยว <i class="fa fa-caret-down" aria-hidden="true"></i></h5>
+  </div>
+  <div id="Stat2" class="w3-bar-block w3-hide w3-left-align w3-margin">
+    
+    <a id="A7" href="RptStatChartTab.aspx?rt=2" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo">ภาพรวมสถิติรถท่องเที่ยว</a>
+    <a id="A37" href="RptStatChartData.aspx?rt=2" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo">รายงานสถิติรถท่องเที่ยว</a>
+
+    
+
+    <a id="A8" href="RptStat.aspx?sid=1&rt=2"  class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"> ข้อมูลสถิติจำนวนรถ</a>
+    <a id="A9" href="RptStatChart.aspx?sid=1&rt=2" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"> กราฟข้อมูลสถิติจำนวนรถ</a>
+  </div>
+
+    <%--<div  class="w3-container w3-bar-block  shadow-lg w3-padding-top w3-padding-bottom"> 
+       <a id="A2" href="Conditionrule.aspx" class="w3-bar-item w3-button w3-padding w3-text-white">  จัดการข้อมูลฝ่าฝืนเงื่อนไข </a>
+  </div>--%>
+
+  <div class="w3-container w3-bar-block shadow-lg">
+    <h5 id="_Cond" class="headmenu w3-bar-item w3-button w3-padding w3-text-white" onclick="mySetFunc('Cond')">สถิติการฝ่าฝืนเงื่อนไข <i class="fa fa-caret-down" aria-hidden="true"></i></h5>
+  </div>
+  <div id="Cond" class="w3-bar-block w3-hide w3-left-align w3-margin">
+    <a id="menuS2" href="RptStat.aspx?sid=2"  class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-users fa-fw"></i>--%>ข้อมูลสถิติการฝ่าฝืนเงื่อนไข</a>
+    <a id="menuC2" href="RptStatChart.aspx?sid=2" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-eye fa-fw"></i>--%>กราฟข้อมูลสถิติการฝ่าฝืนเงื่อนไข</a>
+  </div>
+
+  
+
+    <div id="adminhide2">
+   <%--<div  class="w3-container w3-bar-block  shadow-lg w3-padding-top w3-padding-bottom"> 
+         <a id="menumain4" href="MapLocation.aspx" class="w3-bar-item w3-button w3-padding w3-text-white">   ติดตามตำแหน่งรถบนแผนที่ </a>
+  </div>--%>
+  <div class="w3-container w3-bar-block shadow-lg">
+    <h5 id="_Map" class="headmenu w3-bar-item w3-button w3-padding w3-text-white" onclick="mySetFunc('Map')">ติดตามตำแหน่งรถบนแผนที่ <i class="fa fa-caret-down" aria-hidden="true"></i></h5>
+  </div>
+   <div id="Map" class="w3-bar-block w3-hide w3-left-align w3-margin">
+    <a id="A4" href="MapLocation.aspx" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-car" aria-hidden="true"></i>--%>  ติดตามตำแหน่งรถบนแผนที่ </a>
+    <a id="A5" href="MapLocationHis.aspx?is_guide=1" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-car" aria-hidden="true"></i>--%>  ติดตามตำแหน่งผู้นำเที่ยวทัวร์ (ย้อนหลัง) </a>
+    <a id="A10" href="MapLocationHis.aspx?is_guide=0" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-car" aria-hidden="true"></i>--%>  ติดตามตำแหน่งรถ (ย้อนหลัง) </a>
+  </div>
+  <%--<div  class="w3-container w3-bar-block  shadow-lg w3-padding-top w3-padding-bottom"> 
+         <a id="menumain4his" href="MapLocationHis.aspx" class="w3-bar-item w3-button w3-padding w3-text-white">  ติดตามตำแหน่งรถ (ย้อนหลัง) </a>
+  </div>--%>
+
+   <div class="w3-container w3-bar-block shadow-lg">
+    <h5 id="H2" class="headmenu w3-bar-item w3-button w3-padding w3-text-white" onclick="mySetFunc('User')">จัดการข้อมูล <i class="fa fa-caret-down" aria-hidden="true"></i> <%--<i class="fa fa-map-marker" aria-hidden="true"></i>--%></h5>
+   </div>
+   <div id="User" class="w3-bar-block w3-hide w3-left-align w3-margin">
+
+    <a id="menumain2" href="EditUser.aspx" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo">   จัดการ User ผู้ประกอบธุรกิจนำเที่ยว</a> 
+    <a id="menumain5" href="EditGuide.aspx" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo">  ข้อมูล ผู้นำเที่ยว </a> 
+    <a id="menumain4" href="EditUserAdmin.aspx" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo">  จัดการ User ระบบ FVP </a>
+    <a id="menumain3" href="News.aspx" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo">   จัดการข่าวประชาสัมพันธ์ </a>
+    <a id="A1" href="BorderCheck.aspx" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo">   จัดการข้อมูลด่าน </a>
+    <a id="A14" href="CalendarV.aspx" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo">   จัดการข้อมูลวันหยุดประจำปี</a> 
+    <a id="A3" href="CompanyTravel.aspx" style="display:none" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo">   จัดการข้อมูลผู้ประกอบธุรกิจนำเที่ยว </a>
+    <a id="A4" href="Bill.aspx" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo">   ข้อมูลใบเสร็จรับเงิน </a>
+    <a id="A2" href="Conditionrule.aspx" class="w3-bar-item w3-button w3-padding w3-text-white w3-indigo"><%--<i class="fa fa-address-card" aria-hidden="true"></i>--%>  จัดการข้อมูลฝ่าฝืนเงื่อนไข </a>
+   </div>
+   </div>
+
+
+  <div id="Userhide3" class="w3-container w3-bar-block shadow-lg">
+    <%---	ในหน้าสำนักงานขนส่งจังหวัด ให้ทำเมนูสำหรับคู่มือเจ้าหน้าที่สำนักงานขนส่งจังหวัด (ส่วนไฟล์คู่มือกำลังทำอยู่ครับ ให้รอไฟล์อีกที่แต่ทำเมนูไว้เตรียมลิ้งไฟล์)--%>
+    <a id="A11" href="https://fvp.dlt.go.th/คู่มือการใช้งานสำหรับสำนักงานขนส่งจังหวัด/คู่มือการใช้งานสำหรับสำนักงานขนส่งจังหวัด.html" class="headmenu w3-bar-item w3-button w3-padding w3-text-white">   คู่มือเจ้าหน้าที่สำนักงานขนส่งจังหวัด </a>
+  </div>
+
+  <div id="adminhide3" class="w3-container w3-bar-block shadow-lg">
+    <%---	คู่มือ Admin ย้ายเมนูไปหลัง adminbt Loginเรียบร้อยแล้ว เนื่องจาก ไม่ให้บุคคลภายนอกดูคู่มือAdminbtได้--%>
+    <a id="A12" href="https://fvp.dlt.go.th/คู่มือผู้ดูแลระบบ/คู่มือผู้ดูแลระบบ.html"  class="headmenu w3-bar-item w3-button w3-padding w3-text-white"  target="_blank">คู่มือผู้ดูแลระบบ</a>
+  </div>
+
+
+    <div id="divT" class="w3-container w3-bar-block w3-padding-top w3-padding-bottom" >
+   <a id="A13" href="Bill.aspx" class="headmenu w3-bar-item w3-button w3-padding w3-text-white">   ข้อมูลใบเสร็จรับเงิน </a>
+</div>
+
+  <div class="w3-container w3-bar-block w3-padding-top w3-padding-bottom">
+  <a href="#" onclick="document.getElementById('btnLogout').click();" class="w3-bar-item w3-button w3-padding w3-text-white"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a><br><br>
+</div>
+</nav>
+
+
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+<!-- !PAGE CONTENT! -->
+<div class="w3-main" style="margin-left:300px;margin-top:43px;">
+
+
+<form id="form1" runat=server>
+  <asp:Button id="btnLogout" style="DISPLAY: none" runat="server" UseSubmitBehavior="false" ></asp:Button> 
+  <div class="main">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server">
+           
+            </asp:ContentPlaceHolder>
+        </div>
+      
+</form>  
+
+  <!-- Footer -->
+
+
+
+
+
+<script>
+
+
+    // Get the Sidebar
+    var mySidebar = document.getElementById("mySidebar");
+
+    // Get the DIV with overlay effect
+    var overlayBg = document.getElementById("myOverlay");
+
+    // Toggle between showing and hiding the sidebar, and add overlay effect
+    function w3_open() {
+        if (mySidebar.style.display === 'block') {
+            mySidebar.style.display = 'none';
+            overlayBg.style.display = "none";
+        } else {
+            mySidebar.style.display = 'block';
+            overlayBg.style.display = "block";
+        }
+    }
+
+    // Close the sidebar with the close button
+    function w3_close() {
+        mySidebar.style.display = "none";
+        overlayBg.style.display = "none";
+    }
+
+
+    function mySetFunc(_div) {
+        console.log(_div);
+        var x = document.getElementById(_div);
+        if (x.className.indexOf("w3-show") == -1) {
+            x.className += " w3-show";
+        } else {
+            x.className = x.className.replace(" w3-show", "");
+        }
+
+//        setclass(_div);
+    }
+
+    var tmp_div;
+    function setclass(_div) {
+//        if (tmp_div = "") { }
+//        else {
+//            document.getElementById("_" + tmp_div).classList.remove("w3-teal");
+//        }
+        document.getElementById("_" + _div).classList.add("w3-teal");
+        tmp_div = _div; 
+    }
+
+
+
+</script>
+
+</body>
+</html>

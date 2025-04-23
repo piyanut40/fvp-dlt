@@ -1,0 +1,17 @@
+﻿
+@font-face {
+  font-family: hv-thin;
+  src: url("DBHeavent-Thin.woff") format("woff");
+}
+@font-face {
+  font-family: hv-light;
+  src: url("DBHeaventt-Light.woff") format("woff");
+}
+@font-face {
+  font-family: hv-bold;
+  src: url("DBHeavent-Bold.woff") format("woff");
+}
+@font-face {
+  font-family: hv-med;
+  src: url("DBHeavent-Med.woff") format("woff");
+}

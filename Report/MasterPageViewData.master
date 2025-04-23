@@ -1,0 +1,230 @@
+﻿<%@ Master Language="VB" CodeFile="MasterPageViewData.master.vb" Inherits="MasterPageViewData" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+   <title>Foreign Vehicle Permit</title>
+    <link rel="icon" href="../image/logo_dlt.png">
+
+
+      <!--icon add Mobile-->
+    <link rel="apple-touch-icon" sizes="128x128" href="image/logo_dlt.png">
+
+    
+    <link href="~/Styles/Site.css" rel="stylesheet" type="text/css" />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    
+    <link rel="stylesheet" href="~/Styles/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <%--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>--%>
+
+    <asp:ContentPlaceHolder ID="HeadContent" runat="server">
+
+    </asp:ContentPlaceHolder>
+   
+
+   <%--For Loading--%>
+<style type="text/css">
+.overlays
+{
+position: fixed;
+z-index: 999;
+height: 100%;
+width: 100%;
+top: 0;
+background-color: Black;
+filter: alpha(opacity=60);
+opacity: 0.6;
+-moz-opacity: 0.8;
+color:White;
+
+/*เพิ่มมาเองมันมีช่องว่างด้านซ้าย*/
+left: 0;
+}
+
+.loader {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #2980B9; /* purple */
+    border-radius: 50%;
+    width: 90px;
+    height: 90px;
+    animation: spin 2s linear infinite;
+    margin-top:200px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+</style>  
+
+</head>
+<style>
+html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+</style>
+<body class="w3-light-grey">
+
+
+<!-- Top container -->
+
+<!-- Sidebar/menu -->
+
+<!-- Overlay effect when opening sidebar on small screens -->
+
+<!-- !PAGE CONTENT! -->
+<div class="w3-main">
+
+<form id="form1" runat=server>
+  <asp:Button id="btnLogout" style="DISPLAY: none" runat="server" UseSubmitBehavior="false" ></asp:Button> 
+  <div class="main">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server">
+           
+            </asp:ContentPlaceHolder>
+        </div>
+      
+</form>  
+
+  <!-- Footer -->
+ <%-- <footer class="w3-container w3-padding-16 w3-light-grey">
+    <h4>FOOTER</h4>
+    <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+  </footer>
+
+  <!-- End page content -->
+</div>
+   --%>
+
+
+
+
+<script>
+
+    // Get the Sidebar
+    var mySidebar = document.getElementById("mySidebar");
+
+    // Get the DIV with overlay effect
+    var overlayBg = document.getElementById("myOverlay");
+
+    // Toggle between showing and hiding the sidebar, and add overlay effect
+    function w3_open() {
+        if (mySidebar.style.display === 'block') {
+            mySidebar.style.display = 'none';
+            overlayBg.style.display = "none";
+        } else {
+            mySidebar.style.display = 'block';
+            overlayBg.style.display = "block";
+        }
+    }
+
+    // Close the sidebar with the close button
+    function w3_close() {
+        mySidebar.style.display = "none";
+        overlayBg.style.display = "none";
+    }
+
+
+    function mySetFunc(_div) {
+        console.log(_div);
+        var x = document.getElementById(_div);
+        if (x.className.indexOf("w3-show") == -1) {
+            x.className += " w3-show";
+        } else {
+            x.className = x.className.replace(" w3-show", "");
+        }
+
+//        setclass(_div);
+    }
+
+    var tmp_div;
+    function setclass(_div) {
+//        if (tmp_div = "") { }
+//        else {
+//            document.getElementById("_" + tmp_div).classList.remove("w3-teal");
+//        }
+        document.getElementById("_" + _div).classList.add("w3-teal");
+        tmp_div = _div; 
+    }
+
+//    $(document).ready(function () {
+//        //ค้นหาข้อมูลส่งใบอนุญาต
+//        if (window.location.href.indexOf("index.aspx?rt=1") > -1) {
+//            document.getElementById("menuLocal").classList.add("w3-teal");
+//            document.getElementById("menu1").classList.add("w3-teal");
+//        } else if (window.location.href.indexOf("index.aspx?rt=2") > -1) {
+//            document.getElementById("menuTravel").classList.add("w3-teal");
+//            document.getElementById("menu1_2").classList.add("w3-teal");
+//        }
+//        //นำรถเข้ามาในราชอาณาจักร
+//         else if (window.location.href.indexOf("arrival.aspx?rt=1") > -1) {
+//            document.getElementById("menuLocal").classList.add("w3-teal");
+//            document.getElementById("menu2").classList.add("w3-teal");
+//        } else if (window.location.href.indexOf("arrival.aspx?rt=2") > -1) {
+//            document.getElementById("menuTravel").classList.add("w3-teal");
+//            document.getElementById("menu2_2").classList.add("w3-teal");
+//        }
+//        //นำรถออกจากราชอาณาจักร
+
+//        else if (window.location.href.indexOf("departures.aspx?rt=1") > -1) {
+//            document.getElementById("menuLocal").classList.add("w3-teal");
+//            document.getElementById("menu3").classList.add("w3-teal");
+//        } else if (window.location.href.indexOf("departures.aspx?rt=2") > -1) {
+//            document.getElementById("menuTravel").classList.add("w3-teal");
+//            document.getElementById("menu3_2").classList.add("w3-teal");
+//        }
+//        //สืบค้นข้อมูลรถ และผู้ใช้รถ
+//        else if (window.location.href.indexOf("search.aspx?rt=1") > -1) {
+//            document.getElementById("menuLocal").classList.add("w3-teal");
+//            document.getElementById("menu4").classList.add("w3-teal");
+//        } else if (window.location.href.indexOf("search.aspx?rt=2") > -1) {
+//            document.getElementById("menuTravel").classList.add("w3-teal");
+//            document.getElementById("menu4_2").classList.add("w3-teal");
+//        }
+
+//        //สืบค้นข้อมูลรถ และผู้ใช้รถ
+//        else if (window.location.href.indexOf("rules.aspx?rt=1") > -1) {
+//            document.getElementById("menuLocal").classList.add("w3-teal");
+//            document.getElementById("menu5").classList.add("w3-teal");
+//        } else if (window.location.href.indexOf("rules.aspx?rt=2") > -1) {
+//            document.getElementById("menuTravel").classList.add("w3-teal");
+//            document.getElementById("menu5_2").classList.add("w3-teal");
+//        }
+
+//        else if (window.location.href.indexOf("searchRules.aspx?rt=1") > -1) {
+//            document.getElementById("menuLocal").classList.add("w3-teal");
+//            document.getElementById("menu6").classList.add("w3-teal");
+//        } else if (window.location.href.indexOf("searchRules.aspx?rt=2") > -1) {
+//            document.getElementById("menuTravel").classList.add("w3-teal");
+//            document.getElementById("menu6_2").classList.add("w3-teal");
+//        }
+
+
+//        else if (window.location.href.indexOf("EditUser.aspx") > -1) {
+//            document.getElementById("menumain2").classList.add("w3-teal");
+//            document.getElementById("menumain2").classList.add("w3-teal");
+//        }
+
+//        else if (window.location.href.indexOf("News.aspx") > -1) {
+//            document.getElementById("menumain3").classList.add("w3-teal");
+//            document.getElementById("menumain3").classList.add("w3-teal");
+//        }
+
+//        else if (window.location.href.indexOf("MapLocation.aspx") > -1) {
+//            document.getElementById("menumain4").classList.add("w3-teal");
+//            document.getElementById("menumain4").classList.add("w3-teal");
+//        }
+//    });
+
+</script>
+
+</body>
+</html>

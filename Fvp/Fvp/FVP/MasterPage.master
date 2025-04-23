@@ -1,0 +1,546 @@
+﻿<%@ Master Language="VB" CodeFile="MasterPage.master.vb" Inherits="MasterPage" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1" runat="server">
+<title>Foreign Vehicle Permit</title>
+<link rel="icon" href="image/logo_dlt.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="Styles/w3Home.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link href="https://fonts.googleapis.com/css?family=Kanit" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="Styles/css/w3-theme-deep-purple.css" />
+<asp:ContentPlaceHolder ID="HeadContent" runat="server">
+    </asp:ContentPlaceHolder>
+<style type="text/css">
+  @font-face{
+      font-family: 'Kanit', sans-serif;
+        src : url('font/ThaiSansNeue-Regular/thaisansneue-bold-webfont.woff2');
+    
+    
+    }
+    
+
+body,h1,h2,h3,h4,h5,h6,a {
+    font-family: 'Kanit', sans-serif;
+    font-size: large;
+}
+body, html {
+    height: auto;
+    line-height: 1.8;
+}
+/* Full height image header */
+.bgimg-1 {
+   background-position: center;
+    background-size: cover;
+    background-image: url("image/76.jpg");
+    width: 100%;
+ 
+
+}
+.contactMasterPage
+{
+    max-width:85%; 
+    margin-top:3%;
+}
+.w3-bar .w3-button {
+    padding: 16px;
+}
+.contact
+{
+    
+    margin-bottom:2%;
+    text-shadow:1px 1px 0 #444; 
+    width:12em;
+     height:3em;
+     margin-left:45%;
+        font-size:22px;
+    
+    
+    
+    
+    
+    }.textcontact
+    {
+        
+        font-size:0.9em;
+        margin-top:-1%;
+        margin-bottom:2%;
+
+        
+        }
+.iconbars
+{
+      margin-left:-5%;      
+}
+.issue
+{
+   margin-bottom:1%; 
+   width:15%;
+  margin-top:2%;
+  
+}.btnReapply{font-size:1rem;margin:8px}
+  .btnRenewPermit{font-size:1rem;margin:8px}
+  .editPassword{ width:60%}
+@media screen and (min-width: 980px) and (max-width:1449px)
+{  
+    .contact
+{ 
+    margin-bottom:1%;
+    text-shadow:1px 1px 0 #444; 
+    width:10em;
+    height:3em;
+    margin-left:42%;
+    font-size:18px;
+    }
+    .textcontact
+{ 
+        font-size:0.8em;
+        margin-top:1%;
+        margin-bottom:3%
+} .issue
+{
+   margin-bottom:1%; 
+   width:20%;
+  
+}
+    }
+@media screen and (min-width: 768px) and (max-width:979px)
+{
+     .contact
+{ 
+    margin-bottom:1%;
+    text-shadow:1px 1px 0 #444; 
+    width:10em;
+    height:3em;
+    margin-left:40%;
+    font-size:18px;
+    }
+    .textcontact
+{ 
+        font-size:0.9em;
+        margin-top:3%;
+} .issue
+{
+   margin-bottom:1%; 
+   width:60%;
+  
+}
+    
+}
+@media screen and (min-width: 480px) and (max-width:767px) and (orientation : portrait)
+{
+    .contact
+{ 
+    margin-bottom:1%;
+    text-shadow:1px 1px 0 #444; 
+    width:10em;
+    height:3em;
+    margin-left:35%;
+    font-size:18px;
+    }
+    .textcontact
+{ 
+        font-size:0.7em;
+        margin-top:2%;
+} .issue
+{
+   margin-bottom:1%; 
+   width:60%;
+  
+}.btnReapply{font-size:0.8rem;flex: 0 0 50%;max-width: 50%; margin:8px}
+  .btnRenewPermit{font-size:0.8rem;flex: 0 0 41.666667%;max-width:-webkit-fill-available; margin:8px}
+  .editPassword{ width:100%}
+}
+@media screen and (min-width: 375px) and (max-width:479px) and (orientation : portrait)
+{
+.contact
+{ 
+    margin-bottom:1%;
+    text-shadow:1px 1px 0 #444; 
+    width:10em;
+    height:3em;
+    margin-left:32%;
+    font-size:18px;
+}
+.textcontact
+{ 
+    font-size:0.7em;
+    margin-top:3%;
+} 
+.issue
+{
+   margin-bottom:1%; 
+   width:60%;
+  
+}.btnReapply{font-size:0.8rem;flex: 0 0 50%;max-width: 50%;margin:8px}
+  .btnRenewPermit{font-size:0.8rem;flex: 0 0 41.666667%;max-width: -webkit-fill-available;margin:8px}
+  .editPassword{ width:100%}
+}
+@media screen and (min-width: 360px) and (max-width:376px) and (orientation : portrait)
+{
+ .contact
+{ 
+    margin-bottom:1%;
+    text-shadow:1px 1px 0 #444; 
+    width:9.5em;
+    height:2.5em;
+    margin-left:30%;
+    font-size:16px;
+}
+.textcontact
+{ 
+        font-size:0.6em;
+        margin-top:4%;
+} 
+.iconbars
+{
+      margin-left:0%;      
+            
+            
+}
+.issue
+{
+   margin-bottom:1%; 
+   width:60%;
+  
+}.btnReapply{font-size:0.8rem;flex: 0 0 50%;max-width: 50%;margin:8px}
+  .btnRenewPermit{font-size:0.8rem;flex: 0 0 41.666667%;max-width: -webkit-fill-available;margin:8px}
+  .editPassword{ width:100%}
+} 
+@media screen and (min-width:320px) and (max-width:359px) and (orientation : portrait)
+{
+    
+.contact
+{ 
+    margin-bottom:2%;
+    text-shadow:1px 1px 0 #444; 
+    width:9em;
+    height:2.5em;
+    margin-left:30%;
+    font-size:15px;
+}
+.textcontact
+{ 
+        font-size:0.55em;
+        margin-top:3%;
+} 
+.issue
+{
+   margin-bottom:1%; 
+   width:60%;
+   
+}.btnReapply{font-size:0.8rem;flex: 0 0 50%;max-width: 50%;margin:8px}
+  .btnRenewPermit{font-size:0.8rem;flex: 0 0 41.666667%;max-width: -webkit-fill-available;margin:8px}
+  .editPassword{ width:100%}
+}
+</style>
+
+<style type="text/css">
+    /*สำหรับ Loading*/
+.overlays
+{
+position: fixed;
+z-index: 999;
+height: 100%;
+width: 100%;
+top: 0;
+background-color: Black;
+filter: alpha(opacity=60);
+opacity: 0.6;
+-moz-opacity: 0.8;
+color:White;
+
+/*เพิ่มมาเองมันมีช่องว่างด้านซ้าย*/
+left: 0;
+}
+
+.loader {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #b213be; /* purple */
+    border-radius: 50%;
+    width: 90px;
+    height: 90px;
+    animation: spin 2s linear infinite;
+    margin-top:200px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+</style>   
+
+<style>
+.conference_new {
+  overflow-y: auto;
+  overflow-x: hidden;
+  right: 0;
+  height: 120px;
+  max-width: 700px;
+}
+
+.bgbanner
+{
+  width:100%;
+  margin:auto;
+  overflow:hidden;
+  /*background: 
+    linear-gradient(47deg, #542A6B 50%, transparent  -50.1%) left no-repeat,
+    linear-gradient(47deg, transparent 0%, #ffffff 0%) right no-repeat;
+  background-size:  100% ,100% auto,  139% auto;
+  box-shadow:0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);*/
+}
+
+.logo{
+
+    width: 40px;
+    padding-right: 10px;
+}
+.textfooter{
+  -webkit-column-count: 2; /* Chrome, Safari, Opera */
+  -moz-column-count: 2; /* Firefox */
+  column-count: 2;
+  -webkit-column-gap: 60px; /* Chrome, Safari, Opera */
+  -moz-column-gap: 60px; /* Firefox */
+  column-gap: 60px;
+  padding-top: 1px;
+}
+.ftbanner {
+        background-image: url('image/footer.jpg');
+        width:100%;
+          background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}/* Slideshow container */
+    .slideshow-container {
+        max-width: 100%;
+        position: relative;
+        margin: auto;
+        background-size: cover;
+    }
+
+    /* Next & previous buttons    
+    .prev, .next {
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        width: auto;
+        padding:64;
+        margin-top: -22px;
+        color: #000000;
+        font-weight: bold;
+        font-size: 18px;
+        transition: 0.6s ease;
+        border-radius: 0 3px 3px 0;
+        user-select: none;
+    }*/
+ 
+    /* Position the "next button" to the right */
+.next {
+        right: 0;
+        border-radius: 3px 0 0 3px;
+}
+
+        /* On hover, add a grey background color */
+        .prev:hover, .next:hover {
+            background-color: #000000;
+            color: #000000;
+}
+.trapezium 
+{
+  height:150px;
+  width:100%;
+  margin:auto;
+  overflow:hidden;
+  background: 
+    linear-gradient(47deg, #542A6B 0%, transparent  0%) left no-repeat,
+    linear-gradient(47deg, transparent 50%, #542A6B -50%) right no-repeat;
+  background-size: 75% ,100% auto,  139% auto;
+	
+}
+
+</style>
+
+</head>
+
+<body>
+
+<form id="formIndex" runat="server">
+
+    <!-- Sidebar (hidden by default) -->
+<nav class=" w3-sidebar w3-bar-block w3-card w3-blue3 w3-top w3-text-blue3 w3-medium w3-animate-left w3-row w3-responsive w3-mobile" style="display:none;z-index:5; /*width:auto*/  width:25%;cursor: pointer;  " id="mySidebar">
+  
+  <a href="javascript:void(0)" onclick="w3_close()" class="w3-bar-item w3-button w3-right-align w3-xlarge w3-text-purple"> <i class="fa fa-times-circle" aria-hidden="true"></i></a>
+
+  <center><img src="image/logo_dlt.png" style="width:20%;" class="w3-round w3-center"><p class=" w3-text-purple" style="margin-top:1%;font-size:1.3em"><b>Foreign Vehicle Permit</b></p></center>
+  <hr />
+  <a href="index.aspx" id="menu1" onclick="w3_close()" class="w3-bar-item w3-button w3-padding">Home</a>
+  <a href="News.aspx" id="A1"  class="w3-bar-item w3-button w3-padding" >News</a> 
+   <a href="Login.aspx" id="A2"  class="w3-bar-item w3-button w3-padding">Login</a> 
+  <!--a href="#" id="A2"  class="w3-bar-item w3-button w3-padding">Using Foreign Register Vehicle in Thailand</a--> 
+   <a href="Manual2.aspx"  id="A4" class="w3-bar-item w3-button w3-padding"> How to apply for FVP </a> 
+   <a href="Manual.aspx"  id="A3" class="w3-bar-item w3-button w3-padding"> Manual for Thai Travel Agency </a> 
+  <a href="#" class="w3-button w3-block w3-left-align " id="MyFuncWebsites">​Related Websites <i class="fa fa-caret-down"></i></a>
+  <div id="demoWeb" class="w3-hide w3-theme-d4 w3-card">
+   <a href="http://www.customs.go.th/" class="w3-bar-item w3-button w3-padding w3-theme-l4 " target="_blank">Thai customs</a>
+  <a href="https://www.immigration.go.th/index"  class="w3-bar-item w3-button w3-paddingw3-bar-item w3-button w3-padding w3-theme-l4 " target="_blank">Immigration Bureau</a>
+  <a href="http://www.mot.go.th/index.html"  class="w3-bar-item w3-button w3-padding w3-theme-l4 " target="_blank">Ministry of Transport</a>
+  <a href="https://www.dlt.go.th/" class="w3-bar-item w3-button w3-padding w3-theme-l4 " target="_blank">Department of Land Transport</a>
+   </div>
+    <%-- คู่มือ Admin ย้ายเมนูไปหลัง adminbt Loginเรียบร้อยแล้ว เนื่องจาก ไม่ให้บุคคลภายนอกดูคู่มือAdminbtได้ --%>
+   <%--<a href="https://fvp.dlt.go.th/คู่มือผู้ดูแลระบบ/FVP_คู่มือผู้ดูแลระบบ.html"  id="A3" class="w3-bar-item w3-button w3-padding"  target="_blank">Foreign Vehicle Permit System Manual For Admin</a>--%> 
+   <%--- คู่มือผู้ใช้งาน ย้ายเข้าไปในหน้าของผู้ประกอบธุรกิจนำเที่ยว --%>
+   <%--<a href="https://fvp.dlt.go.th/คู่มือผู้ใช้งาน/FVP_คู่มือการใช้งาน.html"  id="A4" class="w3-bar-item w3-button w3-padding"  target="_blank">Foreign Vehicle Permit System Manual For User</a>--%> 
+   
+  
+
+   <a href="ContactUs.aspx"  id="A7" class="w3-bar-item w3-button w3-padding"> Contact Us </a> 
+
+ 
+</nav>
+
+ 
+ <asp:ContentPlaceHolder id="topbar" runat="server">
+
+     <div class="w3-top w3-purple w3-card-2 " style="height:75px">
+         <a class="w3-bar-item w3-button w3-text-white w3-left w3-hide-large w3-hide-medium " onclick="w3_open()" style="margin-left: 5%;font-size: 2rem;margin-top: 3%;">
+         <i class="fa fa-bars w3-left"></i></a>
+         <div class="w3-bar " id="myNavbar" style="margin-left:15%;">
+  <%--<div class=" w3-auto w3-left w3-medium w3-button w3-purple " onclick="w3_open()">&#9776; </div> --%>
+             <a href="index.aspx" class="w3-text-white w3-medium w3-bar-item w3-button w3-round-large w3-wide w3-responsive w3-hide-small " style="text-shadow:1px 1px 0 #444;">
+             <img src="image/logo_dlt.png" style="width:45px;"class="w3-round"><b style="margin-left: 15px; font-size:1em;">Foreign Vehicle Permit</b></a>
+<!--a class="w3-bar-item w3-button w3-text-white w3-left w3-hide-large w3-hide-medium w3-xxlarge iconbars" onclick="w3_open()"><i class="fa fa-bars" ></i></a-->
+
+             <div id="Div1" class=" w3-hide-small" style="margin-right:35%;">
+                 <%--w3-right--%>
+     <%-- <a href="index.aspx" class="w3-bar-item w3-button w3-large w3-text-purple"> <i class="fa fa-home"></i><b style="font-size:x-large;">Home</b></a>
+      <a href="Login.aspx" class="w3-bar-item w3-button w3-large w3-text-purple"><i class="fa fa-user"></i> <b style="font-size:x-large;">Sign in</b></a>--%>
+      
+                 <a  class=" w3-bar-item w3-button w3-text-white w3-hide-small w3-right " style="cursor: pointer;margin-right:1%;" onclick="w3_open()">
+                 <i class="fa fa-bars" style=" margin-right:5px"></i><b style="font-size:1em">Menu</b></a>
+  <%--<a href="Login.aspx" class="w3-bar-item w3-button w3-text-white w3-hide-small w3-right" style="cursor: pointer;margin-right:5%"><b style="font-size:1em">Login</b></a>--%>
+
+  <%--  <a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-hover-red">--%>
+   <a id="newsbt" href="News.aspx" class="w3-bar-item w3-button w3-text-white w3-hide-small w3-right " style="margin-right:1%;"><b style="font-size:1em">News<b /></a>
+  <div class="w3-dropdown-hover w3-text-white w3-hide-small w3-right "  style="margin-right:1%; width: 138px; background-color:inherit;" >
+    <a class="w3-button "  > <b style="font-size:1em">About FVP<b /> <i class="fa fa-caret-down"></i></a>     
+    <div class="w3-dropdown-content w3-card-4 w3-bar-block">
+        <a href="Upload/FileManual/Final FVP Brochure ENG-V1.pdf"  class="w3-bar-item w3-button w3-theme-l4 " target="_blank"> English Brochure </a>
+        <a href="Upload/FileManual/Final FVP Brochure TH-V1.pdf"  class="w3-bar-item w3-button w3-theme-l4 " target="_blank"> Thai Brochure </a>
+    </div>
+    </div>
+
+    </a>
+
+             </div>
+         </div>
+     </div>
+ </asp:ContentPlaceHolder>
+
+<div class="w3-overlay w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" id="myOverlay"></div>
+
+
+
+<asp:ContentPlaceHolder id="ContentPlaceHolder2" runat="server">
+
+</asp:ContentPlaceHolder>
+
+ <div class="bgimg-1 w3-display-container w3-text-whit">
+
+  
+<!-- Content -->
+<div class="w3-content contactMasterPage "  > <%--margin-top:58px;">--%> <%--style="max-width:1100px;margin-top:80px;margin-bottom:80px">--%>
+<br /><br /> 
+
+        <asp:ContentPlaceHolder id="ContentPlaceHolder1" runat="server">
+        
+        </asp:ContentPlaceHolder> 
+<br /><br /> <br /><br />
+</div>
+</div>
+<script type="text/javascript">
+
+ 
+    $(document).ready(function () {
+        $("#MyFuncWebsites").click(function () {
+            var x = document.getElementById("demoWeb");
+            if (x.className.indexOf("w3-show") == -1) {
+                x.className += " w3-show w3-theme-d4";
+                x.previousElementSibling.className += " w3-theme-d4";
+            } else {
+                x.className = x.className.replace(" w3-show", "");
+                x.previousElementSibling.className =
+        x.previousElementSibling.className.replace(" w3-theme-d4", "");
+            }
+        });
+
+
+        $("#MyFuncWebsites2").click(function () {
+            var x = document.getElementById("demoWeb2");
+            if (x.className.indexOf("w3-show") == -1) {
+                x.className += " w3-show w3-theme-d4";
+                x.previousElementSibling.className += " w3-theme-d4";
+            } else {
+                x.className = x.className.replace(" w3-show", "");
+                x.previousElementSibling.className =
+        x.previousElementSibling.className.replace(" w3-theme-d4", "");
+            }
+        });
+    });
+    function w3_open() {
+        if (mySidebar.style.display === 'block') {
+            mySidebar.style.display = 'none';
+            document.getElementById("myOverlay").style.display = "none";
+        } else {
+            mySidebar.style.display = 'block';
+            document.getElementById("myOverlay").style.display = "block";
+        }
+    }
+
+    // Close the sidebar with the close button
+    function w3_close() {
+        mySidebar.style.display = "none";
+        document.getElementById("myOverlay").style.display = "none";
+
+    } function topFunction() {
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+    }
+
+
+</script>
+ </form>
+<!-- Footer -->
+ <asp:ContentPlaceHolder id="footer" runat="server">
+         
+ <footer class="w3-purple" style="width:100%;height:20%;left:0%;buttom:0%;"><%--margin-top:3%--%>
+     
+       
+            <div class="w3-text-white w3-center w3-card w3-orange w3-padding contact">
+                <b class=" w3-hide-small">Contact Us</b>
+                  <b class=" w3-hide-large w3-hide-medium" style=" margin-top:-5%">Contact Us</b>
+            </div>
+
+            <div class=" w3-text-white w3-center textcontact ">
+
+                <p> <i class="fa fa-phone w3-hover-opacity w3-text-white"></i> Telephone : 02-2718408-9 <i class="fa fa-fax w3-hover-opacity w3-text-white" aria-hidden="true"></i>  Fax : 02-2718409<br />
+                    <i class="fa fa-home w3-hover-opacity w3-text-white" style="margin-top:-1%"></i> Planning Division, Department of Land Transport<br/> Building 4, Floor 5<br/>1032 Phaholyothin Road, Chom Phon, Chatuchak, Bangkok 10900 Thailand
+                </p>
+            </div>
+             
+         <%--<img src="image/arrow-up.png" class="w3-hide-small w3-right" style=" width:2.5em; height:2.5em;margin-top:-5%; margin-right:3%"  class=" w3-right" onclick="topFunction()" id="myBtn2" title="Go to top" />--%>
+         
+ </footer>
+    <p class="w3-center w3-amber w3-black w3-hide-medium w3-hide-small" style="margin-left:0%;width:100%;height:3%;/*margin-top:-1%;*/font-size:0.7em;margin-bottom: auto;"><i class="fa fa-copyright" aria-hidden="true"></i> Copyright 2019</p>
+     <p class="w3-center w3-amber w3-black w3-hide-large" style="margin-left:0%;width:100%;height:3%;margin-top:0 px;font-size:0.6em;"><i class="fa fa-copyright" aria-hidden="true"></i> Copyright 2019</p>
+  </asp:ContentPlaceHolder>
+</body>
+</html>
