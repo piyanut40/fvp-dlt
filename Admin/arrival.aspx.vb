@@ -149,7 +149,7 @@ Partial Class Admin_arrival
 
                 End If
                 If Request.QueryString("st") = 1 Then
-                    strsql = strsql & "and license.status_id in (1,3)"
+                    strsql = strsql & "and license.status_id in (1,3) and typeuser_id = 2 AND license.regis_date >= CURRENT_DATE - INTERVAL '30 days'"
                 ElseIf Request.QueryString("st") = 2 Then
                     strsql = strsql & "and license.status_id = 5"
                 End If
@@ -478,6 +478,8 @@ Partial Class Admin_arrival
                     e.Row.Cells(15).Visible = False
                     e.Row.Cells(17).Visible = False
                     e.Row.Cells(18).Visible = False
+
+
                 End If
 
                 If lblstatusid IsNot Nothing Then
@@ -505,16 +507,25 @@ Partial Class Admin_arrival
                         e.Row.Cells(19).Visible = False
                     End If
 
-                    If Request.QueryString("all") = 1 Then
-                        Hyperplan.Visible = False
-                        HyperDoc.Visible = False
-                        lnkPay.Visible = False
-                        lnkPDFNew.Visible = False
-                        lnkRegist.Visible = False
+                'If Request.QueryString("all") = 1 Then
+                '    Hyperplan.Visible = False
+                '    HyperDoc.Visible = False
+                '    lnkPay.Visible = False
+                '    lnkPDFNew.Visible = False
+                '    lnkRegist.Visible = False
 
-                    End If
+                'End If
+                If Request.QueryString("all") = "1" Then
 
+                    ' ตรวจว่า control นั้นมีจริงไหมก่อนใช้
+                    If Hyperplan IsNot Nothing Then Hyperplan.Visible = False
+                    If HyperDoc IsNot Nothing Then HyperDoc.Visible = False
+                    If lnkPay IsNot Nothing Then lnkPay.Visible = False
+                    If lnkPDFNew IsNot Nothing Then lnkPDFNew.Visible = False
+                    If lnkRegist IsNot Nothing Then lnkRegist.Visible = False
                 End If
+
+            End If
 
 
 

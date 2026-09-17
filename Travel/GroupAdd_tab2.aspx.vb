@@ -100,7 +100,14 @@ Partial Class Travel_GroupAdd_tab2
                 " left join type_car on type_car.type_id = car.typecar_id " & _
                 " left join (SELECT count(group_id) status , license_id FROM public.travel_group_car group by license_id ) dt on dt.license_id = license.license_id " & _
                 " where travel_group_car.group_id = " & group_id, "carr")
-            is_renew = dtCar.Rows(0).Item("is_renew")
+            'is_renew = dtCar.Rows(0).Item("is_renew")
+            If dtCar IsNot Nothing AndAlso dtCar.Rows.Count > 0 Then
+                is_renew = If(IsDBNull(dtCar.Rows(0).Item("is_renew")), "", dtCar.Rows(0).Item("is_renew").ToString())
+            Else
+                is_renew = "" ' หรือค่าที่เหมาะสมในกรณีไม่มีข้อมูล
+            End If
+
+
             PopulateS.SetGrid_Footable(gvMain, dtCar)
             If PopulateS.IsMobile Then
                 gvMain.Width = Unit.Percentage(98)
@@ -138,19 +145,24 @@ Partial Class Travel_GroupAdd_tab2
 
     Protected Sub BtnAddLicense_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles BtnAddLicense.Click
         Dim lbllicense_id As Integer = 0
-        If HidValueLicense.Value <> "" Then
-            lbllicense_id = HidValueLicense.Value
+        'If HidValueLicense.Value <> "" Then
+        '    lbllicense_id = HidValueLicense.Value
+        'Else
+        If Not String.IsNullOrWhiteSpace(HidValueLicense.Value) AndAlso Integer.TryParse(HidValueLicense.Value, lbllicense_id) Then
+            Console.WriteLine(lbllicense_id)
         Else
-
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Error", "alert('ไม่พบ License ID หรือข้อมูลไม่ถูกต้อง');", True)
+            Exit Sub
         End If
+
         If lbllicense_id > 0 Then
 
-            HidValueLicense.Value = ""
+            'HidValueLicense.Value = ""
 
             Dim dbconnect As New DBConnect
             Dim Datatable As DataTable = dbconnect.TableCommand
 
-            Dim con As Npgsql.NpgsqlConnection = dbconnect.getConnection
+            Dim con As Npgsql.NpgsqlConnection = DBConnect.getConnection
             Dim cmd As New Npgsql.NpgsqlCommand
             Try
                 con.Open()
@@ -163,7 +175,23 @@ Partial Class Travel_GroupAdd_tab2
                 Dim checkout_id As Integer = 0
                 Dim admin_id As Integer = 0
                 Try
-                    cancel_license_id = dbconnect.executeScalar("select status_id from license where license_id = " & lbllicense_id)
+                    Dim rawStatus As Object = dbconnect.executeScalar("select status_id from license where license_id = " & lbllicense_id)
+
+                    Console.WriteLine("Raw status: '" & rawStatus.ToString() & "'") ' debug ตรวจค่าที่ดึงมา
+
+                    If rawStatus IsNot Nothing AndAlso Not Convert.IsDBNull(rawStatus) Then
+                        If Integer.TryParse(rawStatus.ToString(), cancel_license_id) Then
+                            ' ok
+                        Else
+                            ' ค่าที่ได้มาไม่ใช่เลข
+                            cancel_license_id = 0
+                        End If
+                    Else
+                        ' ค่า null หรือ DBNull
+                        cancel_license_id = 0
+                    End If
+
+                    'cancel_license_id = dbconnect.executeScalar("select status_id from license where license_id = " & lbllicense_id)
 
                     'old_group_id = dbconnect.executeScalar("select old_group_id from travel_group where group_id = " & group_id)
                     Dim dtGroups As DataTable = dbconnect.getDataTable("select old_group_id , checkin_id , checkout_id , admin_id from travel_group where group_id = " & group_id, "group")
@@ -181,59 +209,59 @@ Partial Class Travel_GroupAdd_tab2
                         admin_id = drG("admin_id")
                     End If
                 Catch ex As Exception
-
+                    Console.WriteLine(ex.Message)
                 End Try
                 If (old_group_id > 0) Or (cancel_license_id = 4 Or cancel_license_id = 5 Or cancel_license_id = 7 Or cancel_license_id = 8 Or cancel_license_id = 9) Then
-                   
-                    cmd.CommandText = "INSERT INTO car ( owner_name, owner_idcard, owner_address, owner_tel , owner_lastname , owner_province , owner_zipcode , owner_country " & _
-                        " , brands , model , colors , seat , weight , car_no , country_car , typecar_id  ,  province_car , plate , engine_no , engine_cap , authorize_car , regis_photo , platelocal ) " & _
-                        " select owner_name, owner_idcard, owner_address, owner_tel , owner_lastname , owner_province , owner_zipcode , owner_country " & _
-                        " , brands , model , colors , seat , weight , car_no , country_car , typecar_id  ,  province_car , plate , engine_no , engine_cap , authorize_car , regis_photo , platelocal " & _
-                        " from car where car_id = (select car_id from license where license_id = " & lbllicense_id & " ) " & _
+
+                    cmd.CommandText = "INSERT INTO car ( owner_name, owner_idcard, owner_address, owner_tel , owner_lastname , owner_province , owner_zipcode , owner_country " &
+                        " , brands , model , colors , seat , weight , car_no , country_car , typecar_id  ,  province_car , plate , engine_no , engine_cap , authorize_car , regis_photo , platelocal ) " &
+                        " select owner_name, owner_idcard, owner_address, owner_tel , owner_lastname , owner_province , owner_zipcode , owner_country " &
+                        " , brands , model , colors , seat , weight , car_no , country_car , typecar_id  ,  province_car , plate , engine_no , engine_cap , authorize_car , regis_photo , platelocal " &
+                        " from car where car_id = (select car_id from license where license_id = " & lbllicense_id & " ) " &
                         " RETURNING car_id ;"
                     Dim car_id As Object = cmd.ExecuteScalar()
 
-                    cmd.CommandText = "Insert Into car_pic ( car_id , file_name , imgtype) " & _
+                    cmd.CommandText = "Insert Into car_pic ( car_id , file_name , imgtype) " &
                     " select " & car_id & " as car_id , file_name , imgtype from car_pic where car_id = (select car_id from license where license_id = " & lbllicense_id & " )"
                     cmd.ExecuteNonQuery()
 
-                    cmd.CommandText = "Insert Into car_cer ( car_id , file_name ) " & _
+                    cmd.CommandText = "Insert Into car_cer ( car_id , file_name ) " &
                     " select " & car_id & " as car_id , file_name from car_cer where car_id = (select car_id from license where license_id = " & lbllicense_id & " )"
                     cmd.ExecuteNonQuery()
 
-                    cmd.CommandText = "Insert Into car_inspec ( car_id , file_name )  " & _
+                    cmd.CommandText = "Insert Into car_inspec ( car_id , file_name )  " &
                     " select " & car_id & " as car_id , file_name from car_inspec where car_id = (select car_id from license where license_id = " & lbllicense_id & " )"
                     cmd.ExecuteNonQuery()
 
                     ' คนขับรถ
-                    cmd.CommandText = "Insert Into driver ( prename , address , name , surname , license_expire , national , countries , gender " & _
-                    " , passport_photo , licensedriver_photo , idcard_no , county , zipcode , tel , email , birthday , passport_no , passport_expire , photo_cer ) " & _
-                    " select prename , address , name , surname , license_expire , national , countries , gender " & _
-                    " , passport_photo , licensedriver_photo , idcard_no , county , zipcode , tel , email , birthday , passport_no , passport_expire , photo_cer " & _
-                    " from driver where driver_id = (select driver_id from license where license_id = " & lbllicense_id & " )  " & _
+                    cmd.CommandText = "Insert Into driver ( prename , address , name , surname , license_expire , national , countries , gender " &
+                    " , passport_photo , licensedriver_photo , idcard_no , county , zipcode , tel , email , birthday , passport_no , passport_expire , photo_cer ) " &
+                    " select prename , address , name , surname , license_expire , national , countries , gender " &
+                    " , passport_photo , licensedriver_photo , idcard_no , county , zipcode , tel , email , birthday , passport_no , passport_expire , photo_cer " &
+                    " from driver where driver_id = (select driver_id from license where license_id = " & lbllicense_id & " )  " &
                     " RETURNING driver_id ; "
                     Dim driver_id As Object = cmd.ExecuteScalar()
 
                     ' คนขับสำรองคนที่ 1 / คนขับสำรองคนที่ 2
-                    cmd.CommandText = "Insert Into spare_driver (prename , name , surname , license_no , national , driver_id , passport_no , passport_expire , spare_ord " & _
-                                      ", licensedriver_photo , address , state , country , zipcode , tel , email , gender , license_exp_date , passport_photo , photo_cer " & _
-                                      ") " & _
-                                      "select prename , name , surname , license_no , national , driver_id , passport_no , passport_expire , spare_ord " & _
-                                      ", licensedriver_photo , address , state , country , zipcode , tel , email , gender , license_exp_date , passport_photo , photo_cer from spare_driver " & _
+                    cmd.CommandText = "Insert Into spare_driver (prename , name , surname , license_no , national , driver_id , passport_no , passport_expire , spare_ord " &
+                                      ", licensedriver_photo , address , state , country , zipcode , tel , email , gender , license_exp_date , passport_photo , photo_cer " &
+                                      ") " &
+                                      "select prename , name , surname , license_no , national , driver_id , passport_no , passport_expire , spare_ord " &
+                                      ", licensedriver_photo , address , state , country , zipcode , tel , email , gender , license_exp_date , passport_photo , photo_cer from spare_driver " &
                                       " where sparedriver_id = ( select sparedriver_id from spare_driver where driver_id = " & driver_id & ")"
                     cmd.ExecuteNonQuery()
 
                     'ตาราง act
                     If cancel_license_id = 4 Or cancel_license_id = 5 Or cancel_license_id = 7 Or cancel_license_id = 8 Or cancel_license_id = 9 Then
-                        cmd.CommandText = " Insert Into act (act_no , act_name , act_tankno , act_start , act_ends , act_photo , act_company , act_no2 " & _
-                        " , act_name2 , act_start2 , act_photo2 , act_company2 , act_ends2 ) " & _
-                        " select act_no , act_name , act_tankno , act_start , act_ends , act_photo , act_company , act_no2 " & _
-                        " , act_name2 , act_start2 , act_photo2 , act_company2 , act_ends2 " & _
+                        cmd.CommandText = " Insert Into act (act_no , act_name , act_tankno , act_start , act_ends , act_photo , act_company , act_no2 " &
+                        " , act_name2 , act_start2 , act_photo2 , act_company2 , act_ends2 ) " &
+                        " select act_no , act_name , act_tankno , act_start , act_ends , act_photo , act_company , act_no2 " &
+                        " , act_name2 , act_start2 , act_photo2 , act_company2 , act_ends2 " &
                         " from act where act_id = ( select act_id from license where license_id = " & lbllicense_id & " ) RETURNING act_id ;"
                     Else
-                        cmd.CommandText = " Insert Into act (act_no , act_name , act_tankno , act_start , act_ends , act_photo , act_company , act_no2 " & _
-                        " , act_name2 , act_start2 , act_photo2 , act_company2 , act_ends2 ) " & _
-                        " values( null , null , null , null , null , null , null , null " & _
+                        cmd.CommandText = " Insert Into act (act_no , act_name , act_tankno , act_start , act_ends , act_photo , act_company , act_no2 " &
+                        " , act_name2 , act_start2 , act_photo2 , act_company2 , act_ends2 ) " &
+                        " values( null , null , null , null , null , null , null , null " &
                         " , null , null , null , null , null  ) RETURNING act_id ;"
                     End If
                     Dim act_id As Object = cmd.ExecuteScalar()
@@ -242,14 +270,14 @@ Partial Class Travel_GroupAdd_tab2
                     HidExpire.Value = dbconnect.executeScalar("select exp_date from travel_group where group_id = " & group_id)
 
                     If cancel_license_id = 4 Or cancel_license_id = 5 Or cancel_license_id = 7 Or cancel_license_id = 8 Or cancel_license_id = 9 Then
-                        cmd.CommandText = "Insert Into license ( driver_id , car_id , act_id , typeuser_id , travel_id , regis_date , fname , lname , email , exp_date , copy_license_id ) " & _
-                           " select " & driver_id & " as driver_id , " & car_id & " as car_id , " & act_id & " as act_id , typeuser_id , travel_id , regis_date , fname , lname , email , '" & HidExpire.Value & "' , " & lbllicense_id & " " & _
-                           " from license  where license_id = " & lbllicense_id & _
+                        cmd.CommandText = "Insert Into license ( driver_id , car_id , act_id , typeuser_id , travel_id , regis_date , fname , lname , email , exp_date , copy_license_id ) " &
+                           " select " & driver_id & " as driver_id , " & car_id & " as car_id , " & act_id & " as act_id , typeuser_id , travel_id , regis_date , fname , lname , email , '" & HidExpire.Value & "' , " & lbllicense_id & " " &
+                           " from license  where license_id = " & lbllicense_id &
                            " RETURNING license_id ;"
                     Else
-                        cmd.CommandText = "Insert Into license ( driver_id , car_id , act_id , typeuser_id , travel_id , regis_date , fname , lname , email , exp_date ) " & _
-                       " select " & driver_id & " as driver_id , " & car_id & " as car_id , " & act_id & " as act_id , typeuser_id , travel_id , regis_date , fname , lname , email , '" & HidExpire.Value & "' " & _
-                       " from license  where license_id = " & lbllicense_id & _
+                        cmd.CommandText = "Insert Into license ( driver_id , car_id , act_id , typeuser_id , travel_id , regis_date , fname , lname , email , exp_date ) " &
+                       " select " & driver_id & " as driver_id , " & car_id & " as car_id , " & act_id & " as act_id , typeuser_id , travel_id , regis_date , fname , lname , email , '" & HidExpire.Value & "' " &
+                       " from license  where license_id = " & lbllicense_id &
                        " RETURNING license_id ;"
                     End If
 
@@ -261,7 +289,8 @@ Partial Class Travel_GroupAdd_tab2
                     cmd.CommandText = sqlInsert
                     cmd.Parameters.Clear()
                     cmd.Parameters.Add("group_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = group_id
-                    cmd.Parameters.Add("license_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = license_id
+                    'cmd.Parameters.Add("license_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = license_id
+                    cmd.Parameters.Add("license_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = Convert.ToInt32(license_id)
                     cmd.ExecuteNonQuery()
 
                     Datatable.Rows.Clear()
@@ -276,21 +305,39 @@ Partial Class Travel_GroupAdd_tab2
                     cmd.CommandText = CommandType.Text
                     cmd.CommandText = sqlUpdate
                     cmd.Parameters.Clear()
-                    Dim pToken As Object = dbconnect.Token(license_id, car_id)
+                    Dim pToken As Object = DBConnect.Token(license_id, car_id)
                     cmd.Parameters.Add("token", NpgsqlTypes.NpgsqlDbType.Varchar).Value = pToken
                     cmd.Parameters.Add("regis_date", NpgsqlTypes.NpgsqlDbType.Date).Value = Date.Now
                     cmd.Parameters.Add("exp_date", NpgsqlTypes.NpgsqlDbType.Date).Value = HidExpire.Value 'txtExpire.Text
                     cmd.ExecuteNonQuery()
                 Else
-
-
-                    Dim sqlInsert As String = "INSERT INTO travel_group_car( group_id, license_id) VALUES (:group_id, :license_id)"
-                    cmd.CommandText = CommandType.Text
+                    'Dim license_id As Object = cmd.ExecuteScalar()
+                    'If license_id IsNot Nothing AndAlso Not Convert.IsDBNull(license_id) Then
+                    '    Dim sqlInsert As String = "INSERT INTO travel_group_car( group_id, license_id) VALUES (:group_id, :license_id)"
+                    '    cmd.CommandText = CommandType.Text
+                    '    cmd.CommandText = sqlInsert
+                    '    cmd.Parameters.Clear()
+                    '    cmd.Parameters.Add("group_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = group_id
+                    '    cmd.Parameters.Add("license_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = Convert.ToInt32(license_id)
+                    '    cmd.ExecuteNonQuery()
+                    'Else
+                    '    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Error", "alert('ไม่พบ license_id กรุณาตรวจสอบข้อมูลทะเบียนรถ');", True)
+                    '    Exit Sub
+                    'End If
+                    Dim sqlInsert As String = "INSERT INTO travel_group_car(group_id, license_id) VALUES (:group_id, :license_id)"
+                    cmd.CommandType = CommandType.Text
                     cmd.CommandText = sqlInsert
                     cmd.Parameters.Clear()
-                    cmd.Parameters.Add("group_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = group_id
-                    cmd.Parameters.Add("license_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = lbllicense_id
+
+                    ' Convert group_id
+                    cmd.Parameters.Add("group_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = Convert.ToInt32(group_id)
+                    cmd.Parameters.Add("license_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = Convert.ToInt32(lbllicense_id)
+
+                    ' Convert license_id
+
+
                     cmd.ExecuteNonQuery()
+
 
                     Datatable.Rows.Clear()
                     Datatable.Rows.Add("checkin_id", NpgsqlTypes.NpgsqlDbType.Integer, checkin_id) 'ddlBorderCheckin.SelectedValue)
@@ -299,10 +346,10 @@ Partial Class Travel_GroupAdd_tab2
                     Dim tableinsert = dbconnect.UpdateDataTable(Datatable, "license", "WHERE license_id = " & lbllicense_id)
                 End If
 
-              
+
                 Response.Redirect(Request.RawUrl)
             Catch ex As Exception
-
+                Console.WriteLine(ex.Message)
             Finally
                 dbconnect = Nothing
                 cmd.Connection.Close()

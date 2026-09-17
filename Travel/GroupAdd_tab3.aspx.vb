@@ -35,11 +35,14 @@ Partial Class Travel_GroupAdd_tab3
         Dim db As New DBConnect
         Dim Dt As New DataTable
         Try
+            If ddl Is Nothing Then
+                Throw New Exception("DropDownList is Nothing.")
+            End If
 
-            Dim dt_guide = " select guide_id , CAST(prename ||' ' || guide_name || ' ' || guide_surname as varchar) as guide_name from guide " & _
+            Dim dt_guide = " select guide_id , CAST(prename ||' ' || guide_name || ' ' || guide_surname as varchar) as guide_name from guide " &
                            " WHERE travel_user_id = " & Session("user_id") & " and guide_id not in (select guide_id from travel_group_guide WHERE group_id = " & group_id & ")"
             Dt = db.getDataTable(dt_guide, "Data")
-            
+
             ddl.Items.Clear()
             If Dt.Rows.Count > 0 Then
                 ddl.DataSource = Dt
@@ -52,6 +55,7 @@ Partial Class Travel_GroupAdd_tab3
 
             End If
         Catch ex As Exception
+            Console.WriteLine(ex.Message)
 
         Finally
             db = Nothing
@@ -199,14 +203,29 @@ Partial Class Travel_GroupAdd_tab3
                 cmd.CommandText = CommandType.Text
                 cmd.CommandText = sqlInsert
                 cmd.Parameters.Clear()
-                cmd.Parameters.Add("group_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = group_id
-                cmd.Parameters.Add("guide_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = ddlGuide.SelectedValue
+                'cmd.Parameters.Add("group_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = group_id
+                Dim groupIdInt As Integer
+                If Not Integer.TryParse(group_id, groupIdInt) Then
+                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Error", "alert('รหัสกลุ่มไม่ถูกต้อง');window.parent.tab_activeIframe(3);", True)
+                    Exit Sub
+                End If
+                cmd.Parameters.Add("group_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = groupIdInt
+
+                Dim guideId As Integer
+                If Integer.TryParse(ddlGuide.SelectedValue, guideId) Then
+                    cmd.Parameters.Add("guide_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = guideId
+                Else
+                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "Error", "alert('รหัสไกด์ไม่ถูกต้อง');window.parent.tab_activeIframe(3);", True)
+                    Exit Sub
+                End If
+
+                'cmd.Parameters.Add("guide_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = ddlGuide.SelectedValue
                 cmd.Parameters.Add("regis_no", NpgsqlTypes.NpgsqlDbType.Varchar).Value = txtregis_no.Text
                 cmd.Parameters.Add("regis_photo", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoAct.Value
                 cmd.ExecuteNonQuery()
             Catch ex As Exception
 
-
+                Console.WriteLine(ex.Message)
             Finally
                 cmd.Connection.Close()
                 con.Close()

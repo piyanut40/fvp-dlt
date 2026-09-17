@@ -64,4 +64,6 @@ Partial Class Document_1
 
         ReportViewer1.LocalReport.Refresh()
     End Sub
+
+
 End Class

@@ -68,9 +68,9 @@ Partial Class Travel_GroupEdit
                                          "where license_id in (select license_id from travel_group_car where group_id = " & group_id & ") group by license_id "
             Dim dtDuplicate As DataTable = db2.getDataTable(strDuplicate, "data")
             If dtDuplicate.Rows.Count = 0 Then
-                Page.ClientScript.RegisterStartupScript(Me.GetType, "popday", "<script language='javascript'> alert('Please add car');  tab_active(2); </script>")
+                'Page.ClientScript.RegisterStartupScript(Me.GetType, "popday", "<script language='javascript'> alert('Please add car');  tab_active(2); </script>")
 
-
+                Page.ClientScript.RegisterStartupScript(Me.GetType, "popday", "<script language='javascript'> tab_active(3); </script>")
             Else
 
                 Page.ClientScript.RegisterStartupScript(Me.GetType, "popday", "<script language='javascript'> tab_active(3); </script>")

@@ -279,16 +279,16 @@
                                     </ItemTemplate>     
               </asp:TemplateField>
                <asp:BoundField DataField="cancel_date"  HeaderText="<center>วันที่ยกเลิก</center>" DataFormatString="{0:dd-MM-yyyy เวลา HH:mm}" HtmlEncode="False" ItemStyle-HorizontalAlign="Center"  ItemStyle-Width="150" />
-            <asp:TemplateField HeaderText="<center>ลบ</center>" ItemStyle-Width="100" ItemStyle-HorizontalAlign="Center">
+            <%--<asp:TemplateField HeaderText="<center>ลบ</center>" ItemStyle-Width="100" ItemStyle-HorizontalAlign="Center">
                          <ItemTemplate>
-                             <asp:HyperLink ID="btnDelete_Command" NavigateUrl="#" runat="server" ><img src="~/image/g_delete.gif" ></asp:HyperLink>
-    <%--<asp:ImageButton ID="btnDelete" runat="server" 
+                             <asp:HyperLink ID="btnDelete_Command" NavigateUrl="#" runat="server" ><img src="../image/g_delete.gif" ></asp:HyperLink>
+    <asp:ImageButton ID="btnDelete" runat="server" 
             ImageUrl="~/image/g_delete.gif" 
             CommandArgument='<%# Eval("license_id") %>' 
             OnCommand="btnDelete_Command"
-            OnClientClick="return confirm('คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้?');" />--%>
+            OnClientClick="return confirm('คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้?');" />
 </ItemTemplate>
-            </asp:TemplateField>
+            </asp:TemplateField>--%>
             
          </Columns>
         <PagerTemplate>

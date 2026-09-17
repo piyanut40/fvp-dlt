@@ -1,6 +1,6 @@
 ﻿Imports System.Data
-Imports System.IO
 Imports Npgsql
+Imports System.IO
 
 Partial Class Admin_LicenseApp
     Inherits System.Web.UI.Page
@@ -33,12 +33,12 @@ Partial Class Admin_LicenseApp
                     text = "ขออนุญาตนำรถประจำถิ่นเข้ามาในราชอาณาจักร"
                     divCompany.Visible = False
                     div_map.Visible = False
-
+                  
 
                 ElseIf Request.QueryString("rt") = 2 Then
                     text = "ขออนุญาตนำรถท่องเที่ยวเข้ามาในราชอาณาจักร"
 
-
+                
                     divCompany.Visible = True
                     div_map.Visible = False
                 ElseIf Request.QueryString("rt") = 3 Then
@@ -96,17 +96,17 @@ Partial Class Admin_LicenseApp
             End If
         End If
 
-        If Request.QueryString("rt") = 1 Then
-            text = "ขออนุญาตนำรถประจำถิ่นเข้ามาในราชอาณาจักร"
-        ElseIf Request.QueryString("rt") = 2 Then
-            text = "ขออนุญาตนำรถท่องเที่ยวเข้ามาในราชอาณาจักร"
-        ElseIf Request.QueryString("rt") = 3 Then
-            text = "ขออนุญาตนำรถตามความตกลงระหว่างประเทศรถยนต์ส่วนบุคคล ของประเทศลาวเข้ามาในราชอาณาจักร"
-        ElseIf Request.QueryString("rt") = 4 Then
-            text = "ขออนุญาตนำรถตามความตกลงระหว่างประเทศรถยนต์ส่วนบุคคล ของประเทศมาเลเซีย และสิงคโปร์เข้ามาในราชอาณาจักร"
-        ElseIf Request.QueryString("rt") = 5 Then
-            text = "ขออนุญาตนำรถตามความตกลงระหว่างประเทศรถขนส่งเชิงพาณิชย์เข้ามาในราชอาณาจักร"
-        End If
+            If Request.QueryString("rt") = 1 Then
+                text = "ขออนุญาตนำรถประจำถิ่นเข้ามาในราชอาณาจักร"
+            ElseIf Request.QueryString("rt") = 2 Then
+                text = "ขออนุญาตนำรถท่องเที่ยวเข้ามาในราชอาณาจักร"
+            ElseIf Request.QueryString("rt") = 3 Then
+                text = "ขออนุญาตนำรถตามความตกลงระหว่างประเทศรถยนต์ส่วนบุคคล ของประเทศลาวเข้ามาในราชอาณาจักร"
+            ElseIf Request.QueryString("rt") = 4 Then
+                text = "ขออนุญาตนำรถตามความตกลงระหว่างประเทศรถยนต์ส่วนบุคคล ของประเทศมาเลเซีย และสิงคโปร์เข้ามาในราชอาณาจักร"
+            ElseIf Request.QueryString("rt") = 5 Then
+                text = "ขออนุญาตนำรถตามความตกลงระหว่างประเทศรถขนส่งเชิงพาณิชย์เข้ามาในราชอาณาจักร"
+            End If
 
     End Sub
     Private Send As New SendEmail
@@ -171,9 +171,9 @@ Partial Class Admin_LicenseApp
                     " LEFT JOIN admin on admin.admin_id = license.admin_id " '& _
             End If
 
+            
 
-
-
+           
 
             If Request.QueryString("token") Is Nothing Then
 
@@ -499,8 +499,6 @@ Partial Class Admin_LicenseApp
                 End If
 
 
-
-
                 If dr("is_juristic") = 0 Then
                     If Not dr("owner_name") Is DBNull.Value Then
                         If Not dr("owner_prename") Is DBNull.Value Then
@@ -759,12 +757,13 @@ Partial Class Admin_LicenseApp
                 Else
                     btnSubmitY.Visible = False
                     btnSubmitSend.Visible = True
+
                 End If
 
 
                 If lbltab0.Text = "ยังไม่ได้รับการตรวจ" Or lbltab1.Text = "ยังไม่ได้รับการตรวจ" Or lbltab2.Text = "ยังไม่ได้รับการตรวจ" Or lbltab3.Text = "ยังไม่ได้รับการตรวจ" Or lbltab4.Text = "ยังไม่ได้รับการตรวจ" Or lbltab8.Text = "ยังไม่ได้รับการตรวจ" Then
-                    btnSubmitY.Visible = True
-                    btnSubmitSend.Visible = True
+                    btnSubmitY.Visible = False
+                    btnSubmitSend.Visible = False
                 End If
 
 
@@ -790,7 +789,7 @@ Partial Class Admin_LicenseApp
                     Hyperlicense_no2.Visible = False
                 End If
 
-
+              
                 If Not dr("photo_cer") Is DBNull.Value Then
                     hidFileCer.Value = dr("photo_cer")
 
@@ -808,7 +807,7 @@ Partial Class Admin_LicenseApp
                     HyFileCer.Visible = False
                 End If
 
-
+              
                 If Not dr("spare_1_photo_cer") Is DBNull.Value Then
                     hidFileCer2.Value = dr("spare_1_photo_cer")
 
@@ -827,7 +826,7 @@ Partial Class Admin_LicenseApp
                 End If
 
 
-
+              
                 If Not dr("spare_2_photo_cer") Is DBNull.Value Then
                     hidFileCer3.Value = dr("spare_2_photo_cer")
 
@@ -1088,7 +1087,7 @@ Partial Class Admin_LicenseApp
 
 
             Dim strsql2 = "select gid , file_name from car_cer where car_id = " & car_id
-
+          
             Dim DataTable3 As DataTable = dbConnect.getDataTable(strsql2, "DataTable")
             With DataTable3.Columns
                 .Add(New DataColumn("PathImg"))
@@ -1151,7 +1150,7 @@ Partial Class Admin_LicenseApp
                           "','L11','scrollbars=yes,resizable=1,width=1002,height=798').focus();"
 
             If Request.QueryString("rt") = 2 Then
-
+                
                 Dim tbguide As DataTable = dbConnect.getDataTable(" select Row_number() over (order by guide.guide_id nulls last) as number , " & _
                                      " travel_group_guide.gid , guide.guide_id , CAST(prename ||' ' || guide_name || ' ' || guide_surname as varchar) " & _
                                      "  as guide_name ,  guide_tel , guide_idcard , ( " & _
@@ -1462,13 +1461,19 @@ Partial Class Admin_LicenseApp
                 If HidTab.Value = 0 Then
                     If chktabY0.Checked = True Then
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 1
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab0.Text.Trim = "", Nothing, txtcomments_tab0.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab0.Text.Trim = "", Nothing, txtcomments_tab0.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = If(String.IsNullOrEmpty(txtcomments_tab0.Text.Trim), DBNull.Value, txtcomments_tab0.Text.Trim)
+
                     ElseIf chktabN0.Checked = True Then
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 2
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab0.Text.Trim = "", Nothing, txtcomments_tab0.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab0.Text.Trim = "", Nothing, txtcomments_tab0.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = If(String.IsNullOrEmpty(txtcomments_tab0.Text.Trim), DBNull.Value, txtcomments_tab0.Text.Trim)
+
                     Else
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 0
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab0.Text.Trim = "", Nothing, txtcomments_tab0.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab0.Text.Trim = "", Nothing, txtcomments_tab0.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = If(String.IsNullOrEmpty(txtcomments_tab0.Text.Trim), DBNull.Value, txtcomments_tab0.Text.Trim)
+
                     End If
 
                 ElseIf HidTab.Value = 1 Then
@@ -1542,6 +1547,7 @@ Partial Class Admin_LicenseApp
 
             cmd.ExecuteNonQuery()
         Catch ex As Exception
+            Console.WriteLine(ex.Message)
             ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", "alert('ไม่สามารถบันทึกข้อมูลได้ กรุณาลองอีกครั้ง');", True)
         Finally
             If cmd.Connection.State = ConnectionState.Open Then
@@ -1574,7 +1580,7 @@ Partial Class Admin_LicenseApp
     Protected Sub BtnSave2_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles BtnSave2.Click
         Dim dbConnect As New DBConnect
         Dim cmd As New NpgsqlCommand
-        Dim con As NpgsqlConnection = DBConnect.getConnection
+        Dim con As NpgsqlConnection = dbConnect.getConnection
         Try
 
             con.Open()
@@ -1583,6 +1589,7 @@ Partial Class Admin_LicenseApp
             cmd.Parameters.Clear()
 
             If Request.QueryString("token") Is Nothing Then
+
                 cmd.CommandText = "UPDATE license set check_tab" & HidTab.Value & " = :check_tab , comments_tab" & HidTab.Value & " = :comments_tab WHERE license_id = " & Request.QueryString("license_id")
             Else
                 cmd.CommandText = "UPDATE license set check_tab" & HidTab.Value & " = :check_tab , comments_tab" & HidTab.Value & " = :comments_tab WHERE token = '" & Request.QueryString("token") & "'"
@@ -1617,74 +1624,127 @@ Partial Class Admin_LicenseApp
                 If HidTab.Value = 0 Then
                     If chktabY0.Checked = True Then
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 1
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab0.Text.Trim = "", Nothing, txtcomments_tab0.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab0.Text.Trim = "", Nothing, txtcomments_tab0.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value =
+                        If(String.IsNullOrEmpty(txtcomments_tab0.Text.Trim), DBNull.Value, txtcomments_tab0.Text.Trim)
+
                     ElseIf chktabN0.Checked = True Then
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 2
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab0.Text.Trim = "", Nothing, txtcomments_tab0.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab0.Text.Trim = "", Nothing, txtcomments_tab0.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value =
+                        If(String.IsNullOrEmpty(txtcomments_tab0.Text.Trim), DBNull.Value, txtcomments_tab0.Text.Trim)
+
                     Else
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 0
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab0.Text.Trim = "", Nothing, txtcomments_tab0.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab0.Text.Trim = "", Nothing, txtcomments_tab0.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value =
+                        If(String.IsNullOrEmpty(txtcomments_tab0.Text.Trim), DBNull.Value, txtcomments_tab0.Text.Trim)
+
                     End If
 
                 ElseIf HidTab.Value = 1 Then
                     If chktabY1.Checked = True Then
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 1
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab1.Text.Trim = "", Nothing, txtcomments_tab1.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab1.Text.Trim = "", Nothing, txtcomments_tab1.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value =
+                        If(String.IsNullOrEmpty(txtcomments_tab0.Text.Trim), DBNull.Value, txtcomments_tab0.Text.Trim)
+
                     ElseIf chktabN1.Checked = True Then
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 2
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab1.Text.Trim = "", Nothing, txtcomments_tab1.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab1.Text.Trim = "", Nothing, txtcomments_tab1.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value =
+                        If(String.IsNullOrEmpty(txtcomments_tab1.Text.Trim), DBNull.Value, txtcomments_tab1.Text.Trim)
+
                     Else
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 0
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab1.Text.Trim = "", Nothing, txtcomments_tab1.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab1.Text.Trim = "", Nothing, txtcomments_tab1.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value =
+                        If(String.IsNullOrEmpty(txtcomments_tab1.Text.Trim), DBNull.Value, txtcomments_tab1.Text.Trim)
+
                     End If
 
                 ElseIf HidTab.Value = 2 Then
                     If chktabY2.Checked = True Then
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 1
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab2.Text.Trim = "", Nothing, txtcomments_tab2.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab2.Text.Trim = "", Nothing, txtcomments_tab2.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value =
+                        If(String.IsNullOrEmpty(txtcomments_tab2.Text.Trim), DBNull.Value, txtcomments_tab2.Text.Trim)
+
                     ElseIf chktabN2.Checked = True Then
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 2
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab2.Text.Trim = "", Nothing, txtcomments_tab2.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab2.Text.Trim = "", Nothing, txtcomments_tab2.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value =
+                        If(String.IsNullOrEmpty(txtcomments_tab2.Text.Trim), DBNull.Value, txtcomments_tab2.Text.Trim)
+
                     Else
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 0
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab2.Text.Trim = "", Nothing, txtcomments_tab2.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab2.Text.Trim = "", Nothing, txtcomments_tab2.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value =
+                        If(String.IsNullOrEmpty(txtcomments_tab2.Text.Trim), DBNull.Value, txtcomments_tab2.Text.Trim)
+
                     End If
 
                 ElseIf HidTab.Value = 3 Then
                     If chktabY3.Checked = True Then
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 1
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab3.Text.Trim = "", Nothing, txtcomments_tab3.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab3.Text.Trim = "", Nothing, txtcomments_tab3.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value =
+                        If(String.IsNullOrEmpty(txtcomments_tab3.Text.Trim), DBNull.Value, txtcomments_tab3.Text.Trim)
                     ElseIf chktabN3.Checked = True Then
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 2
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab3.Text.Trim = "", Nothing, txtcomments_tab3.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab3.Text.Trim = "", Nothing, txtcomments_tab3.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value =
+                        If(String.IsNullOrEmpty(txtcomments_tab3.Text.Trim), DBNull.Value, txtcomments_tab3.Text.Trim)
+
                     Else
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 0
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab3.Text.Trim = "", Nothing, txtcomments_tab3.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab3.Text.Trim = "", Nothing, txtcomments_tab3.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value =
+                        If(String.IsNullOrEmpty(txtcomments_tab3.Text.Trim), DBNull.Value, txtcomments_tab3.Text.Trim)
+
                     End If
 
                 ElseIf HidTab.Value = 4 Then
                     If chktabY4.Checked = True Then
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 1
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab4.Text.Trim = "", Nothing, txtcomments_tab4.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab4.Text.Trim = "", Nothing, txtcomments_tab4.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value =
+                        If(String.IsNullOrEmpty(txtcomments_tab4.Text.Trim), DBNull.Value, txtcomments_tab4.Text.Trim)
+
                     ElseIf chktabN4.Checked = True Then
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 2
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab4.Text.Trim = "", Nothing, txtcomments_tab4.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab4.Text.Trim = "", Nothing, txtcomments_tab4.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value =
+                        If(String.IsNullOrEmpty(txtcomments_tab4.Text.Trim), DBNull.Value, txtcomments_tab4.Text.Trim)
+
                     Else
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 0
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab4.Text.Trim = "", Nothing, txtcomments_tab4.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab4.Text.Trim = "", Nothing, txtcomments_tab4.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value =
+                        If(String.IsNullOrEmpty(txtcomments_tab4.Text.Trim), DBNull.Value, txtcomments_tab4.Text.Trim)
+
                     End If
 
 
                 ElseIf HidTab.Value = 8 Then
                     If chktabY8.Checked = True Then
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 1
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab8.Text.Trim = "", Nothing, txtcomments_tab8.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab8.Text.Trim = "", Nothing, txtcomments_tab8.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value =
+                        If(String.IsNullOrEmpty(txtcomments_tab8.Text.Trim), DBNull.Value, txtcomments_tab8.Text.Trim)
+
                     ElseIf chktabN8.Checked = True Then
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 2
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab8.Text.Trim = "", Nothing, txtcomments_tab8.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab8.Text.Trim = "", Nothing, txtcomments_tab8.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value =
+                        If(String.IsNullOrEmpty(txtcomments_tab8.Text.Trim), DBNull.Value, txtcomments_tab8.Text.Trim)
+
                     Else
                         cmd.Parameters.Add("check_tab", NpgsqlTypes.NpgsqlDbType.Integer).Value = 0
-                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab8.Text.Trim = "", Nothing, txtcomments_tab8.Text)
+                        'cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtcomments_tab8.Text.Trim = "", Nothing, txtcomments_tab8.Text)
+                        cmd.Parameters.Add("comments_tab", NpgsqlTypes.NpgsqlDbType.Varchar).Value =
+                        If(String.IsNullOrEmpty(txtcomments_tab8.Text.Trim), DBNull.Value, txtcomments_tab8.Text.Trim)
+
                     End If
                 End If
 
@@ -1693,7 +1753,8 @@ Partial Class Admin_LicenseApp
 
             cmd.ExecuteNonQuery()
         Catch ex As Exception
-            'ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", "alert('ไม่สามารถบันทึกข้อมูลได้ กรุณาลองอีกครั้ง');", True)
+            Console.WriteLine(ex.Message)
+            ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", "alert('ไม่สามารถบันทึกข้อมูลได้ กรุณาลองอีกครั้ง');", True)
         Finally
             If cmd.Connection.State = ConnectionState.Open Then
                 cmd.Connection.Close()
@@ -1755,7 +1816,7 @@ Partial Class Admin_LicenseApp
                 If Request.QueryString("rt") = 3 Or Request.QueryString("rt") = 4 Then
                     cmd.Parameters.Add("status_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = 5
                     cmd.Parameters.Add("qrcode", NpgsqlTypes.NpgsqlDbType.Varchar).Value = dbConnect.qrcode(token, Request.QueryString("rt")) 'qrCode & url & token
-                    cmd.Parameters.Add("reason_app", NpgsqlTypes.NpgsqlDbType.Varchar).Value = Nothing
+                    cmd.Parameters.Add("reason_app", NpgsqlTypes.NpgsqlDbType.Varchar).Value = DBNull.Value
                     status = 5
                     cmd.ExecuteNonQuery()
                 Else
@@ -1767,11 +1828,11 @@ Partial Class Admin_LicenseApp
 
                     cmd.Parameters.Add("status_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = status
                     cmd.Parameters.Add("qrcode", NpgsqlTypes.NpgsqlDbType.Varchar).Value = dbConnect.qrcode(token, Request.QueryString("rt")) 'qrCode & url & token
-                    cmd.Parameters.Add("reason_app", NpgsqlTypes.NpgsqlDbType.Varchar).Value = Nothing
+                    cmd.Parameters.Add("reason_app", NpgsqlTypes.NpgsqlDbType.Varchar).Value = DBNull.Value
                     cmd.ExecuteNonQuery()
                 End If
 
-
+               
                 Dim dread As Npgsql.NpgsqlDataReader
                 Dim str = " SELECT driver.prename, coalesce(driver.prename_other,'')as prename_other , driver.name ,  driver.surname , idcard_no  , type_user.typename_th " & _
                     ", plate, country_car, " & IIf(Request.QueryString("rt") = 2, "travel_group.start_date, travel_group.exp_date", "license.start_date, license.exp_date") & _
@@ -1795,7 +1856,7 @@ Partial Class Admin_LicenseApp
                 Dim exp_date As String = ""
                 If dread.Read Then
                     If dread("prename") IsNot DBNull.Value Then
-
+                      
 
                         If dread("prename") = "Other" Then
                             _Name = ""
@@ -1837,7 +1898,7 @@ Partial Class Admin_LicenseApp
 
                 End If
                 dread.Close()
-
+               
                 Send.EmailSummit(email, lblagen_name.Text, token, typename_th, status, reason, 1, _Name, plate, country_car, start_date, exp_date)
             End If
 
@@ -1877,7 +1938,7 @@ Partial Class Admin_LicenseApp
                 Dim now_date As String = Now().Year & "-" & Format(CDbl(Now.Month), "00") & "-" & Format(CDbl(Now.Day), "00")
                 Dim ar_tmp As Array = CDate(lblstartdategroup.Text).ToString.Split("/")
                 Dim tmp_date As String = ar_tmp(2).ToString.Substring(0, 4) & "-" & ar_tmp(0) & "-" & ar_tmp(1)
-                Dim strChkDate As String = "SELECT count(*) AS count_days_no_weekend  FROM generate_series(timestamp '" & now_date & "', timestamp '" & tmp_date & "' , interval  '1 day') the_day  " & _
+                Dim strChkDate As String = "SELECT count(*) AS count_days_no_weekend  FROM generate_series(timestamp '" & now_date & "', timestamp '" & tmp_date & "' , interval  '1 day') the_day  " &
                     " WHERE extract('ISODOW' FROM the_day) < 6 and the_day not in (SELECT h_date FROM holiday)  "
                 Dim CntDay As Integer = dbConnect.executeScalar(strChkDate)
 
@@ -1897,16 +1958,16 @@ Partial Class Admin_LicenseApp
 
 
                 Dim dread As Npgsql.NpgsqlDataReader
-                Dim str = " SELECT driver.prename, coalesce(driver.prename_other,'')as prename_other , driver.name ,  driver.surname , idcard_no , driver.email , type_user.typename_th ,  type_user.typeuser_id , typecar_id , travel_group.group_id,  " & _
-                " check_tab0, check_tab1, check_tab2, check_tab3, check_tab4, check_tab8, " & _
-                " comments_tab0, comments_tab1, comments_tab2, comments_tab3, comments_tab4, comments_tab8 " & _
-                " , countries , travel_id , user_travel.email as travelEmail, plate, country_car, " & IIf(Request.QueryString("rt") = 2, "travel_group.start_date, travel_group.exp_date", "license.start_date, license.exp_date") & _
-                " from driver LEFT JOIN license on license.driver_id = driver.driver_id " & _
-                " LEFT JOIN type_user on type_user.typeuser_id = license.typeuser_id " & _
-                " LEFT JOIN car on car.car_id = license.car_id " & _
-                " LEFT JOIN travel_group_car on travel_group_car.license_id = license.license_id " & _
-                " LEFT JOIN travel_group on travel_group_car.group_id = travel_group.group_id " & _
-                " LEFT JOIN user_travel on user_travel.user_id = travel_group.user_id " & _
+                Dim str = " SELECT driver.prename, coalesce(driver.prename_other,'')as prename_other , driver.name ,  driver.surname , idcard_no , driver.email , type_user.typename_th ,  type_user.typeuser_id , typecar_id , travel_group.group_id,  " &
+                " check_tab0, check_tab1, check_tab2, check_tab3, check_tab4, check_tab8, " &
+                " comments_tab0, comments_tab1, comments_tab2, comments_tab3, comments_tab4, comments_tab8 " &
+                " , countries , travel_id , user_travel.email as travelEmail, plate, country_car, " & IIf(Request.QueryString("rt") = 2, "travel_group.start_date, travel_group.exp_date", "license.start_date, license.exp_date") &
+                " from driver LEFT JOIN license on license.driver_id = driver.driver_id " &
+                " LEFT JOIN type_user on type_user.typeuser_id = license.typeuser_id " &
+                " LEFT JOIN car on car.car_id = license.car_id " &
+                " LEFT JOIN travel_group_car on travel_group_car.license_id = license.license_id " &
+                " LEFT JOIN travel_group on travel_group_car.group_id = travel_group.group_id " &
+                " LEFT JOIN user_travel on user_travel.user_id = travel_group.user_id " &
                 " WHERE license.token = '" & token & "' "
                 cmd.CommandText = str
                 dread = cmd.ExecuteReader()
@@ -2090,12 +2151,12 @@ Partial Class Admin_LicenseApp
 
 
                 Dim dread As Npgsql.NpgsqlDataReader
-                Dim str = " SELECT driver.prename, coalesce(driver.prename_other,'')as prename_other , driver.name ,  driver.surname , idcard_no , driver.email , type_user.typename_th ,  type_user.typeuser_id , typecar_id ,  " & _
-                " check_tab0, check_tab1, check_tab2, check_tab3, check_tab4, check_tab8, " & _
-                " comments_tab0, comments_tab1, comments_tab2, comments_tab3, comments_tab4, comments_tab8 , countries " & _
-                " from driver LEFT JOIN license on license.driver_id = driver.driver_id " & _
-                " LEFT JOIN type_user on type_user.typeuser_id = license.typeuser_id " & _
-                " LEFT JOIN car on car.car_id = license.car_id " & _
+                Dim str = " SELECT driver.prename, coalesce(driver.prename_other,'')as prename_other , driver.name ,  driver.surname , idcard_no , driver.email , type_user.typename_th ,  type_user.typeuser_id , typecar_id ,  " &
+                " check_tab0, check_tab1, check_tab2, check_tab3, check_tab4, check_tab8, " &
+                " comments_tab0, comments_tab1, comments_tab2, comments_tab3, comments_tab4, comments_tab8 , countries " &
+                " from driver LEFT JOIN license on license.driver_id = driver.driver_id " &
+                " LEFT JOIN type_user on type_user.typeuser_id = license.typeuser_id " &
+                " LEFT JOIN car on car.car_id = license.car_id " &
                 " WHERE license.token = '" & token & "' "
                 cmd.CommandText = str
                 dread = cmd.ExecuteReader()
@@ -2176,6 +2237,7 @@ Partial Class Admin_LicenseApp
             End If
 
         Catch ex As Exception
+            Console.WriteLine(ex.Message)
             ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", "alert('ไม่สามารถอัพเดตข้อมูลได้ กรุณาลองอีกครั้ง');", True)
         Finally
             If cmd.Connection.State = ConnectionState.Open Then

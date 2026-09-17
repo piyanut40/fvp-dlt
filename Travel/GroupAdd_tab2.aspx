@@ -104,7 +104,7 @@ left: 0;
  <asp:UpdatePanel ID="UpdButton" runat="server" UpdateMode="Conditional">
     <ContentTemplate>
         <asp:LinkButton ID="LinkSelectCar" class="w3-button w3-purple w3-padding w3-round w3-large" runat="server" text="<i class='fa fa-search' aria-hidden='true' ></i> Find Existing Vehicle" ></asp:LinkButton>
-        <asp:LinkButton ID="LinkAddCarNew" class="w3-button w3-purple w3-padding w3-round w3-large" runat="server" text="<i class='fa fa-plus' aria-hidden='true' ></i> Add New Vehicle" ></asp:LinkButton>
+        <asp:LinkButton ID="LinkAddCarNew" class="w3-button w3-purple w3-padding w3-round w3-large" runat="server" text="<i class='fa fa-plus' aria-hidden='true' ></i> Add New Vehicle " ></asp:LinkButton>
     </ContentTemplate>
   </asp:UpdatePanel>
    </div>

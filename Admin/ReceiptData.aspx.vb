@@ -13,7 +13,8 @@ Partial Class Admin_ReceiptData
                 Dim con As Npgsql.NpgsqlConnection = DBConnect.getConnection
                 Dim strsql As String = ""
                 Try
-                    con.ClearPool()
+                    'con.ClearPool()
+                    Npgsql.NpgsqlConnection.ClearPool(con)
                     cmd.Connection = con
                     cmd.Connection.Open()
                     strsql = "SELECT  license_id  , receipt , receipt_date FROM license  WHERE license_id = " & Request.QueryString("license_id") & " "

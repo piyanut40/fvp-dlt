@@ -36,7 +36,8 @@ Partial Class Admin_CarCommerceMgt
         Dim con As Npgsql.NpgsqlConnection = DBConnect.getConnection
         Dim strsql As String = ""
         Try
-            con.ClearPool()
+            ' con.ClearPool()
+            Npgsql.NpgsqlConnection.ClearPool(con)
             cmd.Connection = con
             cmd.Connection.Open()
             strsql = "SELECT * FROM ( SELECT license.*, car_commerce.* " & _

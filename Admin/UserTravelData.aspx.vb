@@ -17,7 +17,8 @@ Partial Class Admin_UserTravelData
         Dim con As Npgsql.NpgsqlConnection = DBConnect.getConnection
         Dim strsql As String = ""
         Try
-            con.ClearPool()
+            'con.ClearPool()
+            Npgsql.NpgsqlConnection.ClearPool(con)
             cmd.Connection = con
             cmd.Connection.Open()
             strsql = " SELECT  name_company as com_name , CAST(user_name || ' ' || user_surname as varchar) as agen_name, info_company, history, user_travel.telephone as com_tel, user_travel.email as com_mail, company_license " & _

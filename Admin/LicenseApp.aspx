@@ -584,9 +584,12 @@ hr {
                <asp:TemplateField HeaderText="<center>รูปถ่าย</center>" ItemStyle-Width="80px" ItemStyle-HorizontalAlign="Center" >
                                     <ItemTemplate>
                                         <asp:Image ID="Imgregis" runat="server" Width="320px" ImageUrl="#" />
-                                        <asp:HyperLink ID="HyperLicensePhotoGuide" NavigateUrl='<%# ResolveUrl(Eval("regis_photo").ToString()) %>' Target="_blank"  runat="server">ดูรูปใหญ่</asp:HyperLink>
-
                                         <%--<asp:HyperLink ID="HyperLicensePhotoGuide" NavigateUrl="<%#Eval("regis_photo") %>" Target="_blank"  runat="server">ดูรูปใหญ่</asp:HyperLink>--%>
+                                        <asp:HyperLink ID="HyperLicensePhotoGuide" 
+               NavigateUrl='<%# Eval("regis_photo") %>' 
+               Target="_blank" runat="server">
+    ดูรูปใหญ่
+</asp:HyperLink>
                                     </ItemTemplate>     
                                     <ItemStyle HorizontalAlign="Center" Width="80px" />
               </asp:TemplateField>
@@ -748,7 +751,7 @@ hr {
 
 
       <div class=" mt-5 w3-right">
-               <a onclick="tab_active(1);" class="w3-button w3-purple2 w3-padding w3-round" >ถัดไป</a>
+               <a onclick="tab_active(1);" class="w3-button w3-purple2 w3-padding w3-round" >ถัดไป1</a>
             </div>
     </div>
 

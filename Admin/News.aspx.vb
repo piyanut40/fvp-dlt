@@ -63,7 +63,10 @@ Partial Class News
 
                 Dim lblnews_id As Label = e.Row.Cells(0).FindControl("lblnews_id")
                 Dim lnkDel As HyperLink = e.Row.Cells(5).FindControl("HyperLinkDel")
-                lnkDel.Attributes.Add("onclick", "javascript:DelData(" & lblnews_id.Text & ");")
+                'lnkDel.Attributes.Add("onclick", "javascript:DelData(" & lblnews_id.Text & ");")
+                If lblnews_id IsNot Nothing AndAlso lnkDel IsNot Nothing Then
+                    lnkDel.Attributes.Add("onclick", "javascript:DelData(" & lblnews_id.Text & ");")
+                End If
 
             End If
         Catch ex As Exception

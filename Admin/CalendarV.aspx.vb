@@ -75,50 +75,97 @@ Partial Class Admin_CalendarV
 
             text = holidays
 
-            Dim _day As Integer = 0
+            'Dim _day As Integer = 0
+            'Dim _date As Date
+            'Dim myCulture As System.Globalization.CultureInfo = System.Globalization.CultureInfo.CurrentCulture
+            'If myCulture.Calendar.GetDayOfWeek(Date.Today).ToString.ToLower = "sunday" Then
+            '    _day = 6
+            'ElseIf myCulture.Calendar.GetDayOfWeek(Date.Today).ToString.ToLower = "monday" Then
+            '    _day = 5
+            'Else
+            '    _day = 7
+            'End If
+
+
+            'Dim strChkDate As String = "SELECT count(h_date) FROM holiday where h_date between '" & Date.Today & "' and '" & DateAdd(DateInterval.Day, (_day), Date.Today) & "'"
+            'Dim DBCon As New DBConnect
+            'Dim Cnt_h_date As Integer = DBCon.executeScalar(strChkDate)
+
+            '_date = DateAdd(DateInterval.Day, (_day + Cnt_h_date), Date.Today)
+            ''_date = GetNextWorkingDate(Date.Today, 5)
+
+            'strChkDate = "select min(the_day) from (SELECT *  FROM generate_series(timestamp '" & DateAdd(DateInterval.Day, (_day + Cnt_h_date), Date.Today) & "', timestamp '" & DateAdd(DateInterval.Day, (_day + Cnt_h_date + 7), Date.Today) & "' , interval  '1 day') the_day  " &
+            '    " WHERE the_day not in (SELECT h_date FROM holiday where extract('ISODOW' FROM h_date) < 6 ) ) dt "
+            '_date = DBCon.executeScalar(strChkDate)
+            '_date = GetNextWorkingDate(Date.Today, 5)
+
             Dim _date As Date
-            Dim myCulture As System.Globalization.CultureInfo = System.Globalization.CultureInfo.CurrentCulture
-            If myCulture.Calendar.GetDayOfWeek(Date.Today).ToString.ToLower = "sunday" Then
-                _day = 6
-            ElseIf myCulture.Calendar.GetDayOfWeek(Date.Today).ToString.ToLower = "monday" Then
-                _day = 5
-            Else
-                _day = 7
-            End If
-
-
-            Dim strChkDate As String = "SELECT count(h_date) FROM holiday where h_date between '" & Date.Today & "' and '" & DateAdd(DateInterval.Day, (_day), Date.Today) & "'"
-            Dim DBCon As New DBConnect
-            Dim Cnt_h_date As Integer = DBCon.executeScalar(strChkDate)
-
-            _date = DateAdd(DateInterval.Day, (_day + Cnt_h_date), Date.Today)
-
-            strChkDate = "select min(the_day) from (SELECT *  FROM generate_series(timestamp '" & DateAdd(DateInterval.Day, (_day + Cnt_h_date), Date.Today) & "', timestamp '" & DateAdd(DateInterval.Day, (_day + Cnt_h_date + 7), Date.Today) & "' , interval  '1 day') the_day  " & _
-                " WHERE the_day not in (SELECT h_date FROM holiday where extract('ISODOW' FROM h_date) < 6 ) ) dt "
-            _date = DBCon.executeScalar(strChkDate)
+            _date = GetNextWorkingDate(Date.Today, 5)
 
             _dd = Format(_date, "dd")
             _mm = Format(_date, "MM")
             _yyyy = Format(_date, "yyyy")
             min_date = Format(_date, "dd/MM/yyyy") ' "+" & DateDiff(DateInterval.Day, Date.Today, _date)
 
-            Dim strjs As String = " $(document).ready(function() { " & _
-                 " alert(44);" & _
-                 " localStorage.clear();" & _
-                   holidays & _
-                   " alert(55);" & _
+            Dim strjs As String = " $(document).ready(function() { " &
+                 " alert(44);" &
+                 " localStorage.clear();" &
+                   holidays &
+                   " alert(55);" &
                    " }); "
 
 
             HidAllData.Value = holidays
         Catch ex As Exception
-
+            Console.WriteLine("message :" & ex.Message)
         Finally
             dbConnect = Nothing
 
         End Try
 
     End Sub
+    Private Function GetNextWorkingDate(startDate As Date, workingDays As Integer) As Date
+
+        Dim db As New DBConnect
+        Dim holidayList As New HashSet(Of Date)
+
+        ' โหลด holiday ทั้งหมด
+        Dim dtHoliday As DataTable = db.getDataTable(
+        "holiday"
+    )
+
+        For Each row As DataRow In dtHoliday.Rows
+            If Not IsDBNull(row("h_date")) Then
+                holidayList.Add(CDate(row("h_date")).Date)
+            End If
+        Next
+
+        Dim currentDate As Date = startDate
+        Dim countedDays As Integer = 0
+
+        While countedDays < workingDays
+
+            currentDate = currentDate.AddDays(1)
+
+            ' ข้ามเสาร์อาทิตย์
+            If currentDate.DayOfWeek = DayOfWeek.Saturday _
+        OrElse currentDate.DayOfWeek = DayOfWeek.Sunday Then
+
+                Continue While
+            End If
+
+            ' ข้าม holiday
+            If holidayList.Contains(currentDate.Date) Then
+                Continue While
+            End If
+
+            countedDays += 1
+
+        End While
+
+        Return currentDate
+
+    End Function
 
     Public Shared Function ConvertToDateTime(ByVal strExcelDate As String) As String
         Dim excelDate As Double
@@ -156,7 +203,7 @@ Partial Class Admin_CalendarV
                 cur_year = Hidyear.Value
                 _txtDate = New DateTime(Hidyear.Value, Hidmonth.Value, ar_txtDate(0))
             Catch ex As Exception
-
+                Console.WriteLine(ex.Message)
             End Try
 
             hid_id.Value = dbConnect.executeScalar("select gid from holiday where h_date = '" & _txtDate & "'")
@@ -173,14 +220,18 @@ Partial Class Admin_CalendarV
 
             cmd.CommandText = strsql
             cmd.Parameters.Clear()
-            cmd.Parameters.Add("year_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = Hidyear.Value 'ddlYear0.SelectedValue
+            cmd.Parameters.Add("year_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = CInt(Hidyear.Value) 'ddlYear0.SelectedValue
             cmd.Parameters.Add("h_date", NpgsqlTypes.NpgsqlDbType.Date).Value = _txtDate
-            cmd.Parameters.Add("description", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(ar_txtDate(1).ToString.Trim = "", Nothing, ar_txtDate(1))
+            cmd.Parameters.Add("description", NpgsqlTypes.NpgsqlDbType.Varchar).Value =
+            If(String.IsNullOrWhiteSpace(ar_txtDate(1)), DBNull.Value, ar_txtDate(1))
+
+            'cmd.Parameters.Add("description", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(ar_txtDate(1).ToString.Trim = "", Nothing, ar_txtDate(1))
             cmd.ExecuteNonQuery()
 
             loaddata()
 
         Catch ex As Exception
+            Console.WriteLine(ex.Message)
             ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", "alert('ไม่สามารถบันทึกได้ กรุณาลองใหม่อีกครั้ง');", True)
         Finally
             If cmd.Connection.State = ConnectionState.Open Then

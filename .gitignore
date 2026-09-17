@@ -1,0 +1,49 @@
+# Secrets - contains real DB/SMTP passwords, never commit. Use Web.config.sample as the template.
+Web.config
+
+# Visual Studio / IDE caches
+.vs/
+*.user
+*.suo
+*.dbmdl
+*.jfm
+*.pdb
+
+# User-uploaded data (citizen documents: passports, licenses, vehicle photos, etc.)
+# Never track this - real PII, and it's runtime data, not source. On a fresh
+# deploy these folders must be created manually (see Web.config's appSettings
+# for the exact list of Upload/* subfolder names the app expects to exist).
+Upload/
+
+# Local DB backups / dumps that sometimes get dropped in the site folder
+BackupDB/
+*.bak
+*.dump
+
+# ASP.NET Web Site project runtime/precompile artifacts (not present at rest, but ignore if generated)
+PrecompiledWeb/
+*.compiled
+
+# Editor/OS noise
+Thumbs.db
+.DS_Store
+
+# Manual on-server backup copies (made before editing a file directly in prod) -
+# not real source, just clutter. Listed explicitly rather than by pattern to
+# avoid accidentally excluding a real file with a similar name elsewhere.
+Admin/LicenseAppBK.aspx
+Admin/LicenseAppBK.aspx.vb
+Travel/GroupAddBK.aspx
+Travel/GroupAddBK.aspx.vb
+Travel/GroupAddTest.aspx.vb
+Travel/GroupAdd_tab1BK.aspx
+Travel/GroupAdd_tab1BK.aspx.vb
+Travel/GroupAdd_tab2BK.aspx
+Travel/GroupAdd_tab2BK.aspx.vb
+Travel/GroupAdd_tab3BK.aspx
+Travel/GroupAdd_tab3BK.aspx.vb
+Travel/GroupAddlast.aspx
+Travel/GroupEditBK.aspx.vb
+Travel/GuideBK.aspx.vb
+Travel/MgtEditOld.aspx
+Travel/MgtEditOld.aspx.vb

@@ -350,7 +350,7 @@ left: 0;
     </script>
      </asp:Panel>
  </br>
-       <center><button class=" w3-center w3-purple w3-btn w3-round-large w3-large w3-margin"  onclick ="Submit();return false;" UseSubmitBehavior=false>Submit </Button>
+       <center><button class=" w3-center w3-purple w3-btn w3-round-large w3-large w3-margin"  onclick ="Submit();return false;" UseSubmitBehavior=false>Submit1 </Button>
        <asp:Button ID="btnSubmit"  class=" w3-right  w3-purple w3-btn w3-round-large w3-large w3-margin" OnClientClick="$('#loadings').show();"   style="display:none"   runat="server" UseSubmitBehavior="false" Text="Save" /> &nbsp; &nbsp;&nbsp;
        <asp:Button ID="btnSave"  class=" w3-right  w3-purple w3-btn w3-round-large w3-large w3-margin" OnClientClick="$('#loadings').show();"    runat="server" UseSubmitBehavior="false" Text="Save" /> &nbsp; &nbsp;&nbsp;
      <asp:Button ID="btnPrev2" class="w3-purple w3-btn w3-round-large w3-left w3-large w3-margin"  runat="server" UseSubmitBehavior="false" Text="Prev" /></center>

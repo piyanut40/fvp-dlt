@@ -4,10 +4,11 @@ Imports System.Data
 Imports System.Drawing
 Imports System.Collections.Generic
 Imports System.Globalization
+Imports System.ServiceModel.Channels
 
 Partial Class Travel_MgtEdit
     Inherits System.Web.UI.Page
-    
+
     Protected statusth As String
     Protected Img As String
     Protected name As String
@@ -73,7 +74,7 @@ Partial Class Travel_MgtEdit
             chkisJuristic.Attributes.Add("OnClick", strScriptchk)
 
 
-           
+
             If Not (Request.QueryString("token") Is Nothing) Then
                 loaddata()
             End If
@@ -99,7 +100,7 @@ Partial Class Travel_MgtEdit
                     ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script2", "tab4();", True)
                 End If
             End If
-            
+
             ScriptManager.RegisterStartupScript(Page, GetType(Page), "ChkScript", " isJuristic('" & chkisJuristic.ClientID & "'); ", True)
             Dim db As New DBConnect
             Dim prov_code As Object = db.executeScalar("select prov_code from border_check where border_id = " & ddlBorderCheckin.SelectedValue)
@@ -141,7 +142,7 @@ Partial Class Travel_MgtEdit
             tbImageInspec.Rows.Add(nrow)
         Next
 
-      
+
         If hidPhotonamecar_cer.Value <> "" Then
             btnUploadCar_cer.Visible = False
             FileUpload_cer.Visible = False
@@ -414,7 +415,7 @@ Partial Class Travel_MgtEdit
             linkPhotoCer3.Visible = False
         End If
 
-      
+
 
         If hidPhotoRegisCar.Value <> "" Then
             PhotoRegisCar.ImageUrl = "~/Upload/RegisterCar/" & hidPhotoRegisCar.Value
@@ -513,27 +514,27 @@ Partial Class Travel_MgtEdit
     Private Sub loaddata()
         Dim dbConnect As New DBConnect
         Dim cmd As New NpgsqlCommand
-        Dim con As Npgsql.NpgsqlConnection = dbConnect.getConnection
+        Dim con As Npgsql.NpgsqlConnection = DBConnect.getConnection
         Dim dread As Npgsql.NpgsqlDataReader
         Try
             con.Open()
             cmd.Connection = con
-            Dim strCheckUser As String = " SELECT driver.driver_id , passport_no , passport_expire , birthday , license_id , car.car_id , act.act_id , is_send ," & _
-                                         " comments_tab0 , comments_tab1 , comments_tab2 , comments_tab3 , comments_tab4 , comments_tab8 ," & _
-                                         " check_tab0 , check_tab1 , check_tab2 , check_tab3 , check_tab4 , check_tab8" & _
-                                         "  from driver " & _
-                                         " LEFT JOIN license on driver.driver_id = license.driver_id " & _
-                                         " LEFT JOIN car on license.car_id = car.car_id " & _
-                                         " LEFT JOIN act on license.act_id = act.act_id " & _
+            Dim strCheckUser As String = " SELECT driver.driver_id , passport_no , passport_expire , birthday , license_id , car.car_id , act.act_id , is_send ," &
+                                         " comments_tab0 , comments_tab1 , comments_tab2 , comments_tab3 , comments_tab4 , comments_tab8 ," &
+                                         " check_tab0 , check_tab1 , check_tab2 , check_tab3 , check_tab4 , check_tab8" &
+                                         "  from driver " &
+                                         " LEFT JOIN license on driver.driver_id = license.driver_id " &
+                                         " LEFT JOIN car on license.car_id = car.car_id " &
+                                         " LEFT JOIN act on license.act_id = act.act_id " &
                                          " WHERE license.token like '%" & Request.QueryString("token") & "%'"
             cmd.CommandText = CommandType.Text
             cmd.CommandText = strCheckUser
             dread = cmd.ExecuteReader()
             If dread.Read Then
-             
+
 
                 If dread("check_tab1") = 1 Then
-                    page1_2.Enabled = False
+                    Page1_2.Enabled = False
                     lblcomments1.Visible = False
                 End If
 
@@ -678,7 +679,7 @@ Partial Class Travel_MgtEdit
                 'End If
 
                 If Request.QueryString("is_renew") IsNot Nothing Then
-                    page1_2.Enabled = False
+                    Page1_2.Enabled = False
                     'Page2.Enabled = False
                     Page3.Enabled = False
                     Page8.Enabled = False
@@ -719,37 +720,39 @@ Partial Class Travel_MgtEdit
         Dim pScript As New StringBuilder
         pScript.Remove(0, pScript.Length)
         Try
-            con.ClearPool()
+            Npgsql.NpgsqlConnection.ClearPool(con)
+
+            'con.ClearPool()
             cmd.Connection = con
             cmd.Connection.Open()
-          
-            strsql = "SELECT * FROM ( SELECT driver.*, car.*, act.*, act.act_id as actid, license.email as license_email, license_id, admin_id , token , driver.prename as prename, driver.name as name, driver.surname as surname , driver.photo_cer " & _
-                   " , spare_1.prename as prename1, spare_1.name as name1, spare_1.surname as surname1 ,spare_2.prename as prename2, spare_2.name as name2, spare_2.surname as surname2 , spare_1.photo_cer as photo_cer2 , spare_2.photo_cer as photo_cer3 " & _
-                   " , spare_1.passport_no as spare_1_passport_no, spare_1.passport_expire as spare_1_passport_expire, spare_2.passport_no as spare_2_passport_no, spare_2.passport_expire as spare_2_passport_expire " & _
-                   " , spare_1.national as spare_1_national, spare_1.license_no as spare_1_license_no, spare_2.national as spare_2_national, spare_2.license_no as spare_2_license_no " & _
-                   " , spare_1.licensedriver_photo as spare_1_licensedriver_photo, spare_1.passport_photo as spare_1_passport_photo , spare_1.licensedriver_photo_2 as spare_1_licensedriver_photo_2, spare_1.passport_photo_2 as spare_1_passport_photo_2 " & _
-                   " , spare_2.passport_photo as spare_2_passport_photo  , spare_2.licensedriver_photo as spare_2_licensedriver_photo , spare_2.passport_photo_2 as spare_2_passport_photo_2  , spare_2.licensedriver_photo_2 as spare_2_licensedriver_photo_2 " & _
-                   " , spare_1.license_exp_date as spare_1_license_exp_date, spare_2.license_exp_date as spare_2_license_exp_date " & _
-                   " , spare_1.address as spare_1_address, spare_1.state as spare_1_state, spare_1.country as spare_1_country, spare_1.zipcode as spare_1_zipcode, spare_1.tel as spare_1_tel, spare_1.email as spare_1_email, spare_1.gender as spare_1_gender " & _
-                   " , spare_2.address as spare_2_address, spare_2.state as spare_2_state, spare_2.country as spare_2_country, spare_2.zipcode as spare_2_zipcode, spare_2.tel as spare_2_tel, spare_2.email as spare_2_email, spare_2.gender as spare_2_gender " & _
+
+            strsql = "SELECT * FROM ( SELECT driver.*, car.*, act.*, act.act_id as actid, license.email as license_email, license_id, admin_id , token , driver.prename as prename, driver.name as name, driver.surname as surname , driver.photo_cer " &
+                   " , spare_1.prename as prename1, spare_1.name as name1, spare_1.surname as surname1 ,spare_2.prename as prename2, spare_2.name as name2, spare_2.surname as surname2 , spare_1.photo_cer as photo_cer2 , spare_2.photo_cer as photo_cer3 " &
+                   " , spare_1.passport_no as spare_1_passport_no, spare_1.passport_expire as spare_1_passport_expire, spare_2.passport_no as spare_2_passport_no, spare_2.passport_expire as spare_2_passport_expire " &
+                   " , spare_1.national as spare_1_national, spare_1.license_no as spare_1_license_no, spare_2.national as spare_2_national, spare_2.license_no as spare_2_license_no " &
+                   " , spare_1.licensedriver_photo as spare_1_licensedriver_photo, spare_1.passport_photo as spare_1_passport_photo , spare_1.licensedriver_photo_2 as spare_1_licensedriver_photo_2, spare_1.passport_photo_2 as spare_1_passport_photo_2 " &
+                   " , spare_2.passport_photo as spare_2_passport_photo  , spare_2.licensedriver_photo as spare_2_licensedriver_photo , spare_2.passport_photo_2 as spare_2_passport_photo_2  , spare_2.licensedriver_photo_2 as spare_2_licensedriver_photo_2 " &
+                   " , spare_1.license_exp_date as spare_1_license_exp_date, spare_2.license_exp_date as spare_2_license_exp_date " &
+                   " , spare_1.address as spare_1_address, spare_1.state as spare_1_state, spare_1.country as spare_1_country, spare_1.zipcode as spare_1_zipcode, spare_1.tel as spare_1_tel, spare_1.email as spare_1_email, spare_1.gender as spare_1_gender " &
+                   " , spare_2.address as spare_2_address, spare_2.state as spare_2_state, spare_2.country as spare_2_country, spare_2.zipcode as spare_2_zipcode, spare_2.tel as spare_2_tel, spare_2.email as spare_2_email, spare_2.gender as spare_2_gender " &
                    " , type_name as typecar_en, model as models, status_th, spare_1.sparedriver_id as sparedriver_id1, spare_2.sparedriver_id as sparedriver_id2, checkin_id, checkout_id, driver.county , photocar_cer " '& _
 
 
             'If Request.QueryString("rt") = 2 Then
-            strsql = strsql & " ,name_company as com_name , CAST(user_name || ' ' || user_surname as varchar) as agen_name, info_company, history, user_travel.telephone as com_tel, user_travel.email as com_mail, company_license " & _
+            strsql = strsql & " ,name_company as com_name , CAST(user_name || ' ' || user_surname as varchar) as agen_name, info_company, history, user_travel.telephone as com_tel, user_travel.email as com_mail, company_license " &
             " , coalesce(user_travel.address,'')|| ' ตำบล' || t_name_t || ' อำเภอ' || a_name_t || ' จังหวัด' ||p_name_t|| ' ' ||coalesce(postal,'') as com_address "
             'End If
-            strsql = strsql & " FROM license " & _
-             " LEFT JOIN driver on driver.driver_id = license.driver_id " & _
-             " LEFT JOIN spare_driver spare_1 on driver.driver_id = spare_1.driver_id and spare_1.spare_ord = 1 " & _
-             " LEFT JOIN spare_driver spare_2 on driver.driver_id = spare_2.driver_id and spare_2.spare_ord = 2 " & _
-             " LEFT JOIN car on car.car_id = license.car_id " & _
-             " LEFT JOIN act on act.act_id = license.act_id " & _
-             " LEFT JOIN type_car on car.typecar_id = type_car.type_id " & _
+            strsql = strsql & " FROM license " &
+             " LEFT JOIN driver on driver.driver_id = license.driver_id " &
+             " LEFT JOIN spare_driver spare_1 on driver.driver_id = spare_1.driver_id and spare_1.spare_ord = 1 " &
+             " LEFT JOIN spare_driver spare_2 on driver.driver_id = spare_2.driver_id and spare_2.spare_ord = 2 " &
+             " LEFT JOIN car on car.car_id = license.car_id " &
+             " LEFT JOIN act on act.act_id = license.act_id " &
+             " LEFT JOIN type_car on car.typecar_id = type_car.type_id " &
              " LEFT JOIN status on license.status_id = status.status_id " '& _
 
             'If Request.QueryString("rt") = 2 Then
-            strsql = strsql & " LEFT JOIN user_travel on user_travel.user_id = license.travel_id " & _
+            strsql = strsql & " LEFT JOIN user_travel on user_travel.user_id = license.travel_id " &
             " LEFT JOIN tumbol on tumbol.t_id = user_travel.tumbol "
             'End If
             strsql = strsql & " WHERE token = '" & Request.QueryString("token") & "' ) as dt "
@@ -833,7 +836,7 @@ Partial Class Travel_MgtEdit
                     pScript.Append("$(""#" & txtDate.ClientID & """).val('" & txtDate.Text & "');")
                 End If
 
-              
+
 
                 If Not dr("gender") Is DBNull.Value Then
                     ddlGender.Text = dr("gender")
@@ -897,7 +900,7 @@ Partial Class Travel_MgtEdit
                     hidPhotoCer.Value = dr("photo_cer")
                 End If
 
-              
+
 
                 If Not dr("photo_cer2") Is DBNull.Value Then
                     hidPhotoCer2.Value = dr("photo_cer2")
@@ -907,7 +910,7 @@ Partial Class Travel_MgtEdit
                 If Not dr("photo_cer3") Is DBNull.Value Then
                     hidPhotoCer3.Value = dr("photo_cer3")
                 End If
-              
+
 
                 If Not dr("prename1") Is DBNull.Value Then
                     Select Case dr("prename1")
@@ -995,11 +998,11 @@ Partial Class Travel_MgtEdit
 
                 If Not dr("spare_1_gender") Is DBNull.Value Then
 
-                   
+
                     ddlGender2.SelectedValue = dr("spare_1_gender")
                 End If
 
-              
+
 
                 If Not dr("prename2") Is DBNull.Value Then
                     Select Case dr("prename2")
@@ -1039,7 +1042,7 @@ Partial Class Travel_MgtEdit
                 If Not dr("spare_2_passport_no") Is DBNull.Value Then
                     txtPassportNo3.Text = dr("spare_2_passport_no")
                 End If
-                 
+
 
                 If Not dr("spare_2_passport_expire") Is DBNull.Value Then
                     'txtexp_pass_date2.Text = Format(dr("spare_2_passport_expire"), "yyyy-MM-dd")
@@ -1067,7 +1070,7 @@ Partial Class Travel_MgtEdit
                     txtAddress3.Text = dr("spare_2_address")
                 End If
 
-             
+
 
                 If Not dr("spare_2_country") Is DBNull.Value Then
                     ddlCountry3.SelectedValue = dr("spare_2_country")
@@ -1087,7 +1090,7 @@ Partial Class Travel_MgtEdit
 
                 If Not dr("spare_2_gender") Is DBNull.Value Then
 
-                   
+
                     ddlGender3.SelectedValue = dr("spare_2_gender")
                 End If
 
@@ -1116,7 +1119,7 @@ Partial Class Travel_MgtEdit
                     txtWeight.Text = dr("weight")
                 End If
 
-              
+
 
                 If Not dr("colors") Is DBNull.Value Then
                     ddlColor.Text = dr("colors")
@@ -1146,7 +1149,7 @@ Partial Class Travel_MgtEdit
                     txtEnginCap.Text = dr("engine_cap")
                 End If
 
-               
+
 
                 If dr("is_juristic") = 0 Then
                     chkisJuristic.Checked = False
@@ -1241,7 +1244,7 @@ Partial Class Travel_MgtEdit
 
 
 
-            
+
 
                 If Not dr("act_no") Is DBNull.Value Then
                     txtActNo.Text = dr("act_no")
@@ -1295,13 +1298,13 @@ Partial Class Travel_MgtEdit
                     ddlBorderCheckin.SelectedValue = dr("checkin_id")
                 End If
 
-              
+
 
                 If Not dr("admin_id") Is DBNull.Value Then
                     ddladmin.SelectedValue = dr("admin_id")
                 End If
 
-              
+
 
                 If dr("regis_photo") IsNot DBNull.Value Then
                     hidPhotoRegisCar.Value = dr("regis_photo")
@@ -1340,7 +1343,7 @@ Partial Class Travel_MgtEdit
             End If
             dr.Close()
 
-          
+
 
             Dim sqlstr As String
             Dim sqlstr2 As String
@@ -1383,7 +1386,7 @@ Partial Class Travel_MgtEdit
             Next
 
             If DataTable3.Rows.Count > 0 Then
-               
+
 
             End If
 
@@ -1438,11 +1441,11 @@ Partial Class Travel_MgtEdit
     End Sub
 
     Private Sub AddPopupMapAdmin(ByVal paraMap As String)
-        Dim strPopup As String = "javascript:w=window.open(" & _
-                        """" & ResolveClientUrl("~/Map/MapAdmin2.aspx?" & paraMap) & """," & _
-                        """SearchMapAdminWindow""," & _
-                        """" & "location=0,status=0,scrollbars=yes,resizable=no," & _
-                        "width=1024,height=780""" & _
+        Dim strPopup As String = "javascript:w=window.open(" &
+                        """" & ResolveClientUrl("~/Map/MapAdmin2.aspx?" & paraMap) & """," &
+                        """SearchMapAdminWindow""," &
+                        """" & "location=0,status=0,scrollbars=yes,resizable=no," &
+                        "width=1024,height=780""" &
                         ");w.focus();"
         lnkSchMap.NavigateUrl = "javascript://"
         lnkSchMap.Attributes.Add("OnClick", strPopup)
@@ -1488,7 +1491,7 @@ Partial Class Travel_MgtEdit
     End Sub
 
     Protected Sub ddlCountryCar_SelectIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ddlCountryCar.SelectedIndexChanged
-       
+
     End Sub
 
     '''อัพโหลด และ ลบ รูป พาสปอร์ต
@@ -1848,20 +1851,20 @@ Partial Class Travel_MgtEdit
                 srcExt = Path.GetExtension(FileUploadPhotoCer3.PostedFile.FileName)
                 srcName = (srcName & DateTime.Now).GetHashCode
                 If supportedFilePDF.Contains("," & srcExt.ToLower.Trim & ",") Then
-                
-                FileUploadPhotoCer3.PostedFile.SaveAs(Server.MapPath("~/Upload/LicenseDriver/") + srcName & srcExt)
-                hidPhotoCer3.Value = srcName & srcExt
-                'PhotoCer3.ImageUrl = "~/Upload/LicenseDriver/" & hidPhotoCer3.Value
-                'PhotoCer3.Visible = True
-                linkPhotoCer3.Visible = True
-                btnUploadCer3.Visible = False
-                FileUploadPhotoCer3.Visible = False
-                PhotoDeleteCer3.Visible = True
 
-                Dim fpathstr = Server.MapPath(ConfigurationManager.AppSettings("FileLicenseDriver") & "/")
-                Dim tempFile = New System.IO.FileInfo(fpathstr & hidPhotoCer3.Value)
-                linkPhotoCer3.NavigateUrl = "../Admin/ViewFile.aspx?sname=" & hidPhotoCer3.Value & "&fname=" & Server.UrlPathEncode(hidPhotoCer3.Value) & "&fPath=FileLicenseDriver"
-                linkPhotoCer3.Target = "_blank"
+                    FileUploadPhotoCer3.PostedFile.SaveAs(Server.MapPath("~/Upload/LicenseDriver/") + srcName & srcExt)
+                    hidPhotoCer3.Value = srcName & srcExt
+                    'PhotoCer3.ImageUrl = "~/Upload/LicenseDriver/" & hidPhotoCer3.Value
+                    'PhotoCer3.Visible = True
+                    linkPhotoCer3.Visible = True
+                    btnUploadCer3.Visible = False
+                    FileUploadPhotoCer3.Visible = False
+                    PhotoDeleteCer3.Visible = True
+
+                    Dim fpathstr = Server.MapPath(ConfigurationManager.AppSettings("FileLicenseDriver") & "/")
+                    Dim tempFile = New System.IO.FileInfo(fpathstr & hidPhotoCer3.Value)
+                    linkPhotoCer3.NavigateUrl = "../Admin/ViewFile.aspx?sname=" & hidPhotoCer3.Value & "&fname=" & Server.UrlPathEncode(hidPhotoCer3.Value) & "&fPath=FileLicenseDriver"
+                    linkPhotoCer3.Target = "_blank"
                     ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script2", "tab2(); setFocusPage('divReserveDriver2');", True)
                 Else
                     ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script2", "tab2(); setFocusPage('divReserveDriver2'); alert('Please attach a pdf file'); ", True)
@@ -1999,7 +2002,7 @@ Partial Class Travel_MgtEdit
             End If
         End If
     End Sub
-    
+
 
     ''อัพโหลด และ ลบ รูปลงทะเบียนรถ
     Protected Sub PhotoDeleteRegisCar_Command(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.CommandEventArgs) Handles PhotoDeleteRegisCar.Command
@@ -2320,7 +2323,7 @@ Partial Class Travel_MgtEdit
                     btnUploadCar_cer.Visible = True
                     FileUpload_cer.Visible = False
                     PhotoCar_cerDelete.Visible = True
-                   
+
                     ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script7", "tab3(); setFocusPage('divCertified');", True)
                 Else
                     ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script7", "tab3(); setFocusPage('divCertified'); alert('Please attach a pdf file');", True)
@@ -2401,7 +2404,7 @@ Partial Class Travel_MgtEdit
     End Sub
 
     Protected Sub PhotoCarDelete_cer_Command(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.CommandEventArgs) 'Handles PhotoCarDelete.Command
-        
+
 
         ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script8", "tab3();", True)
     End Sub
@@ -2433,19 +2436,19 @@ Partial Class Travel_MgtEdit
 
     Protected Sub btnNext2_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnNext2.Click
         If chkisJuristic.Checked = False And (txtOwnerName.Text = "" Or txtOwnerLastName.Text = "" Or txtOwnerIdcard.Text = "" Or txtLicenseEmail.Text = "") Then
-            ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "fromCheck();", True)
+            'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "fromCheck();", True)
         ElseIf chkisJuristic.Checked = True And (txtJuristicName.Text = "" Or txtJuristicID.Text = "" Or txtLicenseEmail.Text = "") Then
-            ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "fromCheck();", True)
+            'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "fromCheck();", True)
         Else
             If hidcar_id.Value <> "" Then
                 Dim dbConnect As New DBConnect
                 Dim cmd As New NpgsqlCommand
-                Dim con As Npgsql.NpgsqlConnection = dbConnect.getConnection
+                Dim con As Npgsql.NpgsqlConnection = DBConnect.getConnection
                 Dim tbCommand As DataTable = dbConnect.TableCommand
                 Try
                     con.Open()
                     cmd.Connection = con
-                    Dim strUpdate = "Update car set owner_prename=:owner_prename ,owner_name=:owner_name , owner_lastname=:owner_lastname,  owner_idcard=:owner_idcard , owner_address=:owner_address , owner_tel=:owner_tel " & _
+                    Dim strUpdate = "Update car set owner_prename=:owner_prename ,owner_name=:owner_name , owner_lastname=:owner_lastname,  owner_idcard=:owner_idcard , owner_address=:owner_address , owner_tel=:owner_tel " &
                                          "  , owner_province =:owner_province , owner_zipcode =:owner_zipcode , owner_country =:owner_country, is_juristic = :is_juristic  WHERE car_id = " & hidcar_id.Value
                     cmd.CommandText = CommandType.Text
                     cmd.CommandText = strUpdate
@@ -2469,7 +2472,8 @@ Partial Class Travel_MgtEdit
                     End If
 
                     cmd.Parameters.Add("owner_address", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtOwnerAddress.Text.Trim = "", Nothing, txtOwnerAddress.Text)
-                    cmd.Parameters.Add("owner_tel", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtOwnertel.Text.Trim = "", Nothing, txtOwnertel.Text)
+                    'cmd.Parameters.Add("owner_tel", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtOwnertel.Text.Trim = "", Nothing, txtOwnertel.Text)
+                    cmd.Parameters.Add("owner_tel", NpgsqlTypes.NpgsqlDbType.Varchar).Value = If(String.IsNullOrWhiteSpace(txtOwnertel.Text), DBNull.Value, txtOwnertel.Text.Trim())
                     cmd.Parameters.Add("owner_province", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtOwnerProvince.Text = "", Nothing, txtOwnerProvince.Text)
                     cmd.Parameters.Add("owner_zipcode", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtOwnerZipcode.Text = "", Nothing, txtOwnerZipcode.Text)
                     cmd.Parameters.Add("owner_country", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlOwnerCountry.SelectedValue
@@ -2489,13 +2493,14 @@ Partial Class Travel_MgtEdit
                     If check = "" Then
 
                     Else
-                        ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "Error();", True)
+                        'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "Error();", True)
                     End If
 
 
 
                 Catch ex As Exception
-                    ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "Error();", True)
+                    Console.WriteLine(ex.Message)
+                    'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "Error();", True)
                 Finally
                     cmd.Connection.Close()
                     con.Close()
@@ -2506,11 +2511,11 @@ Partial Class Travel_MgtEdit
             Else
                 Dim dbConnect As New DBConnect
                 Dim cmd As New NpgsqlCommand
-                Dim con As Npgsql.NpgsqlConnection = dbConnect.getConnection
+                Dim con As Npgsql.NpgsqlConnection = DBConnect.getConnection
                 Try
                     con.Open()
                     cmd.Connection = con
-                    Dim strCar = " INSERT INTO car( owner_prename, owner_name,  owner_idcard, owner_address, owner_tel , owner_lastname , owner_province , owner_zipcode , owner_country, is_juristic) values( :owner_prename, :owner_name,  :owner_idcard, :owner_address, :owner_tel , :owner_lastname , :owner_province , :owner_zipcode , :owner_country, :is_juristic) RETURNING car_id;"
+                    Dim strCar = " INSERT INTO car( owner_prename, owner_name,  owner_idcard, owner_address, owner_tel , owner_lastname , owner_province , owner_zipcode , owner_country, is_juristic) values( @owner_prename, @owner_name,  @owner_idcard, @owner_address, @owner_tel , @owner_lastname , @owner_province , @owner_zipcode , @owner_country, @is_juristic) RETURNING car_id;"
                     cmd.CommandText = CommandType.Text
                     cmd.CommandText = strCar
                     cmd.Parameters.Clear()
@@ -2533,7 +2538,8 @@ Partial Class Travel_MgtEdit
                     End If
 
                     cmd.Parameters.Add("owner_address", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtOwnerAddress.Text.Trim = "", Nothing, txtOwnerAddress.Text)
-                    cmd.Parameters.Add("owner_tel", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtOwnertel.Text.Trim = "", Nothing, txtOwnertel.Text)
+                    'cmd.Parameters.Add("owner_tel", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtOwnertel.Text.Trim = "", Nothing, txtOwnertel.Text)
+                    cmd.Parameters.Add("owner_tel", NpgsqlTypes.NpgsqlDbType.Varchar).Value = If(String.IsNullOrWhiteSpace(txtOwnertel.Text), DBNull.Value, txtOwnertel.Text.Trim())
                     cmd.Parameters.Add("owner_province", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtOwnerProvince.Text = "", Nothing, txtOwnerProvince.Text)
                     cmd.Parameters.Add("owner_zipcode", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtOwnerZipcode.Text = "", Nothing, txtOwnerZipcode.Text)
                     cmd.Parameters.Add("owner_country", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlOwnerCountry.SelectedValue
@@ -2562,9 +2568,13 @@ Partial Class Travel_MgtEdit
                     cmd.CommandText = CommandType.Text
                     cmd.CommandText = strInsertlicense
                     cmd.Parameters.Clear()
-                    cmd.Parameters.Add("driver_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = hiddriver_id.Value
-                    cmd.Parameters.Add("car_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = hidcar_id.Value
-                    cmd.Parameters.Add("act_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = hidact_id.Value
+                    'cmd.Parameters.Add("driver_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = hiddriver_id.Value
+                    'cmd.Parameters.Add("car_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = hidcar_id.Value
+                    'cmd.Parameters.Add("act_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = hidact_id.Value
+                    cmd.Parameters.Add("driver_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = Convert.ToInt32(hiddriver_id.Value)
+                    cmd.Parameters.Add("car_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = Convert.ToInt32(hidcar_id.Value)
+                    cmd.Parameters.Add("act_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = Convert.ToInt32(hidact_id.Value)
+
                     cmd.Parameters.Add("travel_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = Session("user_id")
                     cmd.Parameters.Add("regis_date", NpgsqlTypes.NpgsqlDbType.Date).Value = Date.Now
                     cmd.Parameters.Add("fname", NpgsqlTypes.NpgsqlDbType.Varchar).Value = txtOwnerName.Text
@@ -2579,7 +2589,7 @@ Partial Class Travel_MgtEdit
                     cmd.CommandText = CommandType.Text
                     cmd.CommandText = strUpdateToken
                     cmd.Parameters.Clear()
-                    cmd.Parameters.Add("token", NpgsqlTypes.NpgsqlDbType.Varchar).Value = dbConnect.Token(hidlicense_id.Value, hidcar_id.Value)
+                    cmd.Parameters.Add("token", NpgsqlTypes.NpgsqlDbType.Varchar).Value = DBConnect.Token(hidlicense_id.Value, hidcar_id.Value)
                     cmd.ExecuteNonQuery()
 
 
@@ -2588,8 +2598,9 @@ Partial Class Travel_MgtEdit
                     'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script2", "tab2();", True)
 
                 Catch ex As Exception
-                    ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "Error();", True)
-                    ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script1", "tab1();", True)
+                    Console.WriteLine(ex.Message)
+                    'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "Error();", True)
+                    'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script1", "tab1();", True)
                 Finally
                     cmd.Connection.Close()
                     con.Close()
@@ -2613,45 +2624,73 @@ Partial Class Travel_MgtEdit
     End Sub
     Protected Sub btnNext3_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnNext3.Click
         If txtAddress.Text = "" Or txtName.Text = "" Or txtSurname.Text = "" Or txtLicenseExpire.Text = "" Then
-            ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "fromCheck();", True)
-            ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script2", "tab2();", True)
+            'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "fromCheck();", True)
+            'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script2", "tab2();", True)
         ElseIf hidPhotoNameLicense.Value = "" Or hidPhotoNamePassport.Value = "" Then
-            ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "fromCheck2();", True)
-            ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script2", "tab2();", True)
+            'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "fromCheck2();", True)
+            'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script2", "tab2();", True)
         ElseIf txtDate.Text = "" Then
-            ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "fromCheck();", True)
-            ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script2", "tab2();", True)
+            'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "fromCheck();", True)
+            'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script2", "tab2();", True)
         ElseIf txtPassportExpire.Text = "" Then
-            ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "fromCheck();", True)
-            ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script2", "tab2();", True)
+            'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "fromCheck();", True)
+            'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script2", "tab2();", True)
         Else
 
             Dim dbConnect As New DBConnect
             Dim cmd As New NpgsqlCommand
-            Dim con As Npgsql.NpgsqlConnection = dbConnect.getConnection
+            Dim con As Npgsql.NpgsqlConnection = DBConnect.getConnection
             Dim dread As Npgsql.NpgsqlDataReader
             Try
-
+                Dim driverIdStr As String = hiddriver_id.Value
+                Response.Write("driver_id=" & driverIdStr)
                 Dim ar_txtDate As String() = txtDate.Text.ToString.Split("/")
                 Dim ar_txtLicenseExpire As String() = txtLicenseExpire.Text.ToString.Split("/")
                 Dim ar_txtPassportExpire As String() = txtPassportExpire.Text.ToString.Split("/")
 
                 Dim _txtDate As New DateTime '(ar_txtDate(2), ar_txtDate(1), ar_txtDate(0))
+                If ar_txtDate.Length = 3 AndAlso IsNumeric(ar_txtDate(0)) AndAlso IsNumeric(ar_txtDate(1)) AndAlso IsNumeric(ar_txtDate(2)) Then
+                    _txtDate = New DateTime(Convert.ToInt32(ar_txtDate(2)), Convert.ToInt32(ar_txtDate(1)), Convert.ToInt32(ar_txtDate(0)))
+                Else
+                    Throw New FormatException("Invalid date format in txtDate.")
+                End If
+
                 Dim _txtLicenseExpire As New DateTime '(ar_txtLicenseExpire(2), ar_txtLicenseExpire(1), ar_txtLicenseExpire(0))
+                If ar_txtLicenseExpire.Length = 3 AndAlso IsNumeric(ar_txtLicenseExpire(0)) AndAlso IsNumeric(ar_txtLicenseExpire(1)) AndAlso IsNumeric(ar_txtLicenseExpire(2)) Then
+                    _txtLicenseExpire = New DateTime(Convert.ToInt32(ar_txtLicenseExpire(2)), Convert.ToInt32(ar_txtLicenseExpire(1)), Convert.ToInt32(ar_txtLicenseExpire(0)))
+                Else
+                    Throw New FormatException("Invalid date format in txtDate.")
+                End If
+
                 Dim _txtPassportExpire As New DateTime '(ar_txtPassportExpire(2), ar_txtPassportExpire(1), ar_txtPassportExpire(0))
+                If ar_txtPassportExpire.Length = 3 AndAlso IsNumeric(ar_txtPassportExpire(0)) AndAlso IsNumeric(ar_txtPassportExpire(1)) AndAlso IsNumeric(ar_txtPassportExpire(2)) Then
+                    _txtPassportExpire = New DateTime(Convert.ToInt32(ar_txtPassportExpire(2)), Convert.ToInt32(ar_txtPassportExpire(1)), Convert.ToInt32(ar_txtPassportExpire(0)))
+                Else
+                    Throw New FormatException("Invalid date format in txtDate.")
+                End If
                 Try
                     _txtDate = New DateTime(ar_txtDate(2), ar_txtDate(1), ar_txtDate(0))
                     _txtLicenseExpire = New DateTime(ar_txtLicenseExpire(2), ar_txtLicenseExpire(1), ar_txtLicenseExpire(0))
                     _txtPassportExpire = New DateTime(ar_txtPassportExpire(2), ar_txtPassportExpire(1), ar_txtPassportExpire(0))
                 Catch ex As Exception
-
+                    Console.WriteLine(ex.Message)
                 End Try
                 con.Open()
                 cmd.Connection = con
-                Dim strInsert = "Update driver Set prename=:prename , address=:address , name=:name , surname=:surname , license_expire=:license_expire , national=:national , countries=:countries , gender=:gender " & _
-                    " , passport_photo=:passport_photo , licensedriver_photo=:licensedriver_photo , passport_photo_2=:passport_photo_2 , licensedriver_photo_2 =:licensedriver_photo_2 " & _
-                    " , idcard_no=:idcard_no , county=:county , zipcode=:zipcode  " & _
-                      ", tel=:tel , email = :email, birthday = :birthday, passport_no = :passport_no, passport_expire = :passport_expire , photo_cer = :photo_cer WHERE driver_id = " & hiddriver_id.Value
+                Dim strInsert = "Update driver Set prename=@prename , address=@address , name=@name , surname=@surname , license_expire=@license_expire , national=@national , countries=@countries , gender=@gender " &
+                    " , passport_photo=@passport_photo , licensedriver_photo=@licensedriver_photo , passport_photo_2=@passport_photo_2 , licensedriver_photo_2 =@licensedriver_photo_2 " &
+                    " , idcard_no=@idcard_no , county=@county , zipcode=@zipcode  " &
+                      ", tel=@tel , email = @email, birthday = @birthday, passport_no = @passport_no, passport_expire = @passport_expire , photo_cer = @photo_cer WHERE driver_id = " & hiddriver_id.Value
+                Dim driver_id As Integer = 0
+                If Not String.IsNullOrWhiteSpace(hiddriver_id.Value) AndAlso IsNumeric(hiddriver_id.Value) Then
+                    driver_id = Convert.ToInt32(hiddriver_id.Value)
+                Else
+                    ' สามารถเลือกจะ throw error, แจ้งเตือน หรือใช้ค่า default เป็น 0 ก็ได้
+                    Console.WriteLine("hiddriver_id มีค่าว่างหรือไม่ใช่ตัวเลข")
+                End If
+
+                cmd.Parameters.AddWithValue("@driver_id", driver_id)
+                'cmd.Parameters.AddWithValue("@driver_id", Convert.ToInt32(hiddriver_id.Value))
                 cmd.CommandText = CommandType.Text
                 cmd.CommandText = strInsert
                 cmd.Parameters.Clear()
@@ -2666,8 +2705,8 @@ Partial Class Travel_MgtEdit
                 cmd.Parameters.Add("surname", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtSurname.Text.Trim = "", Nothing, txtSurname.Text)
                 cmd.Parameters.Add("address", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtAddress.Text.Trim = "", Nothing, txtAddress.Text)
                 cmd.Parameters.Add("license_expire", NpgsqlTypes.NpgsqlDbType.Date).Value = IIf(txtLicenseExpire.Text.Trim = "", Nothing, _txtLicenseExpire) 'IIf(txtLicenseExpire.Text.Trim = "", Nothing, Format(CDate(txtLicenseExpire.Text), "MM/dd/yyyy"))
-                cmd.Parameters.Add("national", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlNational.SelectedItem
-                cmd.Parameters.Add("countries", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlCountry.SelectedItem
+                cmd.Parameters.Add("national", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlNational.SelectedValue
+                cmd.Parameters.Add("countries", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlCountry.SelectedValue
                 cmd.Parameters.Add("gender", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlGender.SelectedValue
                 cmd.Parameters.Add("passport_photo", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoNamePassport.Value
                 cmd.Parameters.Add("licensedriver_photo", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoNameLicense.Value
@@ -2699,49 +2738,59 @@ Partial Class Travel_MgtEdit
                     cmd.Parameters.Clear()
                     dread = cmd.ExecuteReader()
                     If dread.Read Then
-                        cmd.CommandText = "Update spare_driver set  driver_id = :driver_id , prename = :prename , name = :name , surname = :surname , license_no = :license_no , national = :national ,  " & _
-                                             " address = :address , country = :country , zipcode = :zipcode , tel = :tel , email = :email , gender = :gender , license_exp_date = :license_exp_date , passport_no = :passport_no , passport_expire = :passport_expire " & _
-                                             " , licensedriver_photo=:licensedriver_photo , passport_photo =:passport_photo , licensedriver_photo_2=:licensedriver_photo_2 , passport_photo_2 =:passport_photo_2 " & _
-                                             " , photo_cer =:photo_cer WHERE sparedriver_id = " & dread("sparedriver_id") & " and spare_ord = 1"
+                        Dim sparedriver_id = dread("sparedriver_id")
+                        dread.Close()
+                        cmd.CommandText = "Update spare_driver set  driver_id = @driver_id , prename = @prename , name = @name , surname = @surname , license_no = @license_no , national = @national ,  " &
+                                             " address = @address , country = @country , zipcode = @zipcode , tel = @tel , email = @email , gender = @gender , license_exp_date = @license_exp_date , passport_no = @passport_no , passport_expire = @passport_expire " &
+                                             " , licensedriver_photo=@licensedriver_photo , passport_photo =@passport_photo , licensedriver_photo_2=@licensedriver_photo_2 , passport_photo_2 =@passport_photo_2 " &
+                                             " , photo_cer =@photo_cer WHERE sparedriver_id = " & dread("sparedriver_id") & " and spare_ord = 1"
+                        cmd.Parameters.AddWithValue("@sparedriver_id", dread("sparedriver_id"))
                     Else
-                        cmd.CommandText = "Insert Into spare_driver ( prename , name , surname , license_no , national , driver_id  , address  , country , zipcode , tel , email , gender , license_exp_date , passport_no , passport_expire " & _
-                                            " , licensedriver_photo , passport_photo , licensedriver_photo_2 , passport_photo_2 , spare_ord , photo_cer ) " & _
-                                             " VALUES (:prename , :name , :surname , :license_no , :national , :driver_id  , :address , :country , :zipcode , :tel , :email , :gender , :license_exp_date , :passport_no , :passport_expire " & _
-                                             ", :licensedriver_photo, :passport_photo , :licensedriver_photo_2 , :passport_photo_2 , 1 , :photo_cer ) "
+                        dread.Close()
+                        cmd.CommandText = "Insert Into spare_driver ( prename , name , surname , license_no , national , driver_id  , address  , country , zipcode , tel , email , gender , license_exp_date , passport_no , passport_expire " &
+                                            " , licensedriver_photo , passport_photo , licensedriver_photo_2 , passport_photo_2 , spare_ord , photo_cer ) " &
+                                             " VALUES (@prename , @name , @surname , @license_no , @national , @driver_id  , @address , @country , @zipcode , @tel , @email , @gender , @license_exp_date , @passport_no , @passport_expire " &
+                                             ", @licensedriver_photo, @passport_photo , @licensedriver_photo_2 , @passport_photo_2 , 1 , @photo_cer ) "
                     End If
                     dread.Close()
                     If ddlPrename2.SelectedValue = "Other" Then
-                        cmd.Parameters.Add(":prename", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtPrename2.Text.Trim = "", Nothing, txtPrename2.Text)
+                        cmd.Parameters.Add("prename", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtPrename2.Text.Trim = "", Nothing, txtPrename2.Text)
                     Else
-                        cmd.Parameters.Add(":prename", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlPrename2.SelectedValue
+                        cmd.Parameters.Add("prename", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlPrename2.SelectedValue
                     End If
-                    cmd.Parameters.Add(":name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtName2.Text.Trim = "", Nothing, txtName2.Text.Trim)
-                    cmd.Parameters.Add(":surname", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtSurname2.Text.Trim = "", Nothing, txtSurname2.Text.Trim)
-                    cmd.Parameters.Add(":license_no", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtLicense2.Text.Trim = "", Nothing, txtLicense2.Text.Trim)
-                    cmd.Parameters.Add(":national", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlNational2.SelectedValue
-                    cmd.Parameters.Add(":driver_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = hiddriver_id.Value
-                    cmd.Parameters.Add(":address", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtAddress2.Text.Trim = "", Nothing, txtAddress2.Text.Trim)
-                    cmd.Parameters.Add(":country", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlCountry2.SelectedItem
-                    cmd.Parameters.Add(":zipcode", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtZipcode2.Text.Trim = "", Nothing, txtZipcode2.Text.Trim)
-                    cmd.Parameters.Add(":tel", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtTel2.Text.Trim = "", Nothing, txtTel2.Text.Trim)
-                    cmd.Parameters.Add(":email", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtEmail2.Text.Trim = "", Nothing, txtEmail2.Text.Trim)
-                    cmd.Parameters.Add(":gender", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlGender2.SelectedValue
+                    cmd.Parameters.Add("name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtName2.Text.Trim = "", Nothing, txtName2.Text.Trim)
+                    cmd.Parameters.Add("surname", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtSurname2.Text.Trim = "", Nothing, txtSurname2.Text.Trim)
+                    cmd.Parameters.Add("license_no", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtLicense2.Text.Trim = "", Nothing, txtLicense2.Text.Trim)
+                    cmd.Parameters.Add("national", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlNational2.SelectedValue
+                    'cmd.Parameters.Add("driver_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = hiddriver_id.Value
+                    If IsNumeric(hiddriver_id.Value) Then
+                        cmd.Parameters.Add("driver_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = CInt(hiddriver_id.Value)
+                    Else
+                        cmd.Parameters.Add("driver_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = DBNull.Value
+                    End If
+
+                    cmd.Parameters.Add("address", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtAddress2.Text.Trim = "", Nothing, txtAddress2.Text.Trim)
+                    cmd.Parameters.Add("country", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlCountry2.SelectedValue
+                    cmd.Parameters.Add("zipcode", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtZipcode2.Text.Trim = "", Nothing, txtZipcode2.Text.Trim)
+                    cmd.Parameters.Add("tel", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtTel2.Text.Trim = "", Nothing, txtTel2.Text.Trim)
+                    cmd.Parameters.Add("email", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtEmail2.Text.Trim = "", Nothing, txtEmail2.Text.Trim)
+                    cmd.Parameters.Add("gender", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlGender2.SelectedValue
 
 
-                    cmd.Parameters.Add(":license_exp_date", NpgsqlTypes.NpgsqlDbType.Date).Value = IIf(txtLicenseExpire2.Text.Trim = "", Nothing, _txtLicenseExpire2) 'IIf(txtLicenseExpire2.Text.Trim = "", Nothing, Format(CDate(txtLicenseExpire2.Text.Trim), "MM/dd/yyyy"))
-                    cmd.Parameters.Add(":passport_no", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtPassportNo2.Text.Trim = "", Nothing, txtPassportNo2.Text.Trim)
-                    cmd.Parameters.Add(":passport_expire", NpgsqlTypes.NpgsqlDbType.Date).Value = IIf(txtPassport_exp2.Text.Trim = "", Nothing, _txtPassport_exp2) 'IIf(txtPassport_exp2.Text.Trim = "", Nothing, Format(CDate(txtPassport_exp2.Text.Trim), "MM/dd/yyyy"))
+                    cmd.Parameters.Add("license_exp_date", NpgsqlTypes.NpgsqlDbType.Date).Value = IIf(txtLicenseExpire2.Text.Trim = "", Nothing, _txtLicenseExpire2) 'IIf(txtLicenseExpire2.Text.Trim = "", Nothing, Format(CDate(txtLicenseExpire2.Text.Trim), "MM/dd/yyyy"))
+                    cmd.Parameters.Add("passport_no", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtPassportNo2.Text.Trim = "", Nothing, txtPassportNo2.Text.Trim)
+                    cmd.Parameters.Add("passport_expire", NpgsqlTypes.NpgsqlDbType.Date).Value = IIf(txtPassport_exp2.Text.Trim = "", Nothing, _txtPassport_exp2) 'IIf(txtPassport_exp2.Text.Trim = "", Nothing, Format(CDate(txtPassport_exp2.Text.Trim), "MM/dd/yyyy"))
 
 
                     'cmd.Parameters.Add(":state", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtState2.Text.Trim = "", Nothing, txtState2.Text.Trim)
                     'cmd.Parameters.Add(":gender", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlGender2.SelectedValue
 
 
-                    cmd.Parameters.Add(":licensedriver_photo", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoNameLicense2.Value
-                    cmd.Parameters.Add(":passport_photo", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoNamePassport2.Value
-                    cmd.Parameters.Add(":licensedriver_photo_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoNameLicense2_2.Value
-                    cmd.Parameters.Add(":passport_photo_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoNamePassport2_2.Value
-                    cmd.Parameters.Add(":photo_cer", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoCer2.Value
+                    cmd.Parameters.Add("licensedriver_photo", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoNameLicense2.Value
+                    cmd.Parameters.Add("passport_photo", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoNamePassport2.Value
+                    cmd.Parameters.Add("licensedriver_photo_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoNameLicense2_2.Value
+                    cmd.Parameters.Add("passport_photo_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoNamePassport2_2.Value
+                    cmd.Parameters.Add("photo_cer", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoCer2.Value
                     cmd.ExecuteNonQuery()
                 End If
 
@@ -2760,46 +2809,54 @@ Partial Class Travel_MgtEdit
                     cmd.Parameters.Clear()
                     dread = cmd.ExecuteReader()
                     If dread.Read Then
-                        cmd.CommandText = "Update spare_driver set  driver_id = :driver_id , prename = :prename , name = :name , surname = :surname , license_no = :license_no , national = :national ,  " & _
-                                             " address = :address , country = :country , zipcode = :zipcode , tel = :tel , email = :email , gender = :gender , license_exp_date = :license_exp_date , passport_no = :passport_no , passport_expire = :passport_expire " & _
-                                             " , licensedriver_photo=:licensedriver_photo , passport_photo =:passport_photo , licensedriver_photo_2 =:licensedriver_photo_2 , passport_photo_2 =:passport_photo_2 " & _
+                        Dim sparedriver_id = dread("sparedriver_id")
+                        dread.Close()
+                        cmd.CommandText = "Update spare_driver set  driver_id = :driver_id , prename = :prename , name = :name , surname = :surname , license_no = :license_no , national = :national ,  " &
+                                             " address = :address , country = :country , zipcode = :zipcode , tel = :tel , email = :email , gender = :gender , license_exp_date = :license_exp_date , passport_no = :passport_no , passport_expire = :passport_expire " &
+                                             " , licensedriver_photo=:licensedriver_photo , passport_photo =:passport_photo , licensedriver_photo_2 =:licensedriver_photo_2 , passport_photo_2 =:passport_photo_2 " &
                                              " , photo_cer=:photo_cer WHERE sparedriver_id = " & dread("sparedriver_id") & " and spare_ord = 2"
                     Else
-                        cmd.CommandText = "Insert Into spare_driver ( prename , name , surname , license_no , national , driver_id  , address , country , zipcode , tel , email , gender , license_exp_date , passport_no , passport_expire " & _
-                                            " , licensedriver_photo , passport_photo , licensedriver_photo_2 , passport_photo_2 , spare_ord , photo_cer ) " & _
-                                                         " VALUES (:prename , :name , :surname , :license_no , :national , :driver_id  , :address , :country , :zipcode , :tel , :email , :gender , :license_exp_date , :passport_no , :passport_expire " & _
+                        dread.Close()
+                        cmd.CommandText = "Insert Into spare_driver ( prename , name , surname , license_no , national , driver_id  , address , country , zipcode , tel , email , gender , license_exp_date , passport_no , passport_expire " &
+                                            " , licensedriver_photo , passport_photo , licensedriver_photo_2 , passport_photo_2 , spare_ord , photo_cer ) " &
+                                                         " VALUES (:prename , :name , :surname , :license_no , :national , :driver_id  , :address , :country , :zipcode , :tel , :email , :gender , :license_exp_date , :passport_no , :passport_expire " &
                                             " , :licensedriver_photo, :passport_photo , :licensedriver_photo_2, :passport_photo_2 , 2 , :photo_cer) "
                     End If
                     dread.Close()
                     If ddlPrename3.SelectedValue = "Other" Then
-                        cmd.Parameters.Add(":prename", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtPrename3.Text.Trim = "", Nothing, txtPrename3.Text)
+                        cmd.Parameters.Add("prename", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtPrename3.Text.Trim = "", Nothing, txtPrename3.Text)
                     Else
-                        cmd.Parameters.Add(":prename", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlPrename3.SelectedValue
+                        cmd.Parameters.Add("prename", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlPrename3.SelectedValue
                     End If
-                    cmd.Parameters.Add(":name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtName3.Text.Trim = "", Nothing, txtName3.Text.Trim)
-                    cmd.Parameters.Add(":surname", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtSurname3.Text.Trim = "", Nothing, txtSurname3.Text.Trim)
-                    cmd.Parameters.Add(":license_no", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtLicense3.Text.Trim = "", Nothing, txtLicense3.Text.Trim)
-                    cmd.Parameters.Add(":national", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlNational3.SelectedValue
-                    cmd.Parameters.Add(":driver_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = hiddriver_id.Value
-                    cmd.Parameters.Add(":address", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtAddress3.Text.Trim = "", Nothing, txtAddress3.Text.Trim)
+                    cmd.Parameters.Add("name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtName3.Text.Trim = "", Nothing, txtName3.Text.Trim)
+                    cmd.Parameters.Add("surname", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtSurname3.Text.Trim = "", Nothing, txtSurname3.Text.Trim)
+                    cmd.Parameters.Add("license_no", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtLicense3.Text.Trim = "", Nothing, txtLicense3.Text.Trim)
+                    cmd.Parameters.Add("national", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlNational3.SelectedValue
+                    'cmd.Parameters.Add("driver_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = hiddriver_id.Value
+                    If IsNumeric(hiddriver_id.Value) Then
+                        cmd.Parameters.Add("driver_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = CInt(hiddriver_id.Value)
+                    Else
+                        cmd.Parameters.Add("driver_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = DBNull.Value
+                    End If
+                    cmd.Parameters.Add("address", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtAddress3.Text.Trim = "", Nothing, txtAddress3.Text.Trim)
                     'cmd.Parameters.Add(":gender", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlGender3.SelectedValue
 
                     'cmd.Parameters.Add(":state", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtState3.Text.Trim = "", Nothing, txtState3.Text.Trim)
-                    cmd.Parameters.Add(":country", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlCountry3.SelectedItem
-                    cmd.Parameters.Add(":zipcode", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtZipcode3.Text.Trim = "", Nothing, txtZipcode3.Text.Trim)
-                    cmd.Parameters.Add(":tel", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtTel3.Text.Trim = "", Nothing, txtTel3.Text.Trim)
-                    cmd.Parameters.Add(":email", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtEmail3.Text.Trim = "", Nothing, txtEmail3.Text.Trim)
-                    cmd.Parameters.Add(":gender", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlGender3.SelectedItem
-                    cmd.Parameters.Add(":license_exp_date", NpgsqlTypes.NpgsqlDbType.Date).Value = IIf(txtLicenseExpire3.Text.Trim = "", Nothing, _txtLicenseExpire3) 'IIf(txtLicenseExpire3.Text.Trim = "", Nothing, Format(CDate(txtLicenseExpire3.Text.Trim), "MM/dd/yyyy"))
-                    cmd.Parameters.Add(":passport_no", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtPassportNo3.Text.Trim = "", Nothing, txtPassportNo3.Text.Trim)
-                    cmd.Parameters.Add(":passport_expire", NpgsqlTypes.NpgsqlDbType.Date).Value = IIf(txtPassport_exp3.Text.Trim = "", Nothing, _txtPassport_exp3) 'IIf(txtPassport_exp3.Text.Trim = "", Nothing, Format(CDate(txtPassport_exp3.Text.Trim), "MM/dd/yyyy"))
+                    cmd.Parameters.Add("country", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlCountry3.SelectedValue
+                    cmd.Parameters.Add("zipcode", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtZipcode3.Text.Trim = "", Nothing, txtZipcode3.Text.Trim)
+                    cmd.Parameters.Add("tel", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtTel3.Text.Trim = "", Nothing, txtTel3.Text.Trim)
+                    cmd.Parameters.Add("email", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtEmail3.Text.Trim = "", Nothing, txtEmail3.Text.Trim)
+                    cmd.Parameters.Add("gender", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlGender3.SelectedValue
+                    cmd.Parameters.Add("license_exp_date", NpgsqlTypes.NpgsqlDbType.Date).Value = IIf(txtLicenseExpire3.Text.Trim = "", Nothing, _txtLicenseExpire3) 'IIf(txtLicenseExpire3.Text.Trim = "", Nothing, Format(CDate(txtLicenseExpire3.Text.Trim), "MM/dd/yyyy"))
+                    cmd.Parameters.Add("passport_no", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtPassportNo3.Text.Trim = "", Nothing, txtPassportNo3.Text.Trim)
+                    cmd.Parameters.Add("passport_expire", NpgsqlTypes.NpgsqlDbType.Date).Value = IIf(txtPassport_exp3.Text.Trim = "", Nothing, _txtPassport_exp3) 'IIf(txtPassport_exp3.Text.Trim = "", Nothing, Format(CDate(txtPassport_exp3.Text.Trim), "MM/dd/yyyy"))
 
 
-                    cmd.Parameters.Add(":licensedriver_photo", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoNameLicense3.Value
-                    cmd.Parameters.Add(":passport_photo", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoNamePassport3.Value
-                    cmd.Parameters.Add(":licensedriver_photo_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoNameLicense3_2.Value
-                    cmd.Parameters.Add(":passport_photo_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoNamePassport3_2.Value
-                    cmd.Parameters.Add(":photo_cer", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoCer3.Value
+                    cmd.Parameters.Add("licensedriver_photo", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoNameLicense3.Value
+                    cmd.Parameters.Add("passport_photo", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoNamePassport3.Value
+                    cmd.Parameters.Add("licensedriver_photo_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoNameLicense3_2.Value
+                    cmd.Parameters.Add("passport_photo_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoNamePassport3_2.Value
+                    cmd.Parameters.Add("photo_cer", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoCer3.Value
                     cmd.ExecuteNonQuery()
                 End If
 
@@ -2812,8 +2869,10 @@ Partial Class Travel_MgtEdit
 
 
             Catch ex As Exception
-                ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "Error();", True)
-                ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script", "tab2();", True)
+                Console.WriteLine(ex.Message)
+
+                'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "Error();", True)
+                'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script", "tab2();", True)
             Finally
                 dbConnect = Nothing
                 cmd.Connection.Close()
@@ -2824,8 +2883,8 @@ Partial Class Travel_MgtEdit
     End Sub
     Protected Sub btnNext4_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnNext4.Click
         If txtBrands.Text = "" Or txtLicenseCar.Text = "" Or hidPhotoRegisCar.Value = "" Then
-            ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "fromCheck();", True)
-            ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script3", "tab3();", True)
+            'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "fromCheck();", True)
+            'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script3", "tab3();", True)
         Else
 
             Dim dbConnect As New DBConnect
@@ -2840,15 +2899,17 @@ Partial Class Travel_MgtEdit
                 '                     " , authorize_car=:authorize_car , authorize_car_2=:authorize_car_2 " & _
                 '                     " , regis_photo=:regis_photo , regis_photo_2 = :regis_photo_2 , platelocal=:platelocal  WHERE car_id = " & hidcar_id.Value
 
-                Dim strUpdate = "Update car set brands =:brands  , model=:model   , colors =:colors , seat=:seat , weight=:weight , car_no=:car_no , country_car=:country_car , typecar_id = :typecar_id , " & _
-                                    " province_car=:province_car , plate=:plate , engine_no=:engine_no , engine_cap=:engine_cap  " & _
-                                    " , authorize_car=:authorize_car , authorize_car_2=:authorize_car_2 " & _
+                Dim strUpdate = "Update car set brands =:brands  , model=:model   , colors =:colors , seat=:seat , weight=:weight , car_no=:car_no , country_car=:country_car , typecar_id = :typecar_id , " &
+                                    " province_car=:province_car , plate=:plate , engine_no=:engine_no , engine_cap=:engine_cap  " &
+                                    " , authorize_car=:authorize_car , authorize_car_2=:authorize_car_2 " &
                                     " , regis_photo=:regis_photo , regis_photo_2 = :regis_photo_2 , platelocal=:platelocal  WHERE car_id = " & hidcar_id.Value
                 Dim strCheckPic = "Select gid from car_pic WHERE car_id = " & hidcar_id.Value
 
                 cmd.CommandText = CommandType.Text
                 cmd.CommandText = strUpdate
                 cmd.Parameters.Clear()
+
+
                 'cmd.Parameters.Add("type_car", NpgsqlTypes.NpgsqlDbType.Varchar).Value = ddlTypecar.SelectedValue
                 cmd.Parameters.Add("brands", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtBrands.Text.Trim = "", Nothing, txtBrands.Text)
                 cmd.Parameters.Add("model", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtModel.Text.Trim = "", Nothing, txtModel.Text)
@@ -2860,7 +2921,12 @@ Partial Class Travel_MgtEdit
                 cmd.Parameters.Add("weight", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtWeight.Text.Trim = "", Nothing, txtWeight.Text)
                 cmd.Parameters.Add("car_no", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtNumcar.Text.Trim = "", Nothing, txtNumcar.Text)
                 cmd.Parameters.Add("country_car", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(ddlCountryCar.SelectedItem.Value = "", Nothing, ddlCountryCar.SelectedItem.Value)
-                cmd.Parameters.Add("typecar_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = IIf(ddltypecar.SelectedItem.Value = "", Nothing, ddltypecar.SelectedItem.Value)
+                'cmd.Parameters.Add("typecar_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = IIf(ddltypecar.SelectedItem.Value = "", Nothing, ddltypecar.SelectedItem.Value)
+                If ddltypecar.SelectedItem.Value = "" Then
+                    cmd.Parameters.Add("typecar_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = DBNull.Value
+                Else
+                    cmd.Parameters.Add("typecar_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = Convert.ToInt32(ddltypecar.SelectedItem.Value)
+                End If
                 cmd.Parameters.Add("province_car", NpgsqlTypes.NpgsqlDbType.Varchar).Value = txtstate_car.Text 'ddlProvinceRegis.SelectedItem.Text
                 cmd.Parameters.Add("plate", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtLicenseCar.Text.Trim = "", Nothing, txtLicenseCar.Text)
                 cmd.Parameters.Add("engine_no", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtNumEngine.Text.Trim = "", Nothing, txtNumEngine.Text)
@@ -2870,10 +2936,28 @@ Partial Class Travel_MgtEdit
                 'cmd.Parameters.Add("owner_address", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtOwnerAddress.Text.Trim = "", Nothing, txtOwnerAddress.Text)
                 'cmd.Parameters.Add("owner_tel", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtOwnertel.Text.Trim = "", Nothing, txtOwnertel.Text)
                 cmd.Parameters.Add("platelocal", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtLicenseLocalCar.Text.Trim = "", Nothing, txtLicenseLocalCar.Text)
-                cmd.Parameters.Add("authorize_car", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidAuthorize.Value.Trim = "", Nothing, hidAuthorize.Value)
-                cmd.Parameters.Add("authorize_car_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidAuthorize_2.Value.Trim = "", Nothing, hidAuthorize_2.Value)
+                'cmd.Parameters.Add("authorize_car", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidAuthorize.Value.Trim = "", Nothing, hidAuthorize.Value)
+                If String.IsNullOrWhiteSpace(hidAuthorize.Value) Then
+                    cmd.Parameters.Add("authorize_car", NpgsqlTypes.NpgsqlDbType.Varchar).Value = DBNull.Value
+                Else
+                    cmd.Parameters.Add("authorize_car", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidAuthorize.Value
+                End If
+
+                'cmd.Parameters.Add("authorize_car_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidAuthorize_2.Value.Trim = "", Nothing, hidAuthorize_2.Value)
+                If String.IsNullOrWhiteSpace(hidAuthorize_2.Value) Then
+                    cmd.Parameters.Add("authorize_car_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = DBNull.Value
+                Else
+                    cmd.Parameters.Add("authorize_car_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidAuthorize_2.Value
+                End If
+
                 cmd.Parameters.Add("regis_photo", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidPhotoRegisCar.Value.Trim = "", Nothing, hidPhotoRegisCar.Value)
-                cmd.Parameters.Add("regis_photo_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidPhotoRegisCar_2.Value.Trim = "", Nothing, hidPhotoRegisCar_2.Value)
+                'cmd.Parameters.Add("regis_photo_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidPhotoRegisCar_2.Value.Trim = "", Nothing, hidPhotoRegisCar_2.Value)
+                If String.IsNullOrWhiteSpace(hidPhotoRegisCar_2.Value) Then
+                    cmd.Parameters.Add("regis_photo_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = DBNull.Value
+                Else
+                    cmd.Parameters.Add("regis_photo_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoRegisCar_2.Value
+                End If
+
                 'cmd.Parameters.Add("photocar_cer", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoCarCer.Value
 
 
@@ -2907,7 +2991,13 @@ Partial Class Travel_MgtEdit
 
                     End If
 
-                    cmd.Parameters.Add(":car_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = hidcar_id.Value
+                    'cmd.Parameters.Add(":car_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = hidcar_id.Value
+                    If IsNumeric(hidcar_id.Value) Then
+                        cmd.Parameters.Add(":car_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = Convert.ToInt32(hidcar_id.Value)
+                    Else
+                        cmd.Parameters.Add(":car_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = DBNull.Value
+                    End If
+
                     cmd.Parameters.Add(":file_name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = cRowf("file_name")
                     cmd.Parameters.Add(":imgtype", NpgsqlTypes.NpgsqlDbType.Varchar).Value = cRowf("imgtype")
                     cmd.ExecuteNonQuery()
@@ -2922,14 +3012,19 @@ Partial Class Travel_MgtEdit
                 Next
 
 
-              
+
                 ''เปลี่ยนจากรูปเป็นไฟล์
                 cmd.Parameters.Clear()
                 cmd.CommandText = "delete from car_cer where car_id = " & hidcar_id.Value
                 cmd.ExecuteScalar()
                 cmd.Parameters.Clear()
                 cmd.CommandText = "Insert Into car_cer ( car_id , file_name ) VALUES (:car_id , :file_name ) "
-                cmd.Parameters.Add(":car_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = hidcar_id.Value
+                'cmd.Parameters.Add(":car_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = hidcar_id.Value
+                If IsNumeric(hidcar_id.Value) Then
+                    cmd.Parameters.Add(":car_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = Convert.ToInt32(hidcar_id.Value)
+                Else
+                    cmd.Parameters.Add(":car_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = DBNull.Value
+                End If
                 cmd.Parameters.Add(":file_name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotonamecar_cer.Value
                 cmd.ExecuteNonQuery()
 
@@ -2948,7 +3043,12 @@ Partial Class Travel_MgtEdit
 
                     End If
 
-                    cmd.Parameters.Add(":car_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = hidcar_id.Value
+                    'cmd.Parameters.Add(":car_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = hidcar_id.Value
+                    If IsNumeric(hidcar_id.Value) Then
+                        cmd.Parameters.Add(":car_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = Convert.ToInt32(hidcar_id.Value)
+                    Else
+                        cmd.Parameters.Add(":car_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = DBNull.Value
+                    End If
                     cmd.Parameters.Add(":file_name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = cRowf("file_name")
                     cmd.ExecuteNonQuery()
                 Next
@@ -2964,7 +3064,8 @@ Partial Class Travel_MgtEdit
 
                 ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script4", "tab4();", True)
             Catch ex As Exception
-                ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "Error();", True)
+                Console.WriteLine(ex.Message)
+                'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "Error();", True)
             Finally
                 cmd.Connection.Close()
                 con.Close()
@@ -2997,23 +3098,32 @@ Partial Class Travel_MgtEdit
             Dim _txtActExpire2 As New DateTime(ar_txtActExpire2(2), ar_txtActExpire2(1), ar_txtActExpire2(0))
             con.Open()
             cmd.Connection = con
-            Dim strUpdate = "Update act set act_no=:act_no , act_company=:act_company , act_start=:act_start , act_ends=:act_ends , act_photo=:act_photo , act_photo_2=:act_photo_2 " & _
-                            ",act_no2=:act_no2 , act_company2=:act_company2 , act_start2=:act_start2 , act_ends2=:act_ends2 , act_photo2=:act_photo2 , act_photo2_2=:act_photo2_2 " & _
+            Dim strUpdate = "Update act set act_no=:act_no , act_company=:act_company , act_start=:act_start , act_ends=:act_ends , act_photo=:act_photo , act_photo_2=:act_photo_2 " &
+                            ",act_no2=:act_no2 , act_company2=:act_company2 , act_start2=:act_start2 , act_ends2=:act_ends2 , act_photo2=:act_photo2 , act_photo2_2=:act_photo2_2 " &
                             " WHERE act_id = " & hidact_id.Value
-            cmd.CommandText = CommandType.Text
+            cmd.CommandType = CommandType.Text
             cmd.CommandText = strUpdate
             cmd.Parameters.Clear()
             cmd.Parameters.Add("act_no", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtActNo.Text.Trim = "", Nothing, txtActNo.Text)
             cmd.Parameters.Add("act_start", NpgsqlTypes.NpgsqlDbType.Date).Value = IIf(txtActStart.Text.Trim = "", Nothing, _txtActStart) 'IIf(txtActStart.Text.Trim = "", Nothing, txtActStart.Text)
             cmd.Parameters.Add("act_ends", NpgsqlTypes.NpgsqlDbType.Date).Value = IIf(txtActExpire.Text.Trim = "", Nothing, _txtActExpire) 'IIf(txtActExpire.Text.Trim = "", Nothing, txtActExpire.Text)
             cmd.Parameters.Add("act_photo", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidPhotoAct.Value.Trim = "", Nothing, hidPhotoAct.Value)
-            cmd.Parameters.Add("act_photo_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidPhotoAct_2.Value.Trim = "", Nothing, hidPhotoAct_2.Value)
+            If String.IsNullOrWhiteSpace(hidPhotoAct_2.Value) Then
+                cmd.Parameters.Add("act_photo_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = DBNull.Value
+            Else
+                cmd.Parameters.Add("act_photo_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoAct_2.Value
+            End If
+
             cmd.Parameters.Add("act_company", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtActCompany.Text.Trim = "", Nothing, txtActCompany.Text)
             cmd.Parameters.Add("act_no2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtActNo2.Text.Trim = "", Nothing, txtActNo2.Text)
             cmd.Parameters.Add("act_start2", NpgsqlTypes.NpgsqlDbType.Date).Value = IIf(txtActStart2.Text.Trim = "", Nothing, _txtActStart2) ' IIf(txtActStart2.Text.Trim = "", Nothing, txtActStart2.Text)
             cmd.Parameters.Add("act_ends2", NpgsqlTypes.NpgsqlDbType.Date).Value = IIf(txtActExpire2.Text.Trim = "", Nothing, _txtActExpire2) 'IIf(txtActExpire2.Text.Trim = "", Nothing, txtActExpire2.Text)
             cmd.Parameters.Add("act_photo2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidPhotoAct2.Value.Trim = "", Nothing, hidPhotoAct2.Value)
-            cmd.Parameters.Add("act_photo2_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidPhotoAct2_2.Value.Trim = "", Nothing, hidPhotoAct2_2.Value)
+            If String.IsNullOrWhiteSpace(hidPhotoAct2_2.Value) Then
+                cmd.Parameters.Add("act_photo2_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = DBNull.Value
+            Else
+                cmd.Parameters.Add("act_photo2_2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = hidPhotoAct2_2.Value
+            End If
             cmd.Parameters.Add("act_company2", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtActCompany2.Text.Trim = "", Nothing, txtActCompany2.Text)
             cmd.ExecuteNonQuery()
 
@@ -3023,7 +3133,7 @@ Partial Class Travel_MgtEdit
 
             End If
         Catch ex As Exception
-
+            Console.WriteLine(ex.Message)
         Finally
             cmd.Connection.Close()
             con.Close()
@@ -3147,7 +3257,7 @@ Partial Class Travel_MgtEdit
     Private Send As New SendEmail
     Protected Sub btnSubmit_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnSubmit.Click
         If txtActCompany.Text = "" Or txtActNo.Text = "" Or txtActStart.Text = "" Or txtActExpire.Text = "" Or txtActCompany2.Text = "" Or txtActNo2.Text = "" Or txtActStart2.Text = "" Or txtActExpire2.Text = "" Then
-            ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "fromCheck();", True)
+            'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "fromCheck();", True)
         Else
 
             btnNext5_Click(sender, e)
@@ -3203,7 +3313,7 @@ Partial Class Travel_MgtEdit
     Protected Sub btnSave_Command(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnSave.Click
         If txtActCompany.Text = "" Or txtActNo.Text = "" Or txtActStart.Text = "" Or txtActExpire.Text = "" Or hidPhotoAct.Value.Trim = "" _
             Or txtActCompany2.Text = "" Or txtActNo2.Text = "" Or txtActStart2.Text = "" Or txtActExpire2.Text = "" Or hidPhotoAct2.Value.Trim = "" Then
-            ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "fromCheck();", True)
+            'ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "fromCheck();", True)
             ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script2", "tab4();", True)
         Else
             btnNext5_Click(sender, e)
@@ -3262,7 +3372,7 @@ Partial Class Travel_MgtEdit
                 End If
 
             Catch ex As Exception
-
+                Console.WriteLine(ex.Message)
             Finally
                 DBconnect = Nothing
                 cmd.Connection.Close()

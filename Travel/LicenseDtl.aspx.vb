@@ -84,7 +84,8 @@ Partial Class Travel_LicenseDtl
         Dim receipt As String = ""
         Dim receipt_date As String = ""
         Try
-            con.ClearPool()
+            'con.ClearPool()
+            Npgsql.NpgsqlConnection.ClearPool(con)
             cmd.Connection = con
             cmd.Connection.Open()
             strsql = "SELECT * FROM ( SELECT driver.*, car.*, act.*, license.email as licenseemail , fname , lname, license.license_id , token , CAST(driver.prename || ' ' || driver.name || ' ' || driver.surname as varchar) as driver_name, check_tab0, check_tab1, check_tab2, check_tab3, check_tab4 , check_tab8 " & _
@@ -926,7 +927,8 @@ Partial Class Travel_LicenseDtl
         Dim con As Npgsql.NpgsqlConnection = DBConnect.getConnection
         Dim strsql As String = ""
         Try
-            con.ClearPool()
+            'con.ClearPool()
+            Npgsql.NpgsqlConnection.ClearPool(con)
             cmd.Connection = con
             cmd.Connection.Open()
             strsql = "SELECT * FROM ( SELECT license.*, car_commerce.* " & _

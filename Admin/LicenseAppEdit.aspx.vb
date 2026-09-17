@@ -686,41 +686,41 @@ Partial Class Admin_LicenseAppEdit
                 If Long.TryParse(Session("car_id").ToString(), carId) Then
                     cmd.Parameters.AddWithValue("car_id", carId)
                 Else
-                    ' ❌ ถ้า car_id ไม่ใช่ตัวเลข ให้ Rollback และแจ้งเตือน
+
                     transaction.Rollback()
                     ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript",
                     "alert('Error: car_id ต้องเป็นตัวเลขเท่านั้น!');", True)
                     Exit Sub
                 End If
 
-                ' ✅ แสดงค่า Query เพื่อ Debug
+
                 Debug.WriteLine("SQL Query: " & cmd.CommandText)
 
-                ' ✅ Execute Query
+
                 cmd.ExecuteNonQuery()
 
-                ' ✅ ถ้าทุกอย่างสำเร็จ ให้ Commit Transaction
+
                 transaction.Commit()
             Else
-                ' ❌ ถ้าไม่มี car_id ให้ Rollback และแจ้งเตือน
+
                 transaction.Rollback()
                 ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript",
                 "alert('Error: car_id ไม่ถูกต้อง!');", True)
             End If
 
         Catch ex As Exception
-            ' ❌ ถ้ามี Error ให้ Rollback
+
             If transaction IsNot Nothing Then
                 transaction.Rollback()
             End If
 
-            ' ❌ แจ้งเตือน Error
+
             ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript",
             "alert('Error: " & ex.Message.ToString() & " กรุณาลองอีกครั้ง!');", True)
             Debug.WriteLine("ERROR: " & ex.Message)
 
         Finally
-            ' ✅ ปิดการเชื่อมต่อ
+
             If cmd.Connection IsNot Nothing Then cmd.Connection.Close()
             If con IsNot Nothing Then con.Close()
             dbConnect = Nothing

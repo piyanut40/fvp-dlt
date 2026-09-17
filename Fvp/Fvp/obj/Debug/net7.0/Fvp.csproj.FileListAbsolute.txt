@@ -1,6 +1,0 @@
-/Volumes/Backup Plus/remote/DLP/FVP/Fvp/Fvp/obj/Debug/net7.0/Fvp.csproj.AssemblyReference.cache
-/Volumes/Backup Plus/remote/DLP/FVP/Fvp/Fvp/obj/Debug/net7.0/Fvp.GeneratedMSBuildEditorConfig.editorconfig
-/Volumes/Backup Plus/remote/DLP/FVP/Fvp/Fvp/obj/Debug/net7.0/Fvp.AssemblyInfoInputs.cache
-/Volumes/Backup Plus/remote/DLP/FVP/Fvp/Fvp/obj/Debug/net7.0/Fvp.AssemblyInfo.cs
-/Volumes/Backup Plus/remote/DLP/FVP/Fvp/Fvp/obj/Debug/net7.0/Fvp.csproj.CoreCompileInputs.cache
-/Volumes/Backup Plus/remote/DLP/FVP/Fvp/Fvp/obj/Debug/net7.0/Fvp.MvcApplicationPartsAssemblyInfo.cache

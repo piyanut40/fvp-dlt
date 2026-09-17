@@ -147,7 +147,8 @@ Public Class DBConnect
             cmd.ExecuteNonQuery()
             Return ""
         Catch ex As Exception
-            Return ex.ToString
+            Console.WriteLine(ex.Message)
+            'Return ex.ToString
         Finally
             cmd.Connection.Close()
             con.Close()

@@ -15,25 +15,59 @@ Public Class getNews : Implements IHttpHandler
         Dim fetch As String = context.Request.QueryString("fetch")
         Dim name As String = context.Request.QueryString("name")
         nohtml = context.Request.QueryString("NoHtml")
-        
-        If name <> "" Then
-            name = "and title like '%" & name & "%'"
-        Else
-            name = ""
+
+        Dim baseUrl As String = url & port & "/Upload/News/"
+        Dim hasName As Boolean = (name <> "")
+
+        Dim newsNoVal As Integer
+        Dim hasNewsNo As Boolean = Integer.TryParse(news_no, newsNoVal)
+
+        Dim fetchVal As Integer
+        Dim hasFetch As Boolean = Integer.TryParse(fetch, fetchVal)
+
+        Dim news As String = "SELECT news_id, title , detail , CAST(date_news as varchar)  , CAST(:baseUrl as varchar)||pic as url from news WHERE 1=1 "
+        If hasName Then
+            news = news & "and title like :name "
         End If
-        Dim news As String = "SELECT news_id, title , detail , CAST(date_news as varchar)  , CAST('" & url & port & "/Upload/News/' as varchar)||pic as url from news WHERE 1=1 " & name & " "
-        If news_no <> "" Then
-            news = news & "and news_id = " & news_no & ""
+        If hasNewsNo Then
+            news = news & "and news_id = :news_id "
         Else
-            If fetch <> "" Then
-                news = "SELECT news_id, title, CAST(date_news as varchar) , CAST('" & url & port & "/Upload/News/' as varchar)||pic as url from news WHERE news_id < " & fetch & " " & name & " order by news_id DESC limit 8"
+            If hasFetch Then
+                news = "SELECT news_id, title, CAST(date_news as varchar) , CAST(:baseUrl as varchar)||pic as url from news WHERE news_id < :fetch "
+                If hasName Then
+                    news = news & "and title like :name "
+                End If
+                news = news & " order by news_id DESC limit 8"
             Else
-                news = "SELECT news_id, title, CAST(date_news as varchar) , CAST('" & url & port & "/Upload/News/' as varchar)||pic as url from news WHERE 1=1 " & name & " order by news_id DESC limit 8"
+                news = "SELECT news_id, title, CAST(date_news as varchar) , CAST(:baseUrl as varchar)||pic as url from news WHERE 1=1 "
+                If hasName Then
+                    news = news & "and title like :name "
+                End If
+                news = news & " order by news_id DESC limit 8"
             End If
         End If
-        Dim db As New DBConnect
-        
-        Dim dtTask As DataTable = db.getDataTable(news, "News")
+
+        Dim cmd As New Npgsql.NpgsqlCommand(news)
+        cmd.Parameters.AddWithValue("baseUrl", baseUrl)
+        If hasName Then
+            cmd.Parameters.AddWithValue("name", "%" & name & "%")
+        End If
+        If hasNewsNo Then
+            cmd.Parameters.AddWithValue("news_id", newsNoVal)
+        ElseIf hasFetch Then
+            cmd.Parameters.AddWithValue("fetch", fetchVal)
+        End If
+
+        Dim dtTask As New DataTable("News")
+        Dim con As Npgsql.NpgsqlConnection = DBConnect.getConnection()
+        Try
+            con.Open()
+            cmd.Connection = con
+            Dim adapter As New Npgsql.NpgsqlDataAdapter(cmd)
+            adapter.Fill(dtTask)
+        Finally
+            con.Close()
+        End Try
         If news_no <> "" Then
             If dtTask.Rows.Count > 0 Then
                 If Not dtTask.Rows(0).Item("detail") Is DBNull.Value Then

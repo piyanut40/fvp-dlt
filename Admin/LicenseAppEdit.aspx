@@ -1,6 +1,8 @@
 ﻿<%--<%@ Page Language="VB" AutoEventWireup="true" MasterPageFile="~/MasterPageB.master" %>--%>
 
-<%@ Page Language="VB" AutoEventWireup="false" CodeFile="LicenseAppEdit.aspx.vb" MasterPageFile="~/MasterPageB.master"  Inherits="Admin_LicenseAppEdit" %>
+<%--<%@ Page Language="VB" AutoEventWireup="false" CodeFile="LicenseAppEdit.aspx.vb" MasterPageFile="~/MasterPageB.master"  Inherits="Admin_LicenseAppEdit" %>--%>
+<%@ Page Language="VB" AutoEventWireup="false" CodeFile="LicenseAppEdit.aspx.vb" MasterPageFile="~/MasterPageB.master" Inherits="Admin_LicenseAppEdit" %>
+
 <asp:Content ID="Content2" ContentPlaceHolderID="HeadContent" runat="server">
 
 

@@ -81,17 +81,22 @@ Partial Class EditUserAdmin
                 Dim lnkDel As HyperLink = e.Row.Cells(5).FindControl("HyperLinkDel")
                 Dim lblid As Label = e.Row.Cells(0).FindControl("lblid")
                 Dim lblptype As Label = e.Row.Cells(0).FindControl("lblptype")
-                lnkDel.Attributes.Add("onclick", "javascript:DelUser(" & lblid.Text & ");")
-
-                If lblptype.Text = 2 Then
-                    lnkData.Visible = False
-                    lnkDel.Visible = False
+                If lnkDel IsNot Nothing AndAlso lblid IsNot Nothing Then
+                    lnkDel.Attributes.Add("onclick", "javascript:DelUser(" & lblid.Text & ");")
                 End If
 
-              
+                If lblptype IsNot Nothing AndAlso lblptype.Text = "2" Then
+                    If lnkData IsNot Nothing Then lnkData.Visible = False
+                    If lnkDel IsNot Nothing Then lnkDel.Visible = False
+                End If
+
+
                 Dim lblusername As Label = e.Row.Cells(0).FindControl("lblusername")
                 Dim HyperReset As HyperLink = e.Row.Cells(5).FindControl("HyperReset")
-                HyperReset.Attributes.Add("onclick", "javascript:ResetPass(" & lblid.Text & ",'" & lblusername.Text & "'," & lblptype.Text & ");")
+                If HyperReset IsNot Nothing AndAlso lblid IsNot Nothing AndAlso lblusername IsNot Nothing AndAlso lblptype IsNot Nothing Then
+                    HyperReset.Attributes.Add("onclick",
+                    "javascript:ResetPass(" & lblid.Text & ",'" & lblusername.Text & "'," & lblptype.Text & ");")
+                End If
             End If
         Catch ex As Exception
 

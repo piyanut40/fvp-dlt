@@ -154,54 +154,139 @@ Partial Class GuideEdit
         PhotoDeleteAct.Visible = False
     End Sub
 
+    'Protected Sub btnNext4_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles BtnNext4.Click
+    '    If txtName.Text = "" Then
+    '        Dim strError = "alert('Please enter Name !!!');"
+    '        ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", strError, True)
+    '    ElseIf txtSurname.Text = "" Then
+    '        Dim strError = "alert('Please enter Last name !!!');"
+    '        ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", strError, True)
+    '    ElseIf txtIdcard.Text = "" Then
+    '        Dim strError = "alert('Please enter ID card !!!');"
+    '        ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", strError, True)
+    '    ElseIf hidPhotoAct.Value = "" Then
+    '        Dim strError = "alert('Please Upload Photo of identity card !!!');"
+    '        ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", strError, True)
+    '    Else
+    '        Dim dbConnect As New DBConnect
+    '        Dim cmd As New NpgsqlCommand
+    '        Dim TableCommand As DataTable = dbConnect.TableCommand
+    '        Try
+
+    '            If TableCommand.Columns.Count = 0 Then
+    '                TableCommand.Columns.Add("name", GetType(String))
+    '                TableCommand.Columns.Add("type", GetType(String))
+    '                TableCommand.Columns.Add("val", GetType(Object))
+    '            End If
+
+    '            TableCommand.Clear()
+    '            'TableCommand.Rows.Add("guide_name", NpgsqlTypes.NpgsqlDbType.Varchar, txtName.Text)
+    '            'TableCommand.Rows.Add("guide_surname", NpgsqlTypes.NpgsqlDbType.Varchar, txtSurname.Text)
+    '            'TableCommand.Rows.Add("guide_email", NpgsqlTypes.NpgsqlDbType.Varchar, txtEmail.Text)
+    '            'TableCommand.Rows.Add("guide_tel", NpgsqlTypes.NpgsqlDbType.Varchar, txtTelephone.Text)
+    '            'TableCommand.Rows.Add("guide_photo", NpgsqlTypes.NpgsqlDbType.Varchar, hidPhotoAct.Value)
+    '            'TableCommand.Rows.Add("guide_idcard", NpgsqlTypes.NpgsqlDbType.Varchar, txtIdcard.Text)
+    '            TableCommand.Rows.Add("guide_name", "Varchar", txtName.Text)
+    '            TableCommand.Rows.Add("guide_surname", "Varchar", txtSurname.Text)
+    '            TableCommand.Rows.Add("guide_email", "Varchar", txtEmail.Text)
+    '            TableCommand.Rows.Add("guide_tel", "Varchar", txtTelephone.Text)
+    '            TableCommand.Rows.Add("guide_photo", "Varchar", hidPhotoAct.Value)
+    '            TableCommand.Rows.Add("guide_idcard", "Varchar", txtIdcard.Text)
+
+    '            'If ddlprename.SelectedValue = "Other" Then
+    '            '    TableCommand.Rows.Add("prename", NpgsqlTypes.NpgsqlDbType.Varchar, txtPrename.Text)
+    '            'Else
+    '            '    TableCommand.Rows.Add("prename", NpgsqlTypes.NpgsqlDbType.Varchar, ddlprename.SelectedValue)
+    '            'End If
+    '            If ddlprename.SelectedValue = "Other" Then
+    '                TableCommand.Rows.Add("prename", "Varchar", txtPrename.Text)
+    '            Else
+    '                TableCommand.Rows.Add("prename", "Varchar", ddlprename.SelectedValue)
+    '            End If
+    '            For Each row As DataRow In TableCommand.Rows
+    '                Console.WriteLine("name = " & row("name") & ", type = " & row("type") & ", val = " & row("val"))
+    '            Next
+
+
+    '            If guide_id > 0 Then
+    '                Dim Update = dbConnect.UpdateDataTable(TableCommand, "guide", "WHERE guide_id = " & guide_id & " and travel_user_id = " & Session("user_id"))
+    '            Else
+    '                'TableCommand.Rows.Add("travel_user_id", NpgsqlTypes.NpgsqlDbType.Integer, Session("user_id"))
+    '                TableCommand.Rows.Add("travel_user_id", "Integer", Session("user_id"))
+    '                Dim Insert = dbConnect.InsertDataTable(TableCommand, "guide")
+    '            End If
+    '        Catch ex As Exception
+    '            Console.WriteLine(ex.Message)
+    '            Dim strError = "alert('Fill information and please try again !');"
+    '            ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", strError, True)
+    '        Finally
+    '            Response.Redirect("Guide.aspx")
+    '        End Try
+    '    End If
+
+
+    'End Sub
     Protected Sub btnNext4_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles BtnNext4.Click
         If txtName.Text = "" Then
-            Dim strError = "alert('Please enter Name !!!');"
-            ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", strError, True)
+            ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", "alert('Please enter Name !!!');", True)
         ElseIf txtSurname.Text = "" Then
-            Dim strError = "alert('Please enter Last name !!!');"
-            ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", strError, True)
+            ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", "alert('Please enter Last name !!!');", True)
         ElseIf txtIdcard.Text = "" Then
-            Dim strError = "alert('Please enter ID card !!!');"
-            ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", strError, True)
+            ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", "alert('Please enter ID card !!!');", True)
         ElseIf hidPhotoAct.Value = "" Then
-            Dim strError = "alert('Please Upload Photo of identity card !!!');"
-            ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", strError, True)
+            ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", "alert('Please Upload Photo of identity card !!!');", True)
         Else
             Dim dbConnect As New DBConnect
-            Dim cmd As New NpgsqlCommand
-            Dim TableCommand As DataTable = dbConnect.TableCommand
+            Dim con As NpgsqlConnection = DBConnect.getConnection()
+            Dim cmd As New NpgsqlCommand()
             Try
-                TableCommand.Clear()
-                TableCommand.Rows.Add("guide_name", NpgsqlTypes.NpgsqlDbType.Varchar, txtName.Text)
-                TableCommand.Rows.Add("guide_surname", NpgsqlTypes.NpgsqlDbType.Varchar, txtSurname.Text)
-                TableCommand.Rows.Add("guide_email", NpgsqlTypes.NpgsqlDbType.Varchar, txtEmail.Text)
-                TableCommand.Rows.Add("guide_tel", NpgsqlTypes.NpgsqlDbType.Varchar, txtTelephone.Text)
-                TableCommand.Rows.Add("guide_photo", NpgsqlTypes.NpgsqlDbType.Varchar, hidPhotoAct.Value)
-                TableCommand.Rows.Add("guide_idcard", NpgsqlTypes.NpgsqlDbType.Varchar, txtIdcard.Text)
+                con.Open()
+                cmd.Connection = con
 
-                If ddlprename.SelectedValue = "Other" Then
-                    TableCommand.Rows.Add("prename", NpgsqlTypes.NpgsqlDbType.Varchar, txtPrename.Text)
-                Else
-                    TableCommand.Rows.Add("prename", NpgsqlTypes.NpgsqlDbType.Varchar, ddlprename.SelectedValue)
-                End If
+                ' เตรียมค่าพารามิเตอร์
+                Dim prenameVal As String = If(ddlprename.SelectedValue = "Other", txtPrename.Text, ddlprename.SelectedValue)
 
                 If guide_id > 0 Then
-                    Dim Update = dbConnect.UpdateDataTable(TableCommand, "guide", "WHERE guide_id = " & guide_id & " and travel_user_id = " & Session("user_id"))
+                    ' ---------- UPDATE ----------
+                    cmd.CommandText = "UPDATE guide SET guide_name = @guide_name, guide_surname = @guide_surname, " &
+                                  "guide_email = @guide_email, guide_tel = @guide_tel, guide_photo = @guide_photo, " &
+                                  "guide_idcard = @guide_idcard, prename = @prename " &
+                                  "WHERE guide_id = @guide_id AND travel_user_id = @travel_user_id"
+
+                    cmd.Parameters.AddWithValue("@guide_id", NpgsqlTypes.NpgsqlDbType.Integer, guide_id)
                 Else
-                    TableCommand.Rows.Add("travel_user_id", NpgsqlTypes.NpgsqlDbType.Integer, Session("user_id"))
-                    Dim Insert = dbConnect.InsertDataTable(TableCommand, "guide")
+                    ' ---------- INSERT ----------
+                    cmd.CommandText = "INSERT INTO guide (guide_name, guide_surname, guide_email, guide_tel, guide_photo, guide_idcard, prename, travel_user_id) " &
+                                  "VALUES (@guide_name, @guide_surname, @guide_email, @guide_tel, @guide_photo, @guide_idcard, @prename, @travel_user_id)"
                 End If
+
+                ' พารามิเตอร์ที่ใช้ร่วมกันทั้ง INSERT/UPDATE
+                cmd.Parameters.AddWithValue("@guide_name", NpgsqlTypes.NpgsqlDbType.Varchar, txtName.Text)
+                cmd.Parameters.AddWithValue("@guide_surname", NpgsqlTypes.NpgsqlDbType.Varchar, txtSurname.Text)
+                cmd.Parameters.AddWithValue("@guide_email", NpgsqlTypes.NpgsqlDbType.Varchar, txtEmail.Text)
+                cmd.Parameters.AddWithValue("@guide_tel", NpgsqlTypes.NpgsqlDbType.Varchar, txtTelephone.Text)
+                cmd.Parameters.AddWithValue("@guide_photo", NpgsqlTypes.NpgsqlDbType.Varchar, hidPhotoAct.Value)
+                cmd.Parameters.AddWithValue("@guide_idcard", NpgsqlTypes.NpgsqlDbType.Varchar, txtIdcard.Text)
+                cmd.Parameters.AddWithValue("@prename", NpgsqlTypes.NpgsqlDbType.Varchar, prenameVal)
+                cmd.Parameters.AddWithValue("@travel_user_id", NpgsqlTypes.NpgsqlDbType.Integer, Session("user_id"))
+
+                cmd.ExecuteNonQuery()
+
             Catch ex As Exception
-                Dim strError = "alert('Fill information and please try again !');"
-                ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", strError, True)
+                Console.WriteLine(ex.ToString())
+                ScriptManager.RegisterStartupScript(Page, GetType(Page), "AlertScript", "alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่');", True)
+                Exit Sub
             Finally
-                Response.Redirect("Guide.aspx")
+                cmd.Dispose()
+                con.Close()
+                con.Dispose()
             End Try
+
+            Response.Redirect("Guide.aspx")
         End If
-
-
     End Sub
+
+
 
     Protected Sub BtnBack_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles BtnBack.Click
         Response.Redirect("Guide.aspx")

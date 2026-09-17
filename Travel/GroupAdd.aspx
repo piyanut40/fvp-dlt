@@ -32,7 +32,6 @@
         $('#loadings').hide();
     });
 </script>
-
   <div id="loadings" align="center" class="overlays">
             <div class="loader" ></div>
         </div>
@@ -107,8 +106,8 @@
 <script type="text/javascript">
 
     var v = document.getElementById('<%= HidExpDate.ClientID %>').value;
-    console.log(v);
-//    alert(v)
+    console.log("Exp:",v);
+    //    alert(v)
 
     function checkddlProv() {
         $("#<%=ddlProvarea.ClientID %>").select2();
@@ -120,17 +119,33 @@
     }
 
 
-    function getDay() {
+     <%--function getDay() {
 
         var date = new Date();
         var dayname = date.toLocaleDateString('en-EN', { weekday: 'long' });
         var _Day;
 
-    
-        
-        _Day = <% Response.Write(min_date)%>;
+        //        if (dayname.toLowerCase() == 'sunday') {
+        //            _Day = '+6';
+        //        }
+        //        else {
+        //            _Day = '+7';
+        //        }
+
+         _Day = <% Response.Write(min_date)%>;
         return _Day;
+    }--%>
+   // console.log("Injected min_date from server:", <%= min_date %>);
+    function getDay() {
+        var dayOffset = <%= min_date %>;  
+        var today = new Date();
+        // สร้างวันที่ใหม่ โดยบวก dayOffset เข้าไป
+        var minDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + dayOffset);
+        //console.log("dayOffset:", dayOffset, "typeof dayOffset:", typeof dayOffset);
+        //console.log("Calculated minDate:", minDate);
+        return minDate;
     }
+
 
     function getDaybyHid(pHid) {
 
@@ -148,10 +163,10 @@
         $("#<%=ddladmin.ClientID %>").select2();
     });
 
-
+    /* กำหนดวันเวลา + - 5 วัน กำหนดกรุ๊ปทัวร์ */
 
     $(function () {
-   
+        //var dateFormat = "mm/dd/yy";
         var dateFormat = "dd/mm/yy";
         $("#<%=txtStart.ClientID %>").datepicker({
 
@@ -160,7 +175,7 @@
             yearRange: "-5 :+20",
             setDate: new Date(),
             minDate: getDay(),
-     
+            //maxDate: v, 'อยากขอให้ขยายเป็น 3 เดือนค่ะ เพราะจริงๆแล้วตามระเบียบไม่ได้ล็อคเรื่องนี้เอาไว้
             maxDate: "+100",
             showButtonPanel: true
             , dateFormat: 'dd/mm/yy'
@@ -171,46 +186,63 @@
         $("#<%=txtStart.ClientID %>").keyup(function () {
             $("#<%=txtStart.ClientID %>").val('');
         })
+   
+        $(function () {
+            var $start = $("#<%=txtStart.ClientID %>");
 
+       // แสดงค่า minDate ใน console
+       var minDate = $start.datepicker("option", "minDate");
+       console.log("Current minDate is:", minDate);
 
-
-
+   });
+    
         function getDate(element) {
-           
+            // var dateFormat1 = "dd/mm/yy";
             var date;
             try {
 
                 date = $.datepicker.parseDate(dateFormat, element.value);
-
+                //                var date = new Date(element.value);
             } catch (error) {
                 date = null;
             }
-
+            //            alert(date);
             return date;
         }
 
         function EndgetDate(element) {
 
-         
+            //            var date = new Date(element.value);
             date = $.datepicker.parseDate(dateFormat, element.value);
-          
+            //var expdate = new Date(v);
             date.setDate(date.getDate() + 30);
-         
+            //alert(expdate)
+            /*console.log(expdate);
+            if (expdate < date) {
+            console.log(expdate);
+            return expdate;
+            } else {
+            console.log(date);
+            return date;
+            }*/
+            //            alert(date);
             return date;
         }
 
     });
 
     $(function () {
-
+        //alert($("#<%=txtStart.ClientID %>").val());
         $("#<%=txtExpire.ClientID %>").datepicker({
             changeMonth: true,
             changeYear: true,
             yearRange: "now :+20",
             setDate: new Date(),
-    
+            //minDate: '0',
+            //minDate: getDay(),
             minDate: $("#<%=HidStart.ClientID %>").val() == '' ? $("#<%=txtStart.ClientID %>").val() == '' ? getDay() : $("#<%=txtStart.ClientID %>").val() : getDaybyHid($("#<%=HidStart.ClientID %>").val()),
-
+            //maxDate: v, //'อยากขอให้ขยายเป็น 3 เดือนค่ะ เพราะจริงๆแล้วตามระเบียบไม่ได้ล็อคเรื่องนี้เอาไว้
+            //maxDate: "+100",
             maxDate: $("#<%=HidEnd.ClientID %>").val() == '' ? +40 : getDaybyHid($("#<%=HidEnd.ClientID %>").val()),
             showButtonPanel: true
             , dateFormat: 'dd/mm/yy'
@@ -218,11 +250,11 @@
         $("#<%=txtExpire.ClientID %>").keyup(function () {
             $("#<%=txtExpire.ClientID %>").val('');
         })
-
+        //alert(v)
     });
 
-  
-    </script>
+
+</script>
 
     <style>
   body {
@@ -239,7 +271,7 @@
     .toplabel
     {
         margin-top:10px!important;
-     
+        /*margin-left:-20px;*/
         }
   </style>
 
@@ -258,7 +290,7 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
- 
+        //tab1();
     });
 
     function tab1() {
@@ -289,7 +321,7 @@
         document.getElementById("form3").className = "text-dark w3-animate-right fill pl-5"
     }
 
- 
+
 </script>
 
  <div align="center">
@@ -324,6 +356,7 @@
     });
 
 </script>
+     
             </div>
         <div class="one wide field" style="font-family: 'Kanit', sans-serif;font-size: small;">
         </div>
@@ -455,7 +488,12 @@
      </Triggers>
      </asp:UpdatePanel>
 
-  
+    <%--<br />  <label for="name" class="w3-left">Start date : </label>
+             <asp:TextBox ID="txtStart" type="text" class="w3-input w3-border w3-round-large" runat="server" placeholder="Start date" ></asp:TextBox>
+    
+
+    <br />   <label for="name" class="w3-left">End date : </label>
+                  <asp:TextBox ID="txtExpire" type="text" class="w3-input w3-border w3-round-large" runat="server" placeholder="End date" ></asp:TextBox>--%>
 
 <center>
      <asp:UpdatePanel ID="UpdatePanel11" runat="server" UpdateMode="Conditional">
@@ -465,9 +503,11 @@
         <Columns>
           <asp:TemplateField Visible="false">
           <ItemTemplate>
-                <asp:Label ID="lblarea_id" runat="server"  Text="<%# Bind('area_id') %>"></asp:Label>
+              <asp:Label ID="lblarea_id" runat="server" Text='<%# Bind("area_id") %>'></asp:Label>
+                <%--<asp:Label ID="lblarea_id" runat="server"  Text="<%# Bind('area_id') %>"></asp:Label>--%>
                 <asp:Label id="lblprov_code" runat="server" Text='<%# eval("prov_code") %>'></asp:Label>
-              <asp:Label ID="lblprov_en" runat="server" Text="<%# Bind('prov_en') %>"></asp:Label>
+              <asp:Label ID="lblprov_en" runat="server" Text='<%# Bind("prov_en") %>'></asp:Label>
+              <%--<asp:Label ID="lblprov_en" runat="server" Text="<%# Bind('prov_en') %>"></asp:Label>--%>
                 
             </ItemTemplate>
           </asp:TemplateField>
@@ -519,9 +559,10 @@
 <asp:UpdatePanel id="updateddladmin" runat="server" UpdateMode="Conditional">
 <ContentTemplate>
 
- 
-                <asp:DropDownList ID="ddladmin" Width="94%" runat="server" class="w3-input w3-border w3-round-large">   
-            </asp:DropDownList>  
+     <asp:DropDownList ID="ddladmin" Width="94%" runat="server" AutoPostBack="true" class="w3-input w3-border w3-round-large" > 
+</asp:DropDownList>  
+                <%--<asp:DropDownList ID="ddladmin" Width="94%" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddladmin_selectedindexchanged" class="w3-input w3-border w3-round-large" > 
+            </asp:DropDownList>--%>  
  
              
             <asp:Button style="DISPLAY: none" id="btnSetValueddladmin" UseSubmitBehavior="false" runat="server" Text="Button" />
@@ -620,30 +661,40 @@
                     document.location.href = '#' + _divName;
                 }, PageAutoSec);
             }
-</script>
+        </script>
 
 <div class="row">
 
  <div class="two wide field" style="font-family: 'Kanit', sans-serif;font-size: small;">
    &nbsp; &nbsp; &nbsp;
  </div>
- 
+ <%--<div class="ten wide column"  id="divMap"  >
+   <div class="two wide field" style="font-family: 'Kanit', sans-serif;font-size: small;">
+   &nbsp; &nbsp; &nbsp;
+ </div>
+            <iframe runat="server" id="iframeMap" enableviewstate="true" frameborder="0"  style="width:400px; height:300px;" name="IframeLocation" scrolling="yes" 
+          src="../Map/MapArea.aspx?pro=-1" >Your browser does not support iframes 
+    </iframe>
+
+    
+</div>--%>  
 </div>
 
  
 
   <script  type='text/javascript'>
+      var mapProlist = [];
       $(document).ready(function () {
           var dv = document.getElementById("divMap").offsetWidth;
           //alert(dv)
           if (navigator.userAgent.match(/Android/i)
- || navigator.userAgent.match(/webOS/i)
- || navigator.userAgent.match(/iPhone/i)
- || navigator.userAgent.match(/iPad/i)
- || navigator.userAgent.match(/iPod/i)
- || navigator.userAgent.match(/BlackBerry/i)
- || navigator.userAgent.match(/Windows Phone/i)
- ) {
+              || navigator.userAgent.match(/webOS/i)
+              || navigator.userAgent.match(/iPhone/i)
+              || navigator.userAgent.match(/iPad/i)
+              || navigator.userAgent.match(/iPod/i)
+              || navigator.userAgent.match(/BlackBerry/i)
+              || navigator.userAgent.match(/Windows Phone/i)
+          ) {
               var iFrame = document.getElementById("MainContent_iframeMap");
               iFrame.style.width = (dv * 0.8) + 'px';
               iFrame.style.height = (dv * 0.8) + 'px';
@@ -665,7 +716,7 @@
 
       function get_IframeMap(pro) {
           document.getElementById('MainContent_iframeMap').src = document.getElementById('MainContent_iframeMap').src + ',' + pro;
-          console.log(pro)
+          console.log('getiframemap',pro)
           console.log(document.getElementById('MainContent_iframeMap').src);
       }
 
@@ -678,7 +729,8 @@
           document.getElementById('MainContent_iframeMap').src = pro
           console.log(document.getElementById('MainContent_iframeMap').src);
       }
-    </script>
+  </script>
+    
 
 
 
@@ -710,7 +762,7 @@
         }
         else if (_tab == 3) {
             tab3();
-        } 
+        }
     }
 
     window.tab_Redirect = function (_href) {
@@ -719,15 +771,19 @@
     }
 
     function LoadPageNew() {
-  
+        // ต้องโหลดใหม่ไม่งั้นแผนที่ไม่ขึ้น!!!
         var href = window.location.href;
         window.location.href = href;
+    }
+
+    function closeIFrame() {
+        window.open(window.location, '_self').close();
     }
 </script>
 
 <div id="form2" class="w3-animate-right fill center ui-form w3-margin text-dark ">
 
-
+<%--เปลี่ยนไปใช้ iframe เรียกที่เดียวกับหน้า GroupEdit.aspx น่ะ--%>
 <div class="ui form w3-margin" style="font-family: 'Kanit', sans-serif; " >
 <iframe runat="server" id="Iframe2" enableviewstate="true" frameborder="0" class="w3-theme-l5"
             name="Iframe1" scrolling="no"   width="100%"  src=""  
@@ -824,9 +880,42 @@
               </asp:TemplateField>
          </Columns>
           <EmptyDataRowStyle HorizontalAlign="Center" />
-     
-    </asp:GridView>
+          <%--<PagerTemplate>
+          <div class="w3-row w3-padding-small"> 
+                      
+            <div class="col ">
+             <div  class="w3-right"> 
 
+               <asp:LinkButton ID="btnLast" runat="server" CommandArgument="Last" CommandName="Page"  class="w3-right btn w3-button w3-padding-small w3-round w3-large" >Last</asp:LinkButton>
+              <asp:LinkButton ID="btnNext" runat="server" CommandArgument="Next" CommandName="Page" class="w3-right btn w3-button w3-padding-small w3-round w3-large" >Next</asp:LinkButton> 
+  
+             
+              
+                <asp:LinkButton ID="btnPrev" class="w3-right btn w3-button w3-padding-small w3-round w3-large" runat="server" CommandArgument="Prev" CommandName="Page" >Prev</asp:LinkButton>
+             
+
+             
+               <asp:LinkButton ID="btnFirst" class="w3-right btn w3-button w3-padding-small w3-round w3-large" runat="server" CommandArgument="First" CommandName="Page" >First </asp:LinkButton>
+              
+            </div> 
+               
+
+               <div class="w3-left"> 
+              <p class="w3-left w3-padding-small"> Page   
+             </p>
+
+            <p class="w3-left"><asp:DropDownList ID="DDLPage" runat="server" class="w3-input w3-border w3-round-large"  AutoPostBack="true"  OnSelectedIndexChanged="DDLPage_SelectedIndexChanged" Style="position: static" >
+                
+                </asp:DropDownList>  
+             </p>
+             </div> 
+            </div>
+          </div>
+        </PagerTemplate>--%>   
+    </asp:GridView>
+     <%--<p class="w3-left w3-padding "> Display  </p>
+    <p class="w3-left "> <asp:DropDownList id="ddl_PageSize" runat="server" class="w3-input w3-border w3-round-large" Style="position: static"  AppendDataBoundItems="True" AutoPostBack="True"></asp:DropDownList>  </p>
+    <p class="w3-left w3-padding "> Rows  </p>--%>
 </ContentTemplate>
   </asp:UpdatePanel>
 
@@ -839,13 +928,13 @@
   <div class="fields" style="margin-top:2rem;"> 
   <div class=" five wide field" style="font-family: 'Kanit', sans-serif;font-size: small;">
 
-  <asp:Label id="NoteStatus" runat="server" ForeColor="Red" ><i class="fa fa-asterisk"></i></asp:Label> Vehicle have duplicate group tour  
+  <asp:Label id="NoteStatus" runat="server" ForeColor="Red" ><i class="fa fa-asterisk"></i></asp:Label> jiuweb Vehicle have duplicate group tour  
   </div>
   </div>
 
   </asp:Panel>
 <br />
-<asp:Button ID="btnNext3"  class=" w3-right  w3-purple w3-btn w3-round-large w3-large"   runat="server" UseSubmitBehavior="false" Text="Next" />
+<asp:Button ID="btnNext3"  class=" w3-right  w3-purple w3-btn w3-round-large w3-large"   runat="server" UseSubmitBehavior="false" Text="Next2" />
 <asp:Button ID="btnPrev1" class="w3-purple w3-btn w3-round-large w3-left w3-large"  runat="server" UseSubmitBehavior="false" Text="Prev" />
 
 </div>
@@ -854,6 +943,7 @@
 
 <div id="form3" class="w3-animate-right fill center ui-form w3-margin text-dark ">
 
+<%--เปลี่ยนไปใช้ iframe เรียกที่เดียวกับหน้า GroupEdit.aspx น่ะ--%>
 <div class="ui form w3-margin" style="font-family: 'Kanit', sans-serif; " >
 <iframe runat="server" id="Iframe3" enableviewstate="true" frameborder="0" class="w3-theme-l5"
             name="Iframe1" scrolling="no"   width="100%"  src=""  
@@ -908,7 +998,24 @@
            </asp:UpdatePanel>
         </div>
 
-   
+     <%--    <div class="w3-left fields col-md-6 pb-3" style="font-family: 'Kanit', sans-serif;font-size: small;">
+          <label for="name" class="w3-left" ><a class="w3-text-red">*</a> Passport ( jpg or png and size of attached file not over 5 MB) : </label>
+       
+           <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="conditional"  ChildrenAsTriggers="true">
+           <ContentTemplate>
+          <asp:FileUpload ID="FileUpload1" runat="server" onchange="document.getElementById('MainContent_btnUploadPassport').click();" />
+            <asp:ImageButton ID="btnUploadPassport" style="DISPLAY: none"  runat="server" AutoPostBack="true" ImageUrl="~/image/upload.png" Width="50px"  OnClientClick="showProgress();" UseSubmitBehavior="false" />
+               <asp:HiddenField ID="hidPhotoNamePassport" runat="server" />
+            <asp:Image ID="PhotoPassport" runat="server" Height="200px" Width="250px"/>
+            <asp:ImageButton ID="PhotoDeletePassport"  OnClientClick="javascript:return confirm('Do you want delete photo?'); return false;"  ImageUrl="../image/g_delete.gif"  runat="server"
+             alt="Delete" title="Delete" UseSubmitBehavior="false" Visible="false" />
+            </ContentTemplate>
+                  <Triggers>
+                      <asp:PostBackTrigger ControlID="btnUploadPassport"/>
+	          </Triggers>
+           </asp:UpdatePanel>
+          
+        </div>--%>
         <div class="seven wide field" style="font-family: 'Kanit', sans-serif;font-size: small; padding-top:20px; " id="divGuide4" runat="server">
         <asp:Button ID="BtnAddGuide"  class=" w3-purple w3-btn w3-round-large w3-right-align w3-large"   runat="server" UseSubmitBehavior="false" Text="Add" /> 
    </div>
@@ -969,9 +1076,42 @@
               </asp:TemplateField>
          </Columns>
           <EmptyDataRowStyle HorizontalAlign="Center" />
-      
-    </asp:GridView>
+          <%--<PagerTemplate>
+          <div class="w3-row w3-padding-small"> 
+                      
+            <div class="col ">
+             <div  class="w3-right"> 
 
+               <asp:LinkButton ID="btnLast" runat="server" CommandArgument="Last" CommandName="Page"  class="w3-right btn w3-button w3-padding-small w3-round w3-large" >Last</asp:LinkButton>
+              <asp:LinkButton ID="btnNext" runat="server" CommandArgument="Next" CommandName="Page" class="w3-right btn w3-button w3-padding-small w3-round w3-large" >Next</asp:LinkButton> 
+  
+             
+              
+                <asp:LinkButton ID="btnPrev" class="w3-right btn w3-button w3-padding-small w3-round w3-large" runat="server" CommandArgument="Prev" CommandName="Page" >Prev</asp:LinkButton>
+             
+
+             
+               <asp:LinkButton ID="btnFirst" class="w3-right btn w3-button w3-padding-small w3-round w3-large" runat="server" CommandArgument="First" CommandName="Page" >First </asp:LinkButton>
+              
+            </div> 
+               
+
+               <div class="w3-left"> 
+              <p class="w3-left w3-padding-small"> Page   
+             </p>
+
+            <p class="w3-left"><asp:DropDownList ID="DDLPage" runat="server" class="w3-input w3-border w3-round-large"  AutoPostBack="true"  OnSelectedIndexChanged="DDLPage_SelectedIndexChanged" Style="position: static" >
+                
+                </asp:DropDownList>  
+             </p>
+             </div> 
+            </div>
+          </div>
+        </PagerTemplate>   --%>
+    </asp:GridView>
+     <%--<p class="w3-left w3-padding "> Display  </p>
+    <p class="w3-left "> <asp:DropDownList id="ddl_PageSize" runat="server" class="w3-input w3-border w3-round-large" Style="position: static"  AppendDataBoundItems="True" AutoPostBack="True"></asp:DropDownList>  </p>
+    <p class="w3-left w3-padding "> Rows  </p>--%>
 </ContentTemplate>
   </asp:UpdatePanel>
 
@@ -992,16 +1132,23 @@
 </div>
 
     <script type="text/javascript">
-     function Submit() {
+        function Submit() {
+            alert('SUBMIT FUNCTION CALLED');
         $.confirm({
             title: 'Notification',
             content: "Once you have submitted the document, it cannot be modified again. Do you want to send it? ",
             buttons: {
+                //submit: function () {
+                //    $.alert("Confirm submit clicked");
+                //    document.getElementById('MainContent_btnSubmit').click();
+
+
+                //},
                 submit: function () {
-                    document.getElementById('MainContent_btnSubmit').click();
+                    alert('CLICK CONFIRM');
                 },
                 cancel: function () {
-                  
+                    //$.alert('Cancel');
                 }
             }
         });
@@ -1014,7 +1161,8 @@
             content: "Your license has expired. Please contact admin.",
             buttons: {
                 OK: function () {
-               
+                    //Ver.1 By.ท๊อป มันไม่ไปจร้า หน้าที่ส่งไปก็ผิดหน้าอีก!!!
+                   //window.location.replace("/Travel/Group.aspx");
                    var href = window.location.href.replace("GroupAdd.aspx", "EditUserTravel.aspx");
                    window.location.href = href;
                 }
@@ -1038,17 +1186,19 @@
    
     }
 
+
     </script>
      </asp:Panel>
  </br>
-       <button class=" w3-center w3-purple w3-btn w3-round-large w3-large w3-margin"  onclick ="Submit();return false;" UseSubmitBehavior=false>Submit </Button>
-       <asp:Button ID="btnSubmit"  class=" w3-right  w3-purple w3-btn w3-round-large w3-large w3-margin" style="display:none"   runat="server" UseSubmitBehavior="false" Text="Save" /> &nbsp; &nbsp;&nbsp;
-       <asp:Button ID="btnSave"  class=" w3-right  w3-purple w3-btn w3-round-large w3-large w3-margin"   runat="server" UseSubmitBehavior="false" Text="Save" /> &nbsp; &nbsp;&nbsp;
-     <asp:Button ID="btnPrev2" class="w3-purple w3-btn w3-round-large w3-left w3-large w3-margin"  runat="server" UseSubmitBehavior="false" Text="Prev" />
-
+    
 </div>
-
+   <button class=" w3-center w3-purple w3-btn w3-round-large w3-large w3-margin" onclick ="Submit();return false;" UseSubmitBehavior=false>Submit1 </Button>
+  <asp:Button ID="btnSubmit"  class=" w3-right  w3-purple w3-btn w3-round-large w3-large w3-margin" style="display:none"   runat="server" UseSubmitBehavior="false" Text="Save3" /> &nbsp; &nbsp;&nbsp;
+  <asp:Button ID="btnSave"  class=" w3-right  w3-purple w3-btn w3-round-large w3-large w3-margin"   runat="server" UseSubmitBehavior="false" Text="Save2" /> &nbsp; &nbsp;&nbsp;
+<asp:Button ID="btnPrev2" class="w3-purple w3-btn w3-round-large w3-left w3-large w3-margin"  runat="server" UseSubmitBehavior="false" Text="Prev" />
 </div>
+         
+
 
 </form>
 
@@ -1112,7 +1262,7 @@
 
 
 
-  
+
 </script>
 </asp:Content>
 

@@ -6,6 +6,8 @@ Partial Class Admin_RptStatCarByAdmin
     Inherits System.Web.UI.Page
     Private Populate As New PopulateDropDown
     Protected _year As String
+    'Protected WithEvents ReportViewer1 As Microsoft.Reporting.WebForms.ReportViewer
+
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         _year = Now.Year()
         If Page.IsPostBack = False Then

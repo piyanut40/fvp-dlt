@@ -29,7 +29,7 @@ Partial Class ViewFile
 
             'End If
         Catch ex As Exception
-            'lblwait.Text = "äÁèÊÒÁÒÃ¶à»Ô´ä¿Åì PDF ä´é Error " & ex.Message.ToString
+            'lblwait.Text = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ô´ï¿½ï¿½ï¿½ PDF ï¿½ï¿½ Error " & ex.Message.ToString
             'Response.Write("<script language='javascript'> alert('" & ex.Message.ToString & "')</script>")
         End Try
 

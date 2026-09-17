@@ -1,5 +1,4 @@
 ﻿<%@ Page Language="VB" AutoEventWireup="false" CodeFile="departures.aspx.vb" MasterPageFile="~/MasterPageB.master" Inherits="Admin_departures" %>
-
 <asp:Content ID="Content2" ContentPlaceHolderID="HeadContent" Runat="Server">
     <link href="../Styles/datatables.min.css" rel="stylesheet">
 <script type="text/javascript" src="../Scripts/datatables.min.js"></script>
@@ -7,7 +6,8 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" Runat="Server">
     <header class="w3-container" style="padding-top:22px">
-    <h5><b> <% Response.Write(text)%></b></h5>
+    <%--<h5><b> <% Response.Write(text)%></b></h5>--%>
+        <h5><b><%= pagetext %></b></h5>
 </header>
 <style>
 
@@ -25,7 +25,7 @@ td{
       <th class="th-sm">เลขที่อ้างอิงใบขออนุญาต
         <i class="fa fa-sort float-right" aria-hidden="true"></i>
       </th>
-      <th class="th-sm"><%Response.Write(name)%>
+      <th class="th-sm"><%= name %>
         <i class="fa fa-sort float-right" aria-hidden="true"></i>
       </th>
       <th class="th-sm">ข้อมูลรถ

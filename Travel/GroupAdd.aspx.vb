@@ -1,6 +1,8 @@
 ﻿Imports System.Data
 Imports Npgsql
 Imports System.IO
+Imports System.Diagnostics
+
 
 Partial Class Travel_GroupAdd
     Inherits System.Web.UI.Page
@@ -51,22 +53,51 @@ Partial Class Travel_GroupAdd
 
         _date = DateAdd(DateInterval.Day, (_day + Cnt_h_date), Date.Today)
 
-        strChkDate = "select min(the_day) from (SELECT *  FROM generate_series(timestamp '" & DateAdd(DateInterval.Day, (_day + Cnt_h_date), Date.Today) & "', timestamp '" & DateAdd(DateInterval.Day, (_day + Cnt_h_date + 7), Date.Today) & "' , interval  '1 day') the_day  " & _
+        strChkDate = "select min(the_day) from (SELECT *  FROM generate_series(timestamp '" & DateAdd(DateInterval.Day, (_day + Cnt_h_date), Date.Today) & "', timestamp '" & DateAdd(DateInterval.Day, (_day + Cnt_h_date + 7), Date.Today) & "' , interval  '1 day') the_day  " &
             " WHERE the_day not in (SELECT h_date FROM holiday where extract('ISODOW' FROM h_date) < 6 ) ) dt "
         _date = DBCon.executeScalar(strChkDate)
+        Dim nextWorkingDate As Date = GetNextWorkingDate(5)
+        'min_date = "+" & DateDiff(DateInterval.Day, Date.Today, _date)
+        'min_date = DateDiff(DateInterval.Day, Date.Today, _date)
+        min_date = DateDiff(DateInterval.Day, Date.Today, nextWorkingDate)
+        'Populate.genAreaform(ddladmin, False)
+        Dim logScript As String = ""
+        logScript &= "console.log('Server Today: " & Date.Today.ToString("yyyy-MM-dd") & "');"
+        logScript &= "console.log('Next Working Date: " & nextWorkingDate.ToString("yyyy-MM-dd") & "');"
+        logScript &= "console.log('Calculated min_date: " & min_date & "');"
+        'logScript &= "console.log('Calculated min_date (TypeName): " & min_date.GetType().Name & "');"
 
-        min_date = "+" & DateDiff(DateInterval.Day, Date.Today, _date)
+        ' Inject ลง Browser Console
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "LogMinDate", logScript, True)
+        Dim dbs As New DBConnect
+        Dim dtHoliday As DataTable = dbs.getDataTable("holiday")
+        logScript &= "console.log('--- Holidays Loaded ---');"
+        For Each row As DataRow In dtHoliday.Rows
+            If Not IsDBNull(row("h_date")) Then
+                logScript &= "console.log('" & CDate(row("h_date")).ToString("yyyy-MM-dd") & "');"
+            End If
+        Next
+
+        ' Inject log ลง Browser Console
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "LogMinDate", logScript, True)
         If Page.IsPostBack = False Then
+
+            '        Dim minStartDate As Date = GetNextWorkingDate(5) 'GetWorkingDateAfterNDays(Date.Today, 5) 
+            '        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "SetMinDate",
+            '"setMinDate('" & minStartDate.ToString("yyyy-MM-dd") & "');", True)
+
+
+
 
             If Session("user_id") = Nothing Or Session("user_type") = 1 Then
                 Session.Clear()
                 Response.Redirect("../Login.aspx")
             End If
-
+            Populate.genAreaform(ddladmin, False)
             'genDDLLicense(ddlLicense, IIf(Request.QueryString("id") Is Nothing, 0, Request.QueryString("id")))
             genDDLGuide(ddlGuide, IIf(group_id Is Nothing, 0, group_id))
 
-            Populate.genAreaform(ddladmin, False)
+
             Populate.genDDLProvince(ddlProvarea, False)
             Populate.genDDLBorder(ddlBorderCheckin, False, "")
             Populate.genDDLBorder(ddlBorderCheckout, False, "")
@@ -89,6 +120,8 @@ Partial Class Travel_GroupAdd
             Iframe2.Attributes("src") = "GroupAdd_tab2.aspx?is_renew=" & is_renew & IIf(group_id Is Nothing, "", "&id=" & group_id & "")
             Iframe3.Attributes("src") = "GroupAdd_tab3.aspx?is_renew=" & is_renew & IIf(group_id Is Nothing, "", "&id=" & group_id & "")
 
+
+
             If Request.QueryString("is_renew") <> "" Then
 
                 ddlBorderCheckin.Enabled = False
@@ -103,8 +136,9 @@ Partial Class Travel_GroupAdd
             End If
 
 
-            If Request.QueryString("is_renew").Contains(",0") Then
+            If Not Request.QueryString("is_renew") Is Nothing AndAlso Request.QueryString("is_renew").Contains(",0") Then
                 LoadDataRenew()
+
             Else
                 If Not ((group_id) Is Nothing) Then
 
@@ -146,7 +180,7 @@ Partial Class Travel_GroupAdd
 
 
             AddPopupMapAdmin("")
- 
+
         End If
 
         With tbProvice
@@ -200,7 +234,7 @@ Partial Class Travel_GroupAdd
                     UpdatePanel13.Update()
                     'btnProv.Visible = True
                     Dim db As New DBConnect
-                   
+
                 End If
             End If
         Else
@@ -269,17 +303,138 @@ Partial Class Travel_GroupAdd
 
 
     End Sub
+    'Function GetNextWorkingDate(Optional ByVal nDays As Integer = 5) As Date
+    '    Dim db As New DBConnect
+    '    Dim holidayList As New HashSet(Of Date)()
+
+
+    '    Dim dtHoliday As DataTable = db.getDataTable("holiday")
+
+
+    '    For Each row As DataRow In dtHoliday.Rows
+    '        If Not IsDBNull(row("h_date")) Then
+    '            Dim hDate As Date = CDate(row("h_date")).Date
+    '            If hDate >= Date.Today Then
+    '                holidayList.Add(hDate)
+    '            End If
+    '        End If
+    '    Next
+
+
+    '    Dim currentDate As Date = Date.Today
+    '    Dim count As Integer = 0
+
+    '    Do While count < nDays
+    '        currentDate = currentDate.AddDays(1)
+
+    '        If currentDate.DayOfWeek <> DayOfWeek.Saturday AndAlso
+    '       currentDate.DayOfWeek <> DayOfWeek.Sunday AndAlso
+    '       Not holidayList.Contains(currentDate.Date) Then
+    '            count += 1
+    '        End If
+    '    Loop
+
+    '    Return currentDate
+    'End Function
+    ' helper function สำหรับเขียน log ออก console
+    Private Sub LogToConsole(msg As String)
+        Dim script As String = "console.log('" & msg.Replace("'", "\'") & "');"
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(), Guid.NewGuid().ToString(), script, True)
+    End Sub
+
+    Function GetNextWorkingDate(Optional ByVal nDays As Integer = 5) As Date
+        Dim db As New DBConnect
+        Dim holidayList As New HashSet(Of Date)()
+
+
+        Dim dtHoliday As DataTable = db.getDataTable("holiday")
+
+        'For Each row As DataRow In dtHoliday.Rows
+        '    If Not IsDBNull(row("h_date")) Then
+        '        holidayList.Add(CDate(row("h_date")).Date)
+        '    End If
+        'Next
+        For Each row As DataRow In dtHoliday.Rows
+            If Not IsDBNull(row("h_date")) Then
+                Dim hDate As Date = CDate(row("h_date")).Date
+                holidayList.Add(hDate)
+                ' log ออก console ของ browser
+                'LogToConsole("Holiday loaded: " & hDate.ToString("yyyy-MM-dd"))
+            End If
+        Next
+
+        'LogToConsole("Total holidays loaded: " & holidayList.Count)
+
+        Dim currentDate As Date = Date.Today
+        LogToConsole("Start checking from: " & currentDate.ToString("yyyy-MM-dd"))
+        Dim count As Integer = 0
+
+        Do While count < nDays
+            'LogToConsole("Checking date: " & currentDate.ToString("yyyy-MM-dd"))
+            If currentDate.DayOfWeek <> DayOfWeek.Saturday AndAlso
+           currentDate.DayOfWeek <> DayOfWeek.Sunday AndAlso
+           Not holidayList.Contains(currentDate.Date) Then
+
+                count += 1
+                'LogToConsole(" -> Count as working day (" & count & "/" & nDays & ")")
+            Else
+                'LogToConsole(" -> Skip (Weekend or Holiday)")
+            End If
+
+            If count < nDays Then
+                currentDate = currentDate.AddDays(1)
+            End If
+        Loop
+        currentDate = currentDate.AddDays(1)
+        'LogToConsole("Final result: " & currentDate.ToString("yyyy-MM-dd"))
+
+        Return currentDate
+    End Function
+
+
+    'Function GetWorkingDateAfterNDays(startDate As Date, workingDaysToAdd As Integer) As Date
+    '    Dim db As New DBConnect
+    '    Dim currentDate As Date = startDate.AddDays(1)
+    '    Dim workdayCount As Integer = 0
+
+    '    Do While workdayCount < workingDaysToAdd
+    '        ' ตรวจสอบว่าเป็นวันเสาร์หรืออาทิตย์
+    '        If currentDate.DayOfWeek = DayOfWeek.Saturday Or currentDate.DayOfWeek = DayOfWeek.Sunday Then
+    '            currentDate = currentDate.AddDays(1)
+    '            Continue Do
+    '        End If
+
+
+    '        Dim sql = "SELECT COUNT(*) FROM holiday WHERE h_date = '" & currentDate.ToString("yyyy-MM-dd") & "'"
+    '        Dim count = CInt(db.executeScalar(sql))
+    '        If count > 0 Then
+    '            currentDate = currentDate.AddDays(1)
+    '            Continue Do
+    '        End If
+
+
+    '        workdayCount += 1
+
+    '        ' หากยังไม่ครบ ให้ไปวันถัดไป
+    '        If workdayCount < workingDaysToAdd Then
+    '            currentDate = currentDate.AddDays(1)
+    '        End If
+    '    Loop
+
+    '    Return currentDate
+    'End Function
+
 
     Private Sub LoadDataRenew()
         Dim dbConnect As New DBConnect
         Dim cmd As New NpgsqlCommand
-        Dim con As Npgsql.NpgsqlConnection = dbConnect.getConnection
+        Dim con As Npgsql.NpgsqlConnection = DBConnect.getConnection
         Dim dread As Npgsql.NpgsqlDataReader
         Try
 
             con.Open()
             cmd.Connection = con
-            Dim strCheckUser As String = " SELECT group_name, start_date, exp_date, cntpeople, checkin_id, checkout_id , admin_id, travel_itinerary_filesaved, travel_itinerary_filename, attachments_file_name, attachments_file_saved, reason " & _
+            Dim strCheckUser As String = " SELECT group_name, start_date, exp_date, cntpeople, checkin_id, checkout_id , admin_id, travel_itinerary_filesaved, travel_itinerary_filename, attachments_file_name, attachments_file_saved, reason " &
                                       " FROM travel_group  WHERE group_id = " & group_id
             cmd.CommandText = CommandType.Text
             cmd.CommandText = strCheckUser
@@ -295,7 +450,7 @@ Partial Class Travel_GroupAdd
 
                 End If
                 If Not dread("exp_date") Is DBNull.Value Then
-                   
+
                     Dim exp_dateNew As Date = CDate(dread("exp_date")).AddDays(1)
 
                     txtStart.Text = Format(Day(exp_dateNew), "00") & "/" & Format(Month(exp_dateNew), "00") & "/" & CDate(exp_dateNew).ToString("yyyy", enCul)
@@ -352,8 +507,6 @@ Partial Class Travel_GroupAdd
             End If
             dread.Close()
 
-          
-
 
             Dim sqlstr2 = "select area_id , prov_en , area_group.prov_code from area_group LEFT JOIN province on province.prov_code = area_group.prov_code WHERE group_id = '" & group_id & "' order by area_id "
             Dim Datatable2 As DataTable = dbConnect.getDataTable(sqlstr2, "DataTable2")
@@ -401,18 +554,18 @@ Partial Class Travel_GroupAdd
     Private Sub LoadData()
         Dim dbConnect As New DBConnect
         Dim cmd As New NpgsqlCommand
-        Dim con As Npgsql.NpgsqlConnection = dbConnect.getConnection
+        Dim con As Npgsql.NpgsqlConnection = DBConnect.getConnection
         Dim dread As Npgsql.NpgsqlDataReader
         Try
 
             con.Open()
             cmd.Connection = con
-          
-            Dim strCheckUser As String = " SELECT travel_group.group_name, travel_group.start_date, travel_group.exp_date, travel_group.cntpeople, travel_group.checkin_id, travel_group.checkout_id " & _
-                                        ", travel_group.admin_id, travel_group.travel_itinerary_filesaved, travel_group.travel_itinerary_filename, coalesce(license.status_id,0) as status, check_tab0 , check_tab1 , check_tab2 , check_tab3 , check_tab4 , check_tab8 " & _
-                                        " FROM travel_group " & _
-                                        " LEFT JOIN travel_group_car on travel_group_car.group_id = travel_group.group_id " & _
-                                        " LEFT JOIN license on travel_group_car.license_id = license.license_id " & _
+
+            Dim strCheckUser As String = " SELECT travel_group.group_name, travel_group.start_date, travel_group.exp_date, travel_group.cntpeople, travel_group.checkin_id, travel_group.checkout_id " &
+                                        ", travel_group.admin_id, travel_group.travel_itinerary_filesaved, travel_group.travel_itinerary_filename, coalesce(license.status_id,0) as status, check_tab0 , check_tab1 , check_tab2 , check_tab3 , check_tab4 , check_tab8 " &
+                                        " FROM travel_group " &
+                                        " LEFT JOIN travel_group_car on travel_group_car.group_id = travel_group.group_id " &
+                                        " LEFT JOIN license on travel_group_car.license_id = license.license_id " &
                                         " WHERE travel_group.group_id = " & group_id
             cmd.CommandText = CommandType.Text
             cmd.CommandText = strCheckUser
@@ -424,12 +577,12 @@ Partial Class Travel_GroupAdd
                     txtgroup_name.Text = dread("group_name")
                 End If
                 If Not dread("start_date") Is DBNull.Value Then
-                   
+
                     txtStart.Text = Format(Day(dread("start_date")), "00") & "/" & Format(Month(dread("start_date")), "00") & "/" & CDate(dread("start_date")).ToString("yyyy", enCul)
 
                 End If
                 If Not dread("exp_date") Is DBNull.Value Then
-                   
+
                     txtExpire.Text = Format(Day(dread("exp_date")), "00") & "/" & Format(Month(dread("exp_date")), "00") & "/" & CDate(dread("exp_date")).ToString("yyyy", enCul)
 
                 End If
@@ -508,7 +661,7 @@ Partial Class Travel_GroupAdd
             Try
 
                 If Hidstatus.Value = "2" Then
-         
+
                     ddladmin.Enabled = False
                     lnkSchMap.Visible = False
                     Page2.Enabled = False
@@ -548,7 +701,6 @@ Partial Class Travel_GroupAdd
 
             End Try
 
-   
 
             Dim sqlstr2 = "select area_id , prov_en , area_group.prov_code from area_group LEFT JOIN province on province.prov_code = area_group.prov_code WHERE group_id = '" & group_id & "' order by area_id "
             Dim Datatable2 As DataTable = dbConnect.getDataTable(sqlstr2, "DataTable2")
@@ -564,7 +716,7 @@ Partial Class Travel_GroupAdd
                     strprov_codeNew = strprov_codeNew & ",'" & i("prov_code").ToString & "'"
                 Next
 
-   
+
                 genDDLBorderNew(ddlBorderCheckin, False, "")
                 ddlBorderCheckin.SelectedValue = para_checkin_id
                 UpdBorderCheckin.Update()
@@ -575,8 +727,6 @@ Partial Class Travel_GroupAdd
 
 
             End If
-
-
 
         Catch ex As Exception
             ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptError", "Error();", True)
@@ -590,13 +740,12 @@ Partial Class Travel_GroupAdd
         End Try
     End Sub
 
-
     Private Sub AddPopupMapAdmin(ByVal paraMap As String)
-        Dim strPopup As String = "javascript:w=window.open(" & _
-                        """" & ResolveClientUrl("~/Map/MapAdmin2.aspx?" & paraMap) & """," & _
-                        """SearchMapAdminWindow""," & _
-                        """" & "location=0,status=0,scrollbars=yes,resizable=no," & _
-                        "width=1024,height=780""" & _
+        Dim strPopup As String = "javascript:w=window.open(" &
+                        """" & ResolveClientUrl("~/Map/MapAdmin2.aspx?" & paraMap) & """," &
+                        """SearchMapAdminWindow""," &
+                        """" & "location=0,status=0,scrollbars=yes,resizable=no," &
+                        "width=1024,height=780""" &
                         ");w.focus();"
         lnkSchMap.NavigateUrl = "javascript://"
         lnkSchMap.Attributes.Add("OnClick", strPopup)
@@ -640,7 +789,7 @@ Partial Class Travel_GroupAdd
                 ProvareaDelete.Visible = False
             End If
         ElseIf pro <> 0 Then
-          
+
         End If
         UpdatePanel11.Update()
         UpdatePanel12.Update()
@@ -656,13 +805,13 @@ Partial Class Travel_GroupAdd
         Try
             Dim strselect As String
             If _strprov_code Like "*0*" Then
-                strselect = " select border_id as value , CAST(border_nameen || '  (' ||  prov_en || ')' as varchar ) as text " & _
+                strselect = " select border_id as value , CAST(border_nameen || '  (' ||  prov_en || ')' as varchar ) as text " &
                             " from  border_check LEFT JOIN province on province.prov_code = border_check.prov_code Order By border_id "
             ElseIf _strprov_code <> "" Then
-                strselect = " select border_id as value , CAST(border_nameen || '  (' ||  prov_en || ')' as varchar ) as text " & _
+                strselect = " select border_id as value , CAST(border_nameen || '  (' ||  prov_en || ')' as varchar ) as text " &
                " from  border_check LEFT JOIN province on province.prov_code = border_check.prov_code WHERE province.prov_code in (" & _strprov_code & ") Order By border_id "
             Else
-                strselect = " select border_id as value , CAST(border_nameen || '  (' ||  prov_en || ')' as varchar ) as text " & _
+                strselect = " select border_id as value , CAST(border_nameen || '  (' ||  prov_en || ')' as varchar ) as text " &
                           " from  border_check LEFT JOIN province on province.prov_code = border_check.prov_code  Order By border_id "
             End If
 
@@ -755,7 +904,7 @@ Partial Class Travel_GroupAdd
                     ProvareaDelete.Visible = False
                 End If
             ElseIf prov_code <> 0 Then
-              
+
             End If
 
 
@@ -807,7 +956,12 @@ Partial Class Travel_GroupAdd
         End If
 
 
-        ddladmin.SelectedValue = admin_id
+        'ddladmin.SelectedValue = admin_id
+        If admin_id IsNot Nothing AndAlso ddladmin.Items.FindByValue(admin_id.ToString()) IsNot Nothing Then
+            ddladmin.SelectedValue = admin_id.ToString()
+        Else
+            ddladmin.ClearSelection()
+        End If
 
         gvProv.DataSource = tbProvice
         gvProv.DataBind()
@@ -832,7 +986,7 @@ Partial Class Travel_GroupAdd
                 ProvareaDelete.Visible = False
             End If
         Else
-            
+
         End If
         ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script", "tab1();", True)
         ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptBack", "get_IframeMapDel(" & oldprov & ");", True)
@@ -842,31 +996,35 @@ Partial Class Travel_GroupAdd
 
         Dim db As New DBConnect
 
-        checkin = db.executeScalar("select prov_code from border_check where border_id = " & ddlBorderCheckin.SelectedValue)
+        'checkin = db.executeScalar("select prov_code from border_check where border_id = " & ddlBorderCheckin.SelectedValue)
         checkout = db.executeScalar("select prov_code from border_check where border_id = " & ddlBorderCheckout.SelectedValue)
-        Dim oldprov As String = tbProvice.Rows(0)("prov_code")
-     
 
         Dim prov_code As Object = db.executeScalar("select prov_code from border_check where border_id = " & ddlBorderCheckout.SelectedValue)
         Dim admin_id As Object = db.executeScalar("select admin_id from admin where prov_code = '" & prov_code & "'")
         Dim prov_en As Object = db.executeScalar("select prov_en from province where prov_code = ( select prov_code from border_check where border_id = " & ddlBorderCheckout.SelectedValue & ") ")
-       
+
         If ddlBorderCheckin.SelectedValue = ddlBorderCheckout.SelectedValue Then
             tbProvice.Clear()
             tbProvice.Rows.Add(tbProvice.Rows.Count + 1, prov_en, prov_code)
         Else
             tbProvice.Clear()
-            Dim checkin_en As String = db.executeScalar("select prov_en from province where prov_code = '" & checkin & "'")
+            'Dim checkin_en As String = db.executeScalar("select prov_en from province where prov_code = '" & checkin & "'")
             Dim checkout_en As String = db.executeScalar("select prov_en from province where prov_code = '" & checkout & "'")
-            tbProvice.Rows.Add(tbProvice.Rows.Count + 1, checkin_en, checkin)
+            'tbProvice.Rows.Add(tbProvice.Rows.Count + 1, checkin_en, checkin)
             tbProvice.Rows.Add(tbProvice.Rows.Count + 1, checkout_en, checkout)
             If tbProvice.Select("prov_code=" & prov_code).Length > 0 Then
             Else
                 tbProvice.Rows.Add(tbProvice.Rows.Count + 1, prov_en, prov_code)
             End If
-        End If
 
-      
+        End If
+        Dim oldprov As String = tbProvice.Rows(0)("prov_code")
+        'If admin_id IsNot Nothing AndAlso ddladmin.Items.FindByValue(admin_id.ToString()) IsNot Nothing Then
+        '    ddladmin.SelectedValue = admin_id.ToString()
+        'Else
+        '    ddladmin.ClearSelection()
+        'End If
+
 
         gvProv.DataSource = tbProvice
         gvProv.DataBind()
@@ -874,6 +1032,12 @@ Partial Class Travel_GroupAdd
         UpdatePanel12.Update()
         updateddladmin.Update()
 
+        Dim strprov_codeNew As String = "'-1'"
+        For Each i As DataRow In tbProvice.Rows
+            ddlProvarea.Attributes.Clear()
+            ddlProvarea.Items.FindByValue(i("prov_code").ToString).Attributes.Add("disabled", "disabled")
+            strprov_codeNew = strprov_codeNew & ",'" & i("prov_code").ToString & "'"
+        Next
 
         If Session("user_type") = 1 Then
             Paneladd.Visible = False
@@ -883,11 +1047,11 @@ Partial Class Travel_GroupAdd
                 ProvareaDelete.Visible = False
             End If
         Else
-           
+
 
         End If
         ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script", "tab1();", True)
-        ' ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptBack", "get_IframeMapDel(" & oldprov & ");", True)
+        ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptBack", "get_IframeMapDel(" & oldprov & ");", True)
         ScriptManager.RegisterStartupScript(Page, Me.GetType(), "ScriptBack5", "get_IframeMap(" & prov_code & ");", True)
     End Sub
 
@@ -963,8 +1127,8 @@ Partial Class Travel_GroupAdd
     Protected Sub btnNext2_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnNext2.Click
         Dim ar_startDate As String() = txtStart.Text.ToString.Split("/")
         Dim ar_endDate As String() = txtExpire.Text.ToString.Split("/")
-        Dim startDate 'As New DateTime(ar_startDate(2), ar_startDate(1), ar_startDate(0)) 'DateTime.Parse(Format(CDate(txtStart.Text), "MM/dd/yyyy"))
-        Dim endDate 'As New DateTime(ar_endDate(2), ar_endDate(1), ar_endDate(0)) ' DateTime.Parse(Format(CDate(txtExpire.Text), "MM/dd/yyyy"))
+        Dim startDate As New DateTime(ar_startDate(2), ar_startDate(1), ar_startDate(0)) 'DateTime.Parse(Format(CDate(txtStart.Text), "MM/dd/yyyy"))
+        Dim endDate As New DateTime(ar_endDate(2), ar_endDate(1), ar_endDate(0)) ' DateTime.Parse(Format(CDate(txtExpire.Text), "MM/dd/yyyy"))
         Try
             startDate = New DateTime(ar_startDate(2), ar_startDate(1), ar_startDate(0))
             endDate = New DateTime(ar_endDate(2), ar_endDate(1), ar_endDate(0))
@@ -997,7 +1161,7 @@ Partial Class Travel_GroupAdd
                 ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script5", "alert('Travel date must be less than 30 days.!!!')", True)
             Else
                 Dim DBconnect As New DBConnect
-                Dim con As Npgsql.NpgsqlConnection = DBconnect.getConnection
+                Dim con As Npgsql.NpgsqlConnection = DBConnect.getConnection
                 Dim cmd As New Npgsql.NpgsqlCommand
                 Dim tablecommand As DataTable = DBconnect.TableCommand
 
@@ -1027,15 +1191,15 @@ Partial Class Travel_GroupAdd
 
                                 old_group_id = group_id
                             End If
-                            Dim sqlInsert As String = "INSERT INTO travel_group ( group_name, is_active, start_date, exp_date, cntpeople , checkin_id , checkout_id , user_id , admin_id, travel_itinerary_filename, travel_itinerary_filesaved " & _
-                                " , is_renew , old_group_id, attachments_file_name, attachments_file_saved, reason ) " & _
-                            " VALUES (:group_name, 1, :start_date, :exp_date, :cntpeople , :checkin_id , :checkout_id , :user_id , :admin_id, :travel_itinerary_filename, :travel_itinerary_filesaved " & _
-                                " , " & is_renew & " , " & old_group_id & ", :attachments_file_name, :attachments_file_saved, :reason ) RETURNING group_id;  "
+                            Dim sqlInsert As String = "INSERT INTO travel_group ( group_name, is_active, start_date, exp_date, cntpeople , checkin_id , checkout_id , user_id , admin_id, travel_itinerary_filename, travel_itinerary_filesaved " &
+                                " , is_renew , old_group_id, attachments_file_name, attachments_file_saved, reason ) " &
+                            " VALUES (@group_name, 1, @start_date, @exp_date, @cntpeople , @checkin_id , @checkout_id , @user_id , @admin_id, @travel_itinerary_filename, @travel_itinerary_filesaved " &
+                                " , " & is_renew & " , " & old_group_id & ", @attachments_file_name, @attachments_file_saved, @reason ) RETURNING group_id;  "
                             cmd.CommandText = CommandType.Text
                             cmd.CommandText = sqlInsert
                         Else
-                            Dim sqlUpdate As String = " UPDATE travel_group SET group_name = :group_name , start_date = :start_date , exp_date = :exp_date , cntpeople = :cntpeople " & _
-                            " , checkin_id = :checkin_id , checkout_id = :checkout_id , user_id = :user_id , admin_id = :admin_id , travel_itinerary_filename = :travel_itinerary_filename, travel_itinerary_filesaved = :travel_itinerary_filesaved " & _
+                            Dim sqlUpdate As String = " UPDATE travel_group SET group_name = :group_name , start_date = :start_date , exp_date = :exp_date , cntpeople = :cntpeople " &
+                            " , checkin_id = :checkin_id , checkout_id = :checkout_id , user_id = :user_id , admin_id = :admin_id , travel_itinerary_filename = :travel_itinerary_filename, travel_itinerary_filesaved = :travel_itinerary_filesaved " &
                             " WHERE group_id = " & group_id
                             cmd.CommandText = CommandType.Text
                             cmd.CommandText = sqlUpdate
@@ -1046,16 +1210,21 @@ Partial Class Travel_GroupAdd
                         cmd.Parameters.Add("start_date", NpgsqlTypes.NpgsqlDbType.Date).Value = IIf(txtStart.Text.Trim = "", Nothing, startDate)
                         cmd.Parameters.Add("exp_date", NpgsqlTypes.NpgsqlDbType.Date).Value = IIf(txtExpire.Text.Trim = "", Nothing, endDate)
                         cmd.Parameters.Add("cntpeople", NpgsqlTypes.NpgsqlDbType.Integer).Value = 0 'txtcntpeople.Text
-                        cmd.Parameters.Add("checkin_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = ddlBorderCheckin.SelectedValue
-                        cmd.Parameters.Add("checkout_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = ddlBorderCheckout.SelectedValue
+                        cmd.Parameters.Add("checkin_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = CInt(ddlBorderCheckin.SelectedValue)
+                        cmd.Parameters.Add("checkout_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = CInt(ddlBorderCheckout.SelectedValue)
                         cmd.Parameters.Add("user_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = Session("user_id")
-                        cmd.Parameters.Add("admin_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = ddladmin.SelectedValue
+                        Debug.WriteLine("Selected Admin ID = " & ddladmin.SelectedValue)
+                        cmd.Parameters.Add("admin_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = CInt(ddladmin.SelectedValue)
                         cmd.Parameters.Add("travel_itinerary_filename", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidFNamePDF.Value.Trim = "", Nothing, hidFNamePDF.Value)
                         cmd.Parameters.Add("travel_itinerary_filesaved", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidSNamePDF.Value.Trim = "", Nothing, hidSNamePDF.Value)
                         If group_id Is Nothing Or Request.QueryString("is_renew").Contains(",0") Then 'Not Request.QueryString("is_renew") Is Nothing Then
-                            cmd.Parameters.Add("attachments_file_name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidFNameAttach.Value.Trim = "", Nothing, hidFNameAttach.Value)
-                            cmd.Parameters.Add("attachments_file_saved", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidSNameAttach.Value.Trim = "", Nothing, hidSNameAttach.Value)
-                            cmd.Parameters.Add("reason", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtReason.Text.Trim = "", Nothing, txtReason.Text)
+                            'cmd.Parameters.Add("attachments_file_name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidFNameAttach.Value.Trim = "", Nothing, hidFNameAttach.Value)
+                            'cmd.Parameters.Add("attachments_file_saved", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidSNameAttach.Value.Trim = "", Nothing, hidSNameAttach.Value)
+                            'cmd.Parameters.Add("reason", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtReason.Text.Trim = "", Nothing, txtReason.Text)
+                            cmd.Parameters.Add("attachments_file_name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = If(String.IsNullOrWhiteSpace(hidFNameAttach.Value), DBNull.Value, hidFNameAttach.Value)
+                            cmd.Parameters.Add("attachments_file_saved", NpgsqlTypes.NpgsqlDbType.Varchar).Value = If(String.IsNullOrWhiteSpace(hidSNameAttach.Value), DBNull.Value, hidSNameAttach.Value)
+                            cmd.Parameters.Add("reason", NpgsqlTypes.NpgsqlDbType.Varchar).Value = If(String.IsNullOrWhiteSpace(txtReason.Text), DBNull.Value, txtReason.Text)
+
                         End If
 
                         If Request.QueryString("is_renew").Contains(",0") Then 'Not Request.QueryString("is_renew") Is Nothing Then
@@ -1066,13 +1235,16 @@ Partial Class Travel_GroupAdd
                             cmd.CommandText = "Insert into area_group (prov_code , group_id )  select prov_code , " & group_id & " as group_id  from area_group  where group_id = " & old_group_id
                             cmd.ExecuteNonQuery()
 
-                          
+
                             '------------Add Guide-------------
-                            cmd.CommandText = " INSERT INTO travel_group_guide ( group_id, guide_id , regis_no , regis_photo )  " & _
+                            cmd.CommandText = " INSERT INTO travel_group_guide ( group_id, guide_id , regis_no , regis_photo )  " &
                             " select " & group_id & " as group_id , guide_id , regis_no , regis_photo from travel_group_guide where group_id = " & old_group_id
                             cmd.ExecuteNonQuery()
 
-                            Response.Redirect("GroupAdd.aspx?id=" & group_id & "&tab=2" & "&is_renew=1")
+                            'Response.Redirect("GroupAdd.aspx?id=" & group_id & "&tab=2" & "&is_renew=1")
+                            Response.Redirect("GroupAdd.aspx?id=" & group_id & "&tab=2&is_renew=1", False)
+                            Context.ApplicationInstance.CompleteRequest()
+
                         Else
 
 
@@ -1105,7 +1277,9 @@ Partial Class Travel_GroupAdd
                                     End If
 
                                     cmd.Parameters.Add("prov_code", NpgsqlTypes.NpgsqlDbType.Varchar).Value = cRowf("prov_code")
-                                    cmd.Parameters.Add("group_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = group_id1
+                                    'cmd.Parameters.Add("group_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = group_id1
+                                    cmd.Parameters.Add("group_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = Convert.ToInt32(group_id1)
+
                                     cmd.ExecuteNonQuery()
                                 Next
 
@@ -1117,8 +1291,10 @@ Partial Class Travel_GroupAdd
                                     cmd.ExecuteScalar()
                                 Next
 
-                           
-                                Response.Redirect("GroupAdd.aspx?id=" & group_id1 & "&tab=2&is_renew=")
+
+                                Response.Redirect("GroupAdd.aspx?id=" & group_id1 & "&tab=2&is_renew=", False)
+                                Context.ApplicationInstance.CompleteRequest()
+
                             Else
                                 cmd.ExecuteNonQuery()
                                 group_id1 = group_id
@@ -1175,6 +1351,8 @@ Partial Class Travel_GroupAdd
 
 
                     Catch ex As Exception
+                        'Console.WriteLine(ex.Message)
+                        Debug.WriteLine("Error in loadData: " & ex.ToString())
 
                     Finally
                         'DBconnect = Nothing
@@ -1187,9 +1365,248 @@ Partial Class Travel_GroupAdd
             End If
         End If
 
-        genDDLLicense(ddlLicense, IIf(group_id Is Nothing, 0, group_id))
+        genDDLLicense(ddlLicense, If(IsNumeric(group_id), CInt(group_id), 0))
+
+        'genDDLLicense(ddlLicense, IIf(group_id Is Nothing, 0, group_id))
 
     End Sub
+
+    'Protected Sub btnNext2_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnNext2.Click
+    '    Dim ar_startDate As String() = txtStart.Text.ToString.Split("/")
+    '    Dim ar_endDate As String() = txtExpire.Text.ToString.Split("/")
+    '    Dim startDate 'As New DateTime(ar_startDate(2), ar_startDate(1), ar_startDate(0)) 'DateTime.Parse(Format(CDate(txtStart.Text), "MM/dd/yyyy"))
+    '    Dim endDate 'As New DateTime(ar_endDate(2), ar_endDate(1), ar_endDate(0)) ' DateTime.Parse(Format(CDate(txtExpire.Text), "MM/dd/yyyy"))
+    '    Try
+    '        startDate = New DateTime(ar_startDate(2), ar_startDate(1), ar_startDate(0))
+    '        endDate = New DateTime(ar_endDate(2), ar_endDate(1), ar_endDate(0))
+    '    Catch ex As Exception
+    '        ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script", "tab1();", True)
+    '        ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script5", "alert('Select End date!!!')", True)
+    '        Exit Sub
+    '    End Try
+    '    If txtgroup_name.Text.Trim = "" Then
+    '        ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script", "tab1();", True)
+    '        ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script5", "alert('Key Group Name!!!')", True)
+    '    ElseIf txtStart.Text.Trim = "" Then
+    '        ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script", "tab1();", True)
+    '        ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script5", "alert('Select Start date!!!')", True)
+    '    ElseIf txtExpire.Text.Trim = "" Then
+    '        ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script", "tab1();", True)
+    '        ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script5", "alert('Select End date!!!')", True)
+    '    ElseIf CDate(startDate) > CDate(endDate) Then
+    '        ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script", "tab1();", True)
+    '        ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script5", "alert('End date is greater than the Start date!!!')", True)
+    '    ElseIf hidFNamePDF.Value = "" Then
+    '        ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script", "tab1();", True)
+    '        ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script5", "alert('Choose Travel Itinerary File!!!')", True)
+    '    Else
+
+    '        Dim diff As TimeSpan = endDate - startDate
+    '        Dim days As Double = diff.TotalDays
+    '        If days > 30 Then
+    '            ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script", "tab1();", True)
+    '            ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script5", "alert('Travel date must be less than 30 days.!!!')", True)
+    '        Else
+    '            Dim DBconnect As New DBConnect
+    '            Dim con As Npgsql.NpgsqlConnection = DBconnect.getConnection
+    '            Dim cmd As New Npgsql.NpgsqlCommand
+    '            Dim tablecommand As DataTable = DBconnect.TableCommand
+
+    '            Dim ss_exp = DBconnect.executeScalar("select to_char(license_exp , 'dd/mm/YYYY') license_exp from user_travel WHERE user_id = " & Session("user_id"))
+    '            Dim ar_exp As String() = ss_exp.Split("/")
+    '            Dim _license_exp As New Date(ar_exp(2), ar_exp(1), ar_exp(0))
+    '            If CDate(endDate) > CDate(_license_exp) Then
+    '                ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script", "tab1();", True)
+    '                ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script5", "alert('Your license cannot travel on that date.!')", True)
+    '            Else
+    '                'Dim transaction As NpgsqlTransaction
+    '                Try
+    '                    con.Open()
+    '                    'transaction = con.BeginTransaction()
+    '                    cmd.Connection = con
+
+
+    '                    Dim old_group_id As Integer = 0
+    '                    If group_id Is Nothing Or Request.QueryString("is_renew").Contains(",0") Then 'Not Request.QueryString("is_renew") Is Nothing Then
+    '                        Dim is_renew As Integer = 0
+    '                        If Request.QueryString("is_renew").Contains(",0") Then 'Not Request.QueryString("is_renew") Is Nothing Then
+    '                            If Request.QueryString("is_renew").IndexOf(",") > -1 Then
+    '                                is_renew = CInt(Request.QueryString("is_renew").Split(",")(0)) + 1
+    '                            Else
+    '                                is_renew = Request.QueryString("is_renew") + 1
+    '                            End If
+
+    '                            old_group_id = group_id
+    '                        End If
+    '                        Dim sqlInsert As String = "INSERT INTO travel_group ( group_name, is_active, start_date, exp_date, cntpeople , checkin_id , checkout_id , user_id , admin_id, travel_itinerary_filename, travel_itinerary_filesaved " & _
+    '                            " , is_renew , old_group_id, attachments_file_name, attachments_file_saved, reason ) " & _
+    '                        " VALUES (:group_name, 1, :start_date, :exp_date, :cntpeople , :checkin_id , :checkout_id , :user_id , :admin_id, :travel_itinerary_filename, :travel_itinerary_filesaved " & _
+    '                            " , " & is_renew & " , " & old_group_id & ", :attachments_file_name, :attachments_file_saved, :reason ) RETURNING group_id;  "
+    '                        cmd.CommandText = CommandType.Text
+    '                        cmd.CommandText = sqlInsert
+    '                    Else
+    '                        Dim sqlUpdate As String = " UPDATE travel_group SET group_name = :group_name , start_date = :start_date , exp_date = :exp_date , cntpeople = :cntpeople " & _
+    '                        " , checkin_id = :checkin_id , checkout_id = :checkout_id , user_id = :user_id , admin_id = :admin_id , travel_itinerary_filename = :travel_itinerary_filename, travel_itinerary_filesaved = :travel_itinerary_filesaved " & _
+    '                        " WHERE group_id = " & group_id
+    '                        cmd.CommandText = CommandType.Text
+    '                        cmd.CommandText = sqlUpdate
+    '                    End If
+    '                    'HidExpire.Value = txtExpire.Text
+    '                    cmd.Parameters.Clear()
+    '                    cmd.Parameters.Add("group_name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = txtgroup_name.Text
+    '                    cmd.Parameters.Add("start_date", NpgsqlTypes.NpgsqlDbType.Date).Value = IIf(txtStart.Text.Trim = "", Nothing, startDate)
+    '                    cmd.Parameters.Add("exp_date", NpgsqlTypes.NpgsqlDbType.Date).Value = IIf(txtExpire.Text.Trim = "", Nothing, endDate)
+    '                    cmd.Parameters.Add("cntpeople", NpgsqlTypes.NpgsqlDbType.Integer).Value = 0 'txtcntpeople.Text
+    '                    cmd.Parameters.Add("checkin_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = ddlBorderCheckin.SelectedValue
+    '                    cmd.Parameters.Add("checkout_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = ddlBorderCheckout.SelectedValue
+    '                    cmd.Parameters.Add("user_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = Session("user_id")
+    '                    'cmd.Parameters.Add("admin_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = ddladmin.SelectedValue
+    '                    'If Not String.IsNullOrWhiteSpace(ddladmin.SelectedValue) Then
+    '                    '    cmd.Parameters.Add("admin_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = Convert.ToInt32(ddladmin.SelectedValue)
+    '                    'Else
+    '                    '    cmd.Parameters.Add("admin_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = DBNull.Value
+    '                    'End If
+    '                    cmd.Parameters.Add("admin_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = CInt(ddladmin.SelectedValue)
+    '                    cmd.Parameters.Add("travel_itinerary_filename", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidFNamePDF.Value.Trim = "", Nothing, hidFNamePDF.Value)
+    '                    cmd.Parameters.Add("travel_itinerary_filesaved", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidSNamePDF.Value.Trim = "", Nothing, hidSNamePDF.Value)
+    '                    If group_id Is Nothing Or Request.QueryString("is_renew").Contains(",0") Then 'Not Request.QueryString("is_renew") Is Nothing Then
+    '                        cmd.Parameters.Add("attachments_file_name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidFNameAttach.Value.Trim = "", Nothing, hidFNameAttach.Value)
+    '                        cmd.Parameters.Add("attachments_file_saved", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(hidSNameAttach.Value.Trim = "", Nothing, hidSNameAttach.Value)
+    '                        cmd.Parameters.Add("reason", NpgsqlTypes.NpgsqlDbType.Varchar).Value = IIf(txtReason.Text.Trim = "", Nothing, txtReason.Text)
+    '                    End If
+
+    '                    If Request.QueryString("is_renew").Contains(",0") Then 'Not Request.QueryString("is_renew") Is Nothing Then
+    '                        Dim group_id As String
+    '                        group_id = cmd.ExecuteScalar
+
+    '                        '------------อัพโหลดจังหวัด-------------
+    '                        cmd.CommandText = "Insert into area_group (prov_code , group_id )  select prov_code , " & group_id & " as group_id  from area_group  where group_id = " & old_group_id
+    '                        cmd.ExecuteNonQuery()
+
+
+    '                        '------------Add Guide-------------
+    '                        cmd.CommandText = " INSERT INTO travel_group_guide ( group_id, guide_id , regis_no , regis_photo )  " & _
+    '                        " select " & group_id & " as group_id , guide_id , regis_no , regis_photo from travel_group_guide where group_id = " & old_group_id
+    '                        cmd.ExecuteNonQuery()
+
+    '                        Response.Redirect("GroupAdd.aspx?id=" & group_id & "&tab=2" & "&is_renew=1")
+    '                    Else
+
+
+    '                        Dim group_id1 As String
+    '                        If group_id Is Nothing Then
+    '                            group_id1 = cmd.ExecuteScalar
+    '                            Dim sqlselectcheck As String = "SELECT area_id from area_group WHERE group_id = " & group_id1
+
+    '                            Dim cRowf As DataRow
+    '                            Dim drRow() As DataRow
+    '                            Dim tbProviceold As New DataTable
+
+    '                            cmd.CommandText = CommandType.Text
+    '                            cmd.CommandText = sqlselectcheck
+    '                            tbProviceold = DBconnect.getDataTable(sqlselectcheck, "TbProviceold")
+
+    '                            '------------อัพโหลดจังหวัด-------------
+
+    '                            For introw = 0 To tbProvice.Rows.Count - 1
+    '                                cmd.Parameters.Clear()
+    '                                cRowf = tbProvice.Rows(introw)
+    '                                drRow = tbProviceold.Select("area_id = " & cRowf("area_id"))
+
+    '                                If drRow.Length > 0 Then
+    '                                    cmd.CommandText = "Update area_group set prov_code=:prov_code , group_id=:group_id WHERE area_id = " & cRowf("area_id")
+    '                                    tbProviceold.Rows.Remove(drRow(0))
+    '                                Else
+    '                                    cmd.CommandText = "Insert into area_group (prov_code , group_id ) VALUES (:prov_code , :group_id ) "
+
+    '                                End If
+
+    '                                cmd.Parameters.Add("prov_code", NpgsqlTypes.NpgsqlDbType.Varchar).Value = cRowf("prov_code")
+    '                                cmd.Parameters.Add("group_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = group_id1
+    '                                cmd.ExecuteNonQuery()
+    '                            Next
+
+    '                            '----------ลบจังหวัด---------------
+
+    '                            For Each cRow In tbProviceold.Rows
+    '                                cmd.Parameters.Clear()
+    '                                cmd.CommandText = "delete from area_group where area_id =" & cRow("area_id")
+    '                                cmd.ExecuteScalar()
+    '                            Next
+
+
+    '                            Response.Redirect("GroupAdd.aspx?id=" & group_id1 & "&tab=2&is_renew=")
+    '                        Else
+    '                            cmd.ExecuteNonQuery()
+    '                            group_id1 = group_id
+    '                            getCarLicense()
+    '                            Dim sqlselectcheck As String = "SELECT area_id from area_group WHERE group_id = " & group_id1
+
+    '                            Dim cRowf As DataRow
+    '                            Dim drRow() As DataRow
+    '                            Dim tbProviceold As New DataTable
+
+    '                            cmd.CommandText = CommandType.Text
+    '                            cmd.CommandText = sqlselectcheck
+    '                            tbProviceold = DBconnect.getDataTable(sqlselectcheck, "TbProviceold")
+
+    '                            '------------อัพโหลดจังหวัด-------------
+
+    '                            For introw = 0 To tbProvice.Rows.Count - 1
+    '                                cmd.Parameters.Clear()
+    '                                cRowf = tbProvice.Rows(introw)
+    '                                drRow = tbProviceold.Select("area_id = " & cRowf("area_id"))
+
+    '                                If drRow.Length > 0 Then
+    '                                    cmd.CommandText = "Update area_group set prov_code=:prov_code , group_id=:group_id WHERE area_id = " & cRowf("area_id")
+    '                                    tbProviceold.Rows.Remove(drRow(0))
+    '                                Else
+    '                                    cmd.CommandText = "Insert into area_group (prov_code , group_id ) VALUES (:prov_code , :group_id ) "
+
+    '                                End If
+
+    '                                cmd.Parameters.Add("prov_code", NpgsqlTypes.NpgsqlDbType.Varchar).Value = cRowf("prov_code")
+    '                                cmd.Parameters.Add("group_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = group_id1
+    '                                cmd.ExecuteNonQuery()
+    '                            Next
+
+    '                            '----------ลบจังหวัด---------------
+
+    '                            For Each cRow In tbProviceold.Rows
+    '                                cmd.Parameters.Clear()
+    '                                cmd.CommandText = "delete from area_group where area_id =" & cRow("area_id")
+    '                                cmd.ExecuteScalar()
+    '                            Next
+
+
+
+    '                            Dim table As DataTable = DBconnect.getDataTable("select license_id from travel_group_car WHERE group_id = " & group_id1, "group_car")
+
+    '                            For Each i In table.Rows
+    '                                areaCar(i("license_id").ToString)
+    '                            Next
+    '                            ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Script", "tab2();", True)
+    '                        End If
+
+    '                    End If
+
+
+    '                Catch ex As Exception
+    '                    Console.WriteLine(ex.Message)
+    '                Finally
+    '                    'DBconnect = Nothing
+    '                    cmd.Connection.Close()
+    '                    con.Close()
+    '                    cmd.Dispose()
+    '                    con.Dispose()
+    '                End Try
+    '            End If
+    '        End If
+    '    End If
+
+    '    genDDLLicense(ddlLicense, IIf(group_id Is Nothing, 0, group_id))
+
+    'End Sub
     Public Function areaCar(ByVal license_id As String)
 
         Dim DBconnect As New DBConnect
@@ -1338,7 +1755,7 @@ Partial Class Travel_GroupAdd
                 cancel_license_id = dbconnect.executeScalar("select status_id from license where license_id = " & ddlLicense.SelectedValue)
                 old_group_id = dbconnect.executeScalar("select old_group_id from travel_group where group_id = " & group_id)
             Catch ex As Exception
-
+                Console.WriteLine(ex.Message)
             End Try
             If (old_group_id > 0) Or (cancel_license_id = 4 Or cancel_license_id = 5 Or cancel_license_id = 7 Or cancel_license_id = 8 Or cancel_license_id = 9) Then
 
@@ -1461,7 +1878,7 @@ Partial Class Travel_GroupAdd
 
             Response.Redirect("GroupAdd.aspx?id=" & group_id & "&tab=2&is_renew=")
         Catch ex As Exception
-
+            Console.WriteLine(ex.Message)
         Finally
             dbconnect = Nothing
             cmd.Connection.Close()
@@ -1586,8 +2003,9 @@ Partial Class Travel_GroupAdd
                 Try
                     old_group_id = db.executeScalar("select old_group_id from travel_group where group_id = " & group_id)
                 Catch ex As Exception
-
+                    Console.WriteLine(ex.Message)
                 End Try
+
 
                 Dim ar_startDate As String() = txtStart.Text.ToString.Split("/")
                 Dim ar_endDate As String() = txtExpire.Text.ToString.Split("/")
@@ -1680,9 +2098,14 @@ Partial Class Travel_GroupAdd
                 " left join type_car on type_car.type_id = car.typecar_id " & _
                 " LEFT JOIN driver on driver.driver_id = license.driver_id where license_id = " & ddlLicense.SelectedValue
             Dt = db.getDataTable(strselect, "Data")
-            Dim drow As DataRow = Dt.Rows(0)
-            lblType.Text = drow("type_name")
-            lblDriver.Text = drow("driver_name")
+            If Dt IsNot Nothing AndAlso Dt.Rows.Count > 0 Then
+                Dim drow As DataRow = Dt.Rows(0)
+                lblType.Text = drow("type_name")
+                lblDriver.Text = drow("driver_name")
+            Else
+                lblType.Text = ""
+                lblDriver.Text = ""
+            End If
         Catch ex As Exception
 
         Finally
@@ -1716,7 +2139,7 @@ Partial Class Travel_GroupAdd
             cnt_car = dtCar.Rows.Count
 
         Catch ex As Exception
-
+            Console.WriteLine(ex.Message)
         Finally
             db = Nothing
         End Try

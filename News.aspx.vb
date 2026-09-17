@@ -34,18 +34,35 @@ Partial Class News
     Private enCul As New System.Globalization.CultureInfo("en-US")
 
     Private Sub getNew()
+        Dim newsId As Integer
+        If Not Integer.TryParse(Request.QueryString("id"), newsId) Then
+            Return
+        End If
+
         Dim dbconnect As New DBConnect
         Dim cmd As New Npgsql.NpgsqlCommand
         Dim dr As Npgsql.NpgsqlDataReader
         Dim con As Npgsql.NpgsqlConnection = dbconnect.getConnection
         Try
             con.Open()
-            Dim str As String = "SELECT title , detail , pic , date_news from news WHERE news_id = '" & Request.QueryString("id") & "'"
-            Dim strImg As String = "SELECT CAST('Upload/News/' || pic_name as varchar) as pic , CAST('~/Upload/News/' || pic_name as varchar) as url from news_pic WHERE news_id = '" & Request.QueryString("id") & "' "
-            Dim strDoc As String = "SELECT file_name , CAST('~/Upload/DocNews/' || files as varchar ) as url  from news_file WHERE news_id = '" & Request.QueryString("id") & "' "
-            dtlImg.DataSource = dbconnect.getDataTable(strImg, "Img")
+            Dim str As String = "SELECT title , detail , pic , date_news from news WHERE news_id = :news_id"
+            Dim strImg As String = "SELECT CAST('Upload/News/' || pic_name as varchar) as pic , CAST('~/Upload/News/' || pic_name as varchar) as url from news_pic WHERE news_id = :news_id"
+            Dim strDoc As String = "SELECT file_name , CAST('~/Upload/DocNews/' || files as varchar ) as url  from news_file WHERE news_id = :news_id"
+
+            Dim cmdImg As New Npgsql.NpgsqlCommand(strImg, con)
+            cmdImg.Parameters.AddWithValue("news_id", newsId)
+            Dim adapImg As New Npgsql.NpgsqlDataAdapter(cmdImg)
+            Dim tblImg As New DataTable("Img")
+            adapImg.Fill(tblImg)
+            dtlImg.DataSource = tblImg
             dtlImg.DataBind()
-            dtlFile.DataSource = dbconnect.getDataTable(strDoc, "doc")
+
+            Dim cmdDoc As New Npgsql.NpgsqlCommand(strDoc, con)
+            cmdDoc.Parameters.AddWithValue("news_id", newsId)
+            Dim adapDoc As New Npgsql.NpgsqlDataAdapter(cmdDoc)
+            Dim tblDoc As New DataTable("doc")
+            adapDoc.Fill(tblDoc)
+            dtlFile.DataSource = tblDoc
             dtlFile.DataBind()
 
 
@@ -53,6 +70,7 @@ Partial Class News
             cmd.Connection = con
             cmd.CommandType = CommandType.Text
             cmd.CommandText = str
+            cmd.Parameters.AddWithValue("news_id", newsId)
             dr = cmd.ExecuteReader
 
             If dr.Read Then
